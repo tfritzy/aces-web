@@ -88,31 +88,26 @@ type PlayingCardProps = {
   heldIndex: number | null;
   setHeldIndex: (index: number | null) => void;
   setDropSlotIndex: (index: number) => void;
-  onDragStart: (e: React.DragEvent) => void;
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
   const isHeld = props.heldIndex === props.index;
-  const handleDragStart = React.useCallback(
-    (e: React.DragEvent) => {
-      props.setHeldIndex(props.index);
-      props.onDragStart(e);
-    },
-    [props.index]
-  );
+  const handleDragStart = (e: React.DragEvent) => {
+    props.setHeldIndex(props.index);
+  };
 
-  const handleDragEndCapture = React.useCallback(() => {
+  const handleDragEndCapture = () => {
     props.setHeldIndex(null);
-  }, [props.setHeldIndex]);
+  };
 
-  const handleDragEnter = React.useCallback((e: React.DragEvent) => {
+  const handleDragEnter = (e: React.DragEvent) => {
     const targetBounds = e.currentTarget.getBoundingClientRect();
     const targetCenter = targetBounds.left + targetBounds.width / 2;
     const side = e.clientX < targetCenter ? 0 : 1;
 
     props.setDropSlotIndex(props.index + side);
     e.preventDefault();
-  }, []);
+  };
 
   const card = cardMap.get(props.card);
 
@@ -120,25 +115,25 @@ export const PlayingCard = (props: PlayingCardProps) => {
     return <div className="card-out w-32 h-40"></div>;
   }
 
-  const heldClasses = isHeld ? "opacity-50" : "";
+  const heldClasses = isHeld ? "opacity-20 bg-black" : "";
 
   return (
-    <div
-      draggable="true"
-      onDragStart={handleDragStart}
-      onDragOver={handleDragEnter}
-      onDragEndCapture={handleDragEndCapture}
-      id={props.index.toString()}
-    >
-      {
+    <div className={heldClasses}>
+      <div
+        draggable="true"
+        onDragStart={handleDragStart}
+        onDragOver={handleDragEnter}
+        onDragEndCapture={handleDragEndCapture}
+        id={props.index.toString()}
+      >
         <div
-          className={`card-in bg-slate-50 cursor-pointer rounded-md border-solid border-2 flex w-32 h-40 p-2 mx-1 ${heldClasses}`}
+          className={`bg-slate-50 cursor-pointer rounded-md border-solid border-2 flex w-32 h-40 p-2 mx-1`}
         >
           <CardCol card={card} />
           <CardFace card={card} />
           <CardCol card={card} reverse />
         </div>
-      }
+      </div>
     </div>
   );
 };

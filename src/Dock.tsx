@@ -11,75 +11,91 @@ export const Dock = () => {
     CardType.QUEEN_OF_HEARTS,
   ]);
 
+  const handleSetHeldIndex = (index: number | null) => {
+    if (index != null) {
+      // let numInvalidBeforeIndex = 0;
+      // let numInvalidAfterIndex = 0;
+      // cards.forEach((card, i) => {
+      //   if (card === CardType.INVALID) {
+      //     if (i <= index) {
+      //       numInvalidBeforeIndex++;
+      //     } else if (i >= index) {
+      //       numInvalidAfterIndex++;
+      //     }
+      //   }
+      // });
+
+      console.log("Cards before", cards);
+
+      // const filtered = cards.filter((card) => card !== CardType.INVALID);
+      // setCards(filtered);
+
+      setHeldIndex(index);
+    } else {
+      setHeldIndex(index);
+    }
+  };
+
   const handleSetDropSlotIndex = (index: number | null) => {
-    console.log("Set drop slot index", heldIndex, index);
-    if (heldIndex && index && Math.abs(index - heldIndex) < 2) {
+    if (heldIndex == null || index == null) {
+      return;
+    }
+
+    if (index - heldIndex === 0 || index - heldIndex === 1) {
+      setDropSlotIndex(null);
       return;
     }
 
     setDropSlotIndex(index);
   };
 
-  const handleSetHeldIndex = (index: number | null) => {
-    console.log("Set held index", index);
-    setHeldIndex(index);
-  };
-
-  const handleDragStart = React.useCallback(
-    (e: React.DragEvent) => {
-      const filteredCards = cards.filter((card) => card !== CardType.INVALID);
-      setCards(filteredCards);
-    },
-    [setCards, cards]
-  );
-
-  const playingCards = React.useMemo(() => {
-    const divs = cards.map((card, index) => (
+  const playingCards = cards.map((card, index) => {
+    return (
       <PlayingCard
-        key={index}
+        key={card + "-" + index}
         index={index}
         card={card}
-        onDragStart={handleDragStart}
         heldIndex={heldIndex}
         setHeldIndex={handleSetHeldIndex}
         setDropSlotIndex={handleSetDropSlotIndex}
       />
-    ));
+    );
+  });
 
-    if (dropSlotIndex !== null) {
-      divs.splice(
-        dropSlotIndex,
-        0,
-        <div
-          key={-1}
-          className="card-in w-32 h-40 rounded-md border-dashed border-2"
-        />
-      );
+  if (dropSlotIndex !== null) {
+    playingCards.splice(
+      dropSlotIndex,
+      0,
+      <div
+        key={"drop-" + dropSlotIndex}
+        className="card-in w-32 h-40 rounded-md border-dashed border-2 p-2 mx-1"
+      />
+    );
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+
+    if (dropSlotIndex === null || heldIndex === null) {
+      return;
     }
 
-    return divs;
-  }, [cards, dropSlotIndex]);
+    const indexMod = heldIndex > dropSlotIndex ? 1 : 0;
+    cards.splice(dropSlotIndex, 0, CardType.INVALID);
+    cards[dropSlotIndex] = cards[heldIndex + indexMod];
+    cards[heldIndex + indexMod] = CardType.INVALID;
+    const filteredCards = cards.filter(
+      (card, i) => card !== CardType.INVALID || i === heldIndex + indexMod
+    );
 
-  const handleDragOver = React.useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-  }, []);
-
-  const handleDrop = React.useCallback(
-    (e: React.DragEvent) => {
-      console.log("Handle drop", heldIndex, dropSlotIndex);
-      e.preventDefault();
-
-      if (dropSlotIndex === null || heldIndex === null) {
-        return;
-      }
-
-      cards.splice(dropSlotIndex, 0, cards[heldIndex]);
-      cards[heldIndex] = CardType.INVALID;
-      setCards([...cards]);
-      setDropSlotIndex(null);
-    },
-    [dropSlotIndex, heldIndex]
-  );
+    setCards([...filteredCards]);
+    setDropSlotIndex(null);
+    setHeldIndex(null);
+  };
 
   return (
     <div

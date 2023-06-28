@@ -19,15 +19,15 @@ code {
 
 .card-in {
   max-width: 0;
-  animation: growWidth 0.0s ease forwards;
+  animation: growWidth 0.2s ease forwards;
 }
 .card-out {
-  max-width: 120px;
+  max-width: 200px;
   animation: shrinkWidth 0.4s ease forwards;
 }
 @keyframes growWidth {
   to { 
-    max-width: 120px;
+    max-width: 200px;
   }
 }
 @keyframes shrinkWidth {
