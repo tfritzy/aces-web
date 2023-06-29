@@ -2,6 +2,7 @@ import * as React from "react";
 import { CardType } from "./Types";
 import { Suit, cardMap, Card, CardValue } from "Types";
 import { transform } from "typescript";
+import { NULL_HELD_INDEX } from "Board";
 
 const getSuitIcon = (card: Card) => {
   switch (card.suit) {
@@ -83,21 +84,22 @@ const CardFace = (props: CardColProps) => {
 };
 
 type PlayingCardProps = {
-  card: CardType;
+  card: Card;
   index: number;
-  heldIndex: number | null;
-  setHeldIndex: (index: number | null) => void;
-  setDropSlotIndex: (index: number) => void;
+  heldIndex: number;
+  setHeldIndex: (index: number) => void;
+  setDropSlotIndex?: (index: number) => void;
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
+  const card = props.card;
   const isHeld = props.heldIndex === props.index;
   const handleDragStart = (e: React.DragEvent) => {
     props.setHeldIndex(props.index);
   };
 
   const handleDragEndCapture = () => {
-    props.setHeldIndex(null);
+    props.setHeldIndex(NULL_HELD_INDEX);
   };
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -105,13 +107,11 @@ export const PlayingCard = (props: PlayingCardProps) => {
     const targetCenter = targetBounds.left + targetBounds.width / 2;
     const side = e.clientX < targetCenter ? 0 : 1;
 
-    props.setDropSlotIndex(props.index + side);
+    props.setDropSlotIndex?.(props.index + side);
     e.preventDefault();
   };
 
-  const card = cardMap.get(props.card);
-
-  if (!card) {
+  if (!card || card.type == CardType.INVALID) {
     return <div className="card-out w-32 h-40"></div>;
   }
 

@@ -3,6 +3,8 @@ export type Card = {
   suit: Suit;
   value: CardValue;
   points: number;
+  deck: number;
+  createdTimeMs?: number;
 };
 
 export enum CardType {
@@ -119,6 +121,7 @@ const getCards = () => {
           suit: Suit[suit],
           value: CardValue[value],
           points: valueMap[CardValue[value]],
+          deck: 0,
         });
       });
     }
@@ -131,3 +134,11 @@ export const cards = getCards();
 export const cardMap: Map<CardType, Card> = new Map(
   cards.map((card) => [card.type, card])
 );
+
+export const getCard = (card: CardType, deck: number): Card => {
+  const cardObj = cardMap.get(card);
+  return {
+    ...cardObj,
+    deck,
+  } as Card;
+};

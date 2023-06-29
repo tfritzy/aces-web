@@ -23,7 +23,7 @@ code {
 }
 .card-out {
   max-width: 200px;
-  animation: shrinkWidth 0.4s ease forwards;
+  animation: shrinkWidth 0.2s ease forwards;
 }
 @keyframes growWidth {
   to { 
