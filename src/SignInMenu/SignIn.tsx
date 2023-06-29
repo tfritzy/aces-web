@@ -1,23 +1,21 @@
 type LogoBoxProps = {
   icon: string;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
 };
 
 const LogoBox = (props: LogoBoxProps) => {
+  const href = `https://aces-backend.azurewebsites.net/.auth/login/aad?post_login_redirect_url=http://127.0.0.1:3000/menu`;
   return (
-    <button
-      onClick={() => props.setIsAuthenticated(true)}
+    <a
+      href={href}
       className="flex w-46 h-10 bg-white font-sans text-sm bg-zinc-900 items-center text-white space-x-2 p-3 font-semibold"
     >
       <img src={props.icon} alt="Logo" />
       <div>Sign in with Microsoft</div>
-    </button>
+    </a>
   );
 };
 
-type SignInProps = {
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
-};
+type SignInProps = {};
 
 export const SignIn = (props: SignInProps) => {
   return (
@@ -27,10 +25,7 @@ export const SignIn = (props: SignInProps) => {
           <h1>Sign In</h1>
         </div>
 
-        <LogoBox
-          icon="Logos/msft-logo.png"
-          setIsAuthenticated={props.setIsAuthenticated}
-        />
+        <LogoBox icon="Logos/msft-logo.png" />
       </div>
     </div>
   );
