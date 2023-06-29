@@ -1,8 +1,8 @@
 import * as React from "react";
 import { CardType } from "./Types";
-import { Suit, cardMap, Card, CardValue } from "Types";
+import { Suit, cardMap, Card, CardValue } from "Game/Types";
 import { transform } from "typescript";
-import { NULL_HELD_INDEX } from "Board";
+import { NULL_HELD_INDEX } from "Game/Board";
 
 const getSuitIcon = (card: Card) => {
   switch (card.suit) {
@@ -116,6 +116,10 @@ export const PlayingCard = (props: PlayingCardProps) => {
   }
 
   const heldClasses = isHeld ? "opacity-20 bg-black" : "";
+  const color =
+    card.suit == Suit.CLUBS || card.suit == Suit.SPADES
+      ? "text-zinc-800"
+      : "text-red-700";
 
   return (
     <div className={heldClasses}>
@@ -127,7 +131,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
         id={props.index.toString()}
       >
         <div
-          className={`bg-slate-50 cursor-pointer rounded-md border-solid border-2 flex w-32 h-40 p-2 mx-1`}
+          className={`${color} bg-slate-50 cursor-pointer rounded-md border-solid border-2 flex w-32 h-40 p-2 mx-1`}
         >
           <CardCol card={card} />
           <CardFace card={card} />

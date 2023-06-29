@@ -1,8 +1,8 @@
 import React from "react";
 
-import { DECK_HELD_INDEX } from "Board";
-import { PlayingCard } from "PlayingCard";
-import { CardType, getCard } from "Types";
+import { DECK_HELD_INDEX } from "Game/Board";
+import { PlayingCard } from "Game/PlayingCard";
+import { CardType, getCard } from "Game/Types";
 
 type DeckProps = {
   heldIndex: number;

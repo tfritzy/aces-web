@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Card } from "Types";
-import { PlayingCard } from "PlayingCard";
-import { NULL_HELD_INDEX } from "Board";
+import { Card } from "Game/Types";
+import { PlayingCard } from "Game/PlayingCard";
+import { NULL_HELD_INDEX } from "Game/Board";
 
 type DockProps = {
   heldIndex: number;

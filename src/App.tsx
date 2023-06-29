@@ -1,11 +1,14 @@
 import React from "react";
-import { Board } from "Board";
+import { Board } from "Game/Board";
 import "./index.css";
+import { SignIn } from "Menu/SignIn";
 
 export const App = () => {
-  return (
-    <div className="text-3xl font-bold underline text-sky-400">
-      <Board />
-    </div>
-  );
+  const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
+
+  if (isAuthenticated) {
+    return <Board />;
+  }
+
+  return <SignIn setIsAuthenticated={setIsAuthenticated} />;
 };

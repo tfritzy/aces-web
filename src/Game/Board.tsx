@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Dock } from "Dock";
-import { Deck } from "Deck";
-import { Card, CardType, getCard } from "Types";
+import { Dock } from "Game/Dock";
+import { Deck } from "Game/Deck";
+import { Card, CardType, getCard } from "Game/Types";
 
 export const NULL_HELD_INDEX = -3;
 export const DECK_HELD_INDEX = -2;
@@ -12,14 +12,14 @@ export const Board = () => {
   const [heldIndex, setHeldIndex] = React.useState<number>(NULL_HELD_INDEX);
   const [dropSlotIndex, setDropSlotIndex] = React.useState<number | null>(null);
   const [pile, setPile] = useState<Card[]>([
-    getCard(CardType.ACE_OF_SPADES, 0),
+    getCard(CardType.ACE_OF_HEARTS, 0),
     getCard(CardType.TWO_OF_SPADES, 0),
   ]);
   const [deck, setDeck] = useState<Card>(getCard(CardType.ACE_OF_HEARTS, 0));
   const [heldCards, setHeldCards] = React.useState<Card[]>([
     getCard(CardType.ACE_OF_CLUBS, 0),
-    getCard(CardType.TWO_OF_CLUBS, 1),
-    getCard(CardType.THREE_OF_CLUBS, 2),
+    getCard(CardType.TWO_OF_HEARTS, 1),
+    getCard(CardType.THREE_OF_DIAMONDS, 2),
   ]);
 
   const handleSetDropSlotIndex = (index: number | null) => {
@@ -66,7 +66,7 @@ export const Board = () => {
         card.type === CardType.INVALID &&
         now - card.createdTimeMs > 150
     );
-    console.log("Invalid cards", JSON.stringify(invalidCards));
+
     invalidCards.forEach((card) => {
       heldCards.splice(heldCards.indexOf(card), 1);
     });
