@@ -1,20 +1,26 @@
 import React from "react";
-import { Board } from "Game/Board";
 import "./index.css";
-import { SignIn } from "SignInMenu/SignIn";
 import { GameMenu } from "GameMenu/GameMenu";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { isSwitchStatement } from "typescript";
+import { Board } from "Game/Board";
+import { Lobby } from "Lobby/Lobby";
+
+export enum AppState {
+  MENU,
+  LOBBY,
+  GAME,
+}
 
 export const App = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<SignIn />}>
-          <Route index element={<SignIn />} />
-          <Route path="menu" element={<GameMenu />} />
-          <Route path="game" element={<Board />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+  const [state, setState] = React.useState<AppState>(AppState.MENU);
+  const [gameId, setGameId] = React.useState<string>("");
+
+  switch (state) {
+    case AppState.MENU:
+      return <GameMenu setState={setState} setGameId={setGameId} />;
+    case AppState.LOBBY:
+      return <Lobby gameId={gameId} />;
+    case AppState.GAME:
+      return <Board />;
+  }
 };
