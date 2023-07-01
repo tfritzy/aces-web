@@ -3,45 +3,27 @@ import { API_URL } from "Constants";
 import React, { useEffect, useState } from "react";
 
 type GameMenuProps = {
-  setState: (state: AppState) => void;
-  setGameId: (gameId: string) => void;
-};
-
-const generatePlayerId = () => {
-  return "player_" + Math.random().toString(9).substring(2, 6);
+  displayName: string;
+  setDisplayName: (displayName: string) => void;
+  onGameEnter: (gameId: string) => void;
 };
 
 export const GameMenu = (props: GameMenuProps) => {
-  const [displayName, setDisplayName] = useState(generatePlayerId());
   const [joinGameInput, setJoinGameInput] = useState("");
-
-  const openWebsocket = async () => {
-    let res = await fetch(`${API_URL}/api/negotiate`, {
-      headers: {
-        "user-id": displayName,
-      },
-    });
-    let url = await res.json();
-    let ws = new WebSocket(url.url);
-    ws.onopen = () => console.log("connected");
-    ws.onmessage = (event) => {
-      console.log("recieved event", event);
-    };
-  };
 
   const handleCreateGame = async () => {
     console.log("creating game");
     fetch(`${API_URL}/api/create_game`, {
       method: "POST",
       headers: {
-        "user-id": displayName,
+        "user-id": props.displayName,
       },
     }).then(async (res) => {
       console.log("created game", res);
       if (res.ok) {
         const body = await res.json();
         console.log("created game", body);
-        // handleGameEnter(body.Id);
+        handleGameEnter(body.id);
       }
     });
   };
@@ -51,9 +33,7 @@ export const GameMenu = (props: GameMenuProps) => {
   };
 
   const handleGameEnter = async (gameId: string) => {
-    await openWebsocket();
-    props.setState(AppState.LOBBY);
-    props.setGameId(gameId);
+    props.onGameEnter(gameId);
   };
 
   return (
@@ -79,8 +59,8 @@ export const GameMenu = (props: GameMenuProps) => {
           <div className="text-black">
             <input
               type="text"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
+              value={props.displayName}
+              onChange={(e) => props.setDisplayName(e.target.value)}
             />
           </div>
         </div>
