@@ -1,4 +1,3 @@
-import { AppState } from "App";
 import { API_URL } from "Constants";
 import React, { useEffect, useState } from "react";
 
@@ -29,7 +28,18 @@ export const GameMenu = (props: GameMenuProps) => {
   };
 
   const handleJoinGame = () => {
-    handleGameEnter(joinGameInput);
+    fetch(`${API_URL}/api/join_game`, {
+      method: "POST",
+      headers: {
+        "user-id": props.displayName,
+        "game-id": joinGameInput,
+      },
+    }).then(async (res) => {
+      console.log("joining game", res);
+      if (res.ok) {
+        handleGameEnter(joinGameInput);
+      }
+    });
   };
 
   const handleGameEnter = async (gameId: string) => {
