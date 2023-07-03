@@ -1,10 +1,11 @@
 import { API_URL } from "Constants";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 type GameMenuProps = {
+  userId: string;
   displayName: string;
   setDisplayName: (displayName: string) => void;
-  onGameEnter: (gameId: string) => void;
+  onGameEnter: (gameId: string, players: string[]) => void;
 };
 
 export const GameMenu = (props: GameMenuProps) => {
@@ -15,14 +16,13 @@ export const GameMenu = (props: GameMenuProps) => {
     fetch(`${API_URL}/api/create_game`, {
       method: "POST",
       headers: {
-        "user-id": props.displayName,
+        "user-id": props.userId,
+        "display-name": props.displayName,
       },
     }).then(async (res) => {
-      console.log("created game", res);
       if (res.ok) {
         const body = await res.json();
-        console.log("created game", body);
-        handleGameEnter(body.id);
+        handleGameEnter(body.id, [props.displayName]);
       }
     });
   };
@@ -31,19 +31,22 @@ export const GameMenu = (props: GameMenuProps) => {
     fetch(`${API_URL}/api/join_game`, {
       method: "POST",
       headers: {
-        "user-id": props.displayName,
+        "user-id": props.userId,
+        "display-name": props.displayName,
         "game-id": joinGameInput,
       },
     }).then(async (res) => {
       console.log("joining game", res);
       if (res.ok) {
-        handleGameEnter(joinGameInput);
+        const body = await res.json();
+        console.log("joined game", body);
+        handleGameEnter(joinGameInput, body.players);
       }
     });
   };
 
-  const handleGameEnter = async (gameId: string) => {
-    props.onGameEnter(gameId);
+  const handleGameEnter = async (gameId: string, players: string[]) => {
+    props.onGameEnter(gameId, players);
   };
 
   return (

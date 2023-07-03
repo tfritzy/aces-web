@@ -1,7 +1,6 @@
 import * as React from "react";
 import { CardType } from "./Types";
-import { Suit, cardMap, Card, CardValue } from "Game/Types";
-import { transform } from "typescript";
+import { Suit, Card, CardValue } from "Game/Types";
 import { NULL_HELD_INDEX } from "Game/Board";
 
 const getSuitIcon = (card: Card) => {
@@ -111,13 +110,13 @@ export const PlayingCard = (props: PlayingCardProps) => {
     e.preventDefault();
   };
 
-  if (!card || card.type == CardType.INVALID) {
+  if (!card || card.type === CardType.INVALID) {
     return <div className="card-out w-32 h-40"></div>;
   }
 
   const heldClasses = isHeld ? "opacity-20 bg-black" : "";
   const color =
-    card.suit == Suit.CLUBS || card.suit == Suit.SPADES
+    card.suit === Suit.CLUBS || card.suit === Suit.SPADES
       ? "text-zinc-800"
       : "text-red-700";
 

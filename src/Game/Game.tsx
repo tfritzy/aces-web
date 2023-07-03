@@ -2,34 +2,36 @@ import React, { useEffect, useState } from "react";
 import { Board } from "Game/Board";
 import { API_URL } from "Constants";
 import { Lobby } from "Game/Lobby";
-import { Message, MessageType } from "Game/Messages";
+import { Message, EventType } from "Game/Events";
 
 type GameProps = {
+  userId: string;
   displayName: string;
   gameId: string;
+  initialPlayers: string[];
 };
 
 export const Game = (props: GameProps): JSX.Element => {
   const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
   const [websocket, setWebsocket] = React.useState<WebSocket | null>(null);
-  const [players, setPlayers] = useState<string[]>([]);
-
-  const handleMessage = (message: Message) => {
-    console.log("handling message", message);
-    switch (message.type) {
-      case MessageType.JoinGame:
-        setPlayers([...players, message.displayName]);
-        break;
-      default:
-        console.error("unhandled message", message);
-    }
-  };
+  const [players, setPlayers] = useState<string[]>(props.initialPlayers);
 
   useEffect(() => {
-    const openWebsocket = async (displayName: string, gameId: string) => {
+    const handleMessage = (message: Message) => {
+      console.log("handling message", message);
+      switch (message.type) {
+        case EventType.JoinGame:
+          setPlayers([...players, message.name]);
+          break;
+        default:
+          console.error("unhandled message", message);
+      }
+    };
+
+    const openWebsocket = async (userId: string, gameId: string) => {
       let res = await fetch(`${API_URL}/api/negotiate`, {
         headers: {
-          "user-id": displayName,
+          "user-id": userId,
           "game-id": gameId,
         },
       });
@@ -47,7 +49,7 @@ export const Game = (props: GameProps): JSX.Element => {
       let joinResp = await fetch(`${API_URL}/api/join_game_group`, {
         method: "POST",
         headers: {
-          "user-id": displayName,
+          "user-id": userId,
           "game-id": gameId,
         },
       });
@@ -56,10 +58,10 @@ export const Game = (props: GameProps): JSX.Element => {
       return ws;
     };
 
-    openWebsocket(props.displayName, props.gameId).then((websocket) =>
+    openWebsocket(props.userId, props.gameId).then((websocket) =>
       setWebsocket(websocket)
     );
-  }, []);
+  }, [players, props.gameId, props.userId]);
 
   return (
     <div>
