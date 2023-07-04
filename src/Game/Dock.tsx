@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Card } from "Game/Types";
+import { Card, CardType } from "Game/Types";
 import { PlayingCard } from "Game/PlayingCard";
 
 type DockProps = {
@@ -13,6 +13,10 @@ type DockProps = {
 
 export const Dock = (props: DockProps) => {
   const playingCards = props.cards.map((card, index) => {
+    if (card.type === CardType.INVALID) {
+      return <div className="card-out w-32 h-40"></div>;
+    }
+
     return (
       <PlayingCard
         key={card + "-" + index}
@@ -25,7 +29,7 @@ export const Dock = (props: DockProps) => {
     );
   });
 
-  if (props.dropSlotIndex !== null) {
+  if (props.dropSlotIndex && props.dropSlotIndex >= 0) {
     const existingCardId =
       props.cards[props.dropSlotIndex].type +
       "-" +

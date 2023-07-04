@@ -1,19 +1,20 @@
 import React from "react";
 
-import { DECK_HELD_INDEX } from "Game/Board";
+import { PILE_HELD_INDEX } from "Game/Board";
 import { PlayingCard } from "Game/PlayingCard";
-import { CardType, getCard } from "Game/Types";
+import { Card } from "Game/Types";
 
-type DeckProps = {
+type PileProps = {
   heldIndex: number;
   setHeldIndex: (index: number) => void;
+  cards: Card[];
 };
 
-export const Deck = (props: DeckProps) => {
+export const Pile = (props: PileProps) => {
   return (
     <PlayingCard
-      card={getCard(CardType.INVALID, 0)}
-      index={DECK_HELD_INDEX}
+      card={props.cards[props.cards.length - 1]}
+      index={PILE_HELD_INDEX}
       heldIndex={props.heldIndex}
       setHeldIndex={props.setHeldIndex}
     />

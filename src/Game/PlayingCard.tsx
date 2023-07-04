@@ -50,11 +50,15 @@ const getValueIcon = (card: Card) => {
 };
 
 type CardColProps = {
-  card: Card;
+  card: Card | undefined;
   reverse?: boolean;
 };
 
 const CardCol = (props: CardColProps) => {
+  if (!props.card || props.card.type === CardType.INVALID) {
+    return null;
+  }
+
   const flex = props.reverse ? "flex-col-reverse space-y-reverse" : "flex-col";
   const className = `flex h-full text-lg leading-3 space-y-2 select-none ${flex}`;
   const suitIndicator = getSuitIcon(props.card);
@@ -69,10 +73,14 @@ const CardCol = (props: CardColProps) => {
 };
 
 type CardFaceProps = {
-  card: Card;
+  card?: Card;
 };
 
-const CardFace = (props: CardColProps) => {
+const CardFace = (props: CardFaceProps) => {
+  if (!props.card || props.card.type === CardType.INVALID) {
+    return null;
+  }
+
   const face = getValueIcon(props.card);
 
   return (
@@ -82,12 +90,15 @@ const CardFace = (props: CardColProps) => {
   );
 };
 
+const cardClasses = "w-32 h-40 p-2 mx-1 rounded-md";
+
 type PlayingCardProps = {
-  card: Card;
+  card: Card | undefined;
   index: number;
   heldIndex: number;
   setHeldIndex: (index: number) => void;
   setDropSlotIndex?: (index: number) => void;
+  onDrop?: (e: React.DragEvent) => void;
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
@@ -110,15 +121,26 @@ export const PlayingCard = (props: PlayingCardProps) => {
     e.preventDefault();
   };
 
-  if (!card || card.type === CardType.INVALID) {
-    return <div className="card-out w-32 h-40"></div>;
-  }
-
   const heldClasses = isHeld ? "opacity-20 bg-black" : "";
-  const color =
-    card.suit === Suit.CLUBS || card.suit === Suit.SPADES
-      ? "text-zinc-800"
-      : "text-red-700";
+
+  let cardElement: JSX.Element;
+  if (card && card.type !== CardType.INVALID) {
+    const color =
+      card?.suit === Suit.CLUBS || card?.suit === Suit.SPADES
+        ? "text-zinc-800"
+        : "text-red-700";
+    cardElement = (
+      <div
+        className={`${color} bg-slate-50 border-solid border-2 flex ${cardClasses}`}
+      >
+        <CardCol card={card} />
+        <CardFace card={card} />
+        <CardCol card={card} reverse />
+      </div>
+    );
+  } else {
+    cardElement = <div className={`border-dashed border-2 ${cardClasses}`} />;
+  }
 
   return (
     <div className={heldClasses}>
@@ -128,14 +150,9 @@ export const PlayingCard = (props: PlayingCardProps) => {
         onDragOver={handleDragEnter}
         onDragEndCapture={handleDragEndCapture}
         id={props.index.toString()}
+        onDrop={props.onDrop}
       >
-        <div
-          className={`${color} bg-slate-50 cursor-pointer rounded-md border-solid border-2 flex w-32 h-40 p-2 mx-1`}
-        >
-          <CardCol card={card} />
-          <CardFace card={card} />
-          <CardCol card={card} reverse />
-        </div>
+        {cardElement}
       </div>
     </div>
   );

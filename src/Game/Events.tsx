@@ -28,7 +28,8 @@ export type RoundStartEvent = {
 
 export type DiscardEvent = {
   type: EventType.Discard;
-  card: string;
+  card: number;
+  player: string;
 };
 
 export type DrawFromDeckEvent = {
@@ -37,6 +38,7 @@ export type DrawFromDeckEvent = {
 
 export type DrawFromPileEvent = {
   type: EventType.DrawFromPile;
+  player: string;
 };
 
 export type Message =

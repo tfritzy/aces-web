@@ -113,19 +113,17 @@ const valueMap = {
 
 const getCards = () => {
   const cards: Card[] = [];
-  (Object.keys(CardValue) as Array<keyof typeof CardValue>).forEach((value) => {
-    {
-      (Object.keys(Suit) as Array<keyof typeof Suit>).forEach((suit) => {
-        cards.push({
-          type: CardType[`${value}_OF_${suit}` as keyof typeof CardType],
-          suit: Suit[suit],
-          value: CardValue[value],
-          points: valueMap[CardValue[value]],
-          deck: 0,
-        });
+  (Object.keys(CardValue) as Array<keyof typeof CardValue>).forEach((value) =>
+    (Object.keys(Suit) as Array<keyof typeof Suit>).forEach((suit) => {
+      cards.push({
+        type: CardType[`${value}_OF_${suit}` as keyof typeof CardType],
+        suit: Suit[suit],
+        value: CardValue[value],
+        points: valueMap[CardValue[value]],
+        deck: 0,
       });
-    }
-  });
+    })
+  );
   return cards;
 };
 
