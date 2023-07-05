@@ -51,10 +51,10 @@ export const GameMenu = (props: GameMenuProps) => {
 
   return (
     <div className="grid place-content-center h-screen text-white">
-      <div className="rounded-md border-2 border-slate-600 bg-slate-700 p-4 w-80">
+      <div className="rounded-md border-2 border-gray-700 bg-gray-800 p-4 w-80">
         <div className="text-3xl text-center mb-4">Aces</div>
 
-        <div className="flex flex-col space-y-8 divide-y divide-slate-500">
+        <div className="flex flex-col space-y-8 divide-y divide-gray-600">
           <div>
             <label className="block mb-2 text-sm font-medium text-white">
               Display name
@@ -62,7 +62,7 @@ export const GameMenu = (props: GameMenuProps) => {
             <input
               type="text"
               id="display_name"
-              className="border text-sm rounded-lg focus:ring-emerald block w-full p-2 bg-slate-600 border-slate-400 placeholder-slate-400 text-white"
+              className="border text-sm rounded-lg focus:ring-emerald block w-full p-2 bg-gray-700 border-gray-400 placeholder-gray-400 text-white"
               value={props.displayName}
               onChange={(e) => props.setDisplayName(e.target.value)}
             />
@@ -74,7 +74,7 @@ export const GameMenu = (props: GameMenuProps) => {
                 <input
                   type="text"
                   id="game"
-                  className="border text-sm rounded-lg focus:ring-emerald block w-full h-full p-2 bg-slate-600 border-slate-400 placeholder-slate-400 text-white"
+                  className="border text-sm rounded-lg focus:ring-emerald block w-full h-full p-2 bg-gray-700 border-gray-400 placeholder-gray-400 text-white"
                   value={joinGameInput}
                   placeholder="AIE-JCS"
                   onChange={(e) => setJoinGameInput(e.target.value)}
@@ -82,17 +82,17 @@ export const GameMenu = (props: GameMenuProps) => {
               </div>
 
               <button
-                className="flex-none rounded-md bg-emerald-500 px-4 p-2 text-slate-50 font-semibold"
+                className="flex-none rounded-md bg-teal-500 px-4 p-2 text-gray-50 font-semibold"
                 onClick={handleJoinGame}
               >
                 Join
               </button>
             </div>
 
-            <div className="text-slate-400 text-center">— or —</div>
+            <div className="text-gray-400 text-center">— or —</div>
 
             <button
-              className="rounded-md bg-emerald-500 p-2 text-slate-50 font-semibold"
+              className="rounded-md bg-teal-500 p-2 text-gray-50 font-semibold"
               onClick={handleCreateGame}
             >
               Create Game

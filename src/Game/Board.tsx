@@ -282,23 +282,23 @@ export const Board = () => {
     setHeldIndex(index);
   };
 
-  if (gameState === GameState.None) {
-    return (
-      <GameMenu
-        userId={userId}
-        displayName={displayName}
-        setDisplayName={setDisplayName}
-        onGameEnter={(gameId, players) => {
-          setPlayers(players);
-          setGameId(gameId);
-          setGameState(GameState.Lobby);
-        }}
-      />
-    );
-  }
+  // if (gameState === GameState.None) {
+  //   return (
+  //     <GameMenu
+  //       userId={userId}
+  //       displayName={displayName}
+  //       setDisplayName={setDisplayName}
+  //       onGameEnter={(gameId, players) => {
+  //         setPlayers(players);
+  //         setGameId(gameId);
+  //         setGameState(GameState.Lobby);
+  //       }}
+  //     />
+  //   );
+  // }
 
   return (
-    <div className="w-full h-full" id="board">
+    <div className="w-full h-full">
       <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div className="flex flex-row space-x-8">
           <Deck heldIndex={heldIndex} setHeldIndex={setHeldIndex} />
@@ -322,9 +322,14 @@ export const Board = () => {
         setDropSlotIndex={handleSetDropSlotIndex}
       />
 
-      {gameState === GameState.Lobby && (
+      {/* {gameState === GameState.Lobby && (
         <Lobby userId={userId} gameId={gameId} players={players} />
-      )}
+      )} */}
+      <Lobby
+        userId={userId}
+        gameId={"DKWIFH"}
+        players={["Orange Smurf", "Red Cactus"]}
+      />
     </div>
   );
 };

@@ -131,7 +131,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
         : "text-red-700";
     cardElement = (
       <div
-        className={`${color} bg-slate-50 border-solid border-2 flex ${cardClasses}`}
+        className={`${color} bg-gray-50 border-solid border-2 flex ${cardClasses}`}
       >
         <CardCol card={card} />
         <CardFace card={card} />

@@ -1,5 +1,7 @@
-import { API_URL } from "Constants";
 import React from "react";
+
+import { API_URL } from "Constants";
+import { CopyBox } from "components/CopyBox";
 
 type LobbyProps = {
   gameId: string;
@@ -26,14 +28,47 @@ export const Lobby = (props: LobbyProps) => {
 
   return (
     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-      <div className="bg-slate-400 w-96 p-4 rounded-md">
-        <div className="grid place-content-center text-white">
-          <div className="flex flex-col space-y-4">
-            <div>Lobby for game {props.gameId}</div>
-            <button onClick={handleStartGame}>Start Game</button>
-            {props.players.map((player) => (
-              <div key={player}>{player}</div>
-            ))}
+      <div className="bg-gray-700 border-2 border-gray-600 w-64 p-4 rounded-md">
+        <div className="text-white">
+          <div className="flex flex-col space-y-3">
+            <div className="text-center mb-2 text-xl font-semibold">Lobby</div>
+            <div className="flex flex-row space-x-2 items-center">
+              <div>Game code</div>
+              <CopyBox text={props.gameId} />
+            </div>
+
+            <div className="flex flex-row space-x-1.5">
+              <img
+                src="Icons/info.png"
+                alt="Info"
+                style={{ width: 12, height: 12 }}
+                className="translate-y-0.5"
+              />
+              <span className="text-xs text-gray-300">
+                Copy and share this code to let others join this game
+              </span>
+            </div>
+
+            <div>
+              <div className="flex flex-col space-y-1">
+                <span>Players</span>
+                {props.players.map((player) => (
+                  <div
+                    key={player}
+                    className="min-w-fit rounded-md bg-gray-600 px-2 py-1"
+                  >
+                    {player}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              className="rounded-md w-full bg-teal-500 px-4 p-2 text-gray-50 font-semibold"
+              onClick={handleStartGame}
+            >
+              Start Game
+            </button>
           </div>
         </div>
       </div>

@@ -3,5 +3,9 @@ import "./index.css";
 import { Board } from "Game/Board";
 
 export const App = (): JSX.Element => {
-  return <Board />;
+  return (
+    <div className="w-full h-screen bg-gray-900">
+      <Board />
+    </div>
+  );
 };
