@@ -38,15 +38,17 @@ export const Lobby = (props: LobbyProps) => {
               <CopyBox text={props.gameId} />
             </div>
 
-            <div className="pb-3">
-              <div className="flex flex-col space-y-1">
+            <div className="pb-2">
+              <div className="flex flex-col space-y-2">
                 <span>Players</span>
                 {props.players.map((player) => (
-                  <div
-                    key={player}
-                    className="min-w-fit rounded-md bg-gray-600 px-2 py-1"
-                  >
-                    {player}
+                  <div>
+                    <div
+                      key={player}
+                      className="min-w-fit rounded-md bg-slate-600 text-slate-200 font-bold px-3 py-1 w-min text-sm"
+                    >
+                      {player}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -54,7 +56,7 @@ export const Lobby = (props: LobbyProps) => {
 
             <div className="mt-12">
               <button
-                className="rounded-md w-full bg-teal-500 px-4 p-2 text-gray-50 font-semibold"
+                className="rounded-md w-full bg-teal-500 px-4 p-2 text-gray-50 font-semibold hover:bg-teal-600"
                 onClick={handleStartGame}
               >
                 Start Game
