@@ -35,7 +35,6 @@ export const Board = () => {
     generateId("player", 4)
   );
   const [gameId, setGameId] = React.useState<string>("");
-  const [canPickup, setCanPickup] = React.useState<boolean>(true);
   const [heldIndex, setHeldIndex] = React.useState<number>(NULL_HELD_INDEX);
   const [dropSlotIndex, setDropSlotIndex] = React.useState<number | null>(null);
   const [pile, setPile] = useState<Card[]>([]);
@@ -114,12 +113,12 @@ export const Board = () => {
       return ws;
     };
 
-    if (!websocket) {
+    if (gameState === GameState.Lobby && !websocket) {
       openWebsocket(userId, gameId).then((websocket) =>
         setWebsocket(websocket)
       );
     }
-  }, [gameId, handleMessage, userId, websocket]);
+  }, [gameId, gameState, handleMessage, userId, websocket]);
 
   React.useEffect(() => {
     const getState = async () => {
@@ -168,17 +167,24 @@ export const Board = () => {
 
   const handleSetDropSlotIndex = (index: number | null) => {
     console.log("setting drop slot index", index);
-    if (!canPickup) {
+    if (index === null) {
+      console.log("index is null");
       return;
     }
 
-    if (!index) {
+    if (index === dropSlotIndex) {
+      console.log("index is same as drop slot index");
       return;
     }
 
     if (index - heldIndex === 0 || index - heldIndex === 1) {
+      console.log("index is same as held index");
       setDropSlotIndex(null);
       return;
+    }
+
+    if (dropSlotIndex) {
+      setHandCards([...heldCards.slice(0, index), ...heldCards.slice(index)]);
     }
 
     setDropSlotIndex(index);
@@ -194,32 +200,6 @@ export const Board = () => {
     }
   };
 
-  const cleanupInvalidCards = () => {
-    const numInvalidBeforeIndex = [];
-    let sum = 0;
-    for (let i = 0; i < heldCards.length; i++) {
-      numInvalidBeforeIndex.push(sum);
-      if (heldCards[i].type === CardType.INVALID) {
-        sum++;
-      }
-    }
-
-    const now = Date.now();
-    const invalidCards = heldCards.filter(
-      (card) =>
-        card.createdTimeMs &&
-        card.type === CardType.INVALID &&
-        now - card.createdTimeMs > 150
-    );
-
-    invalidCards.forEach((card) => {
-      heldCards.splice(heldCards.indexOf(card), 1);
-    });
-    setHandCards([...heldCards]);
-
-    setCanPickup(true);
-  };
-
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
 
@@ -227,13 +207,17 @@ export const Board = () => {
       return;
     }
 
+    let isAddition = false;
+
     const dropCard = getDroppedCard(heldIndex);
+    console.log("Dropping card at index", heldIndex, "card", dropCard);
     if (!dropCard) {
       return;
     }
 
-    if (heldIndex === PILE_HELD_INDEX) {
+    if (heldIndex === PILE_HELD_INDEX && dropSlotIndex >= 0) {
       const response = await drawFromPile();
+      isAddition = true;
 
       if (!response.ok) {
         console.error("failed to draw from pile", response);
@@ -255,47 +239,36 @@ export const Board = () => {
     }
 
     const indexMod = heldIndex > dropSlotIndex ? 1 : 0;
-    const dummyCard = {
-      type: CardType.INVALID,
-      deck: 0,
-      points: 0,
-      suit: 0,
-      value: 0,
-      createdTimeMs: Date.now(),
-    };
     heldCards.splice(dropSlotIndex, 0, dropCard);
-    heldCards[heldIndex + indexMod] = dummyCard;
+
+    if (!isAddition) {
+      heldCards.splice(heldIndex + indexMod, 1);
+    }
 
     setHandCards([...heldCards]);
     setDropSlotIndex(null);
     setHeldIndex(NULL_HELD_INDEX);
-    setCanPickup(false);
-
-    setTimeout(cleanupInvalidCards, 200);
   };
 
   const handleSetHeldIndex = (index: number) => {
-    if (!canPickup) {
-      return;
-    }
-
     setHeldIndex(index);
   };
 
-  // if (gameState === GameState.None) {
-  //   return (
-  //     <GameMenu
-  //       userId={userId}
-  //       displayName={displayName}
-  //       setDisplayName={setDisplayName}
-  //       onGameEnter={(gameId, players) => {
-  //         setPlayers(players);
-  //         setGameId(gameId);
-  //         setGameState(GameState.Lobby);
-  //       }}
-  //     />
-  //   );
-  // }
+  if (gameState === GameState.None) {
+    return (
+      <GameMenu
+        userId={userId}
+        displayName={displayName}
+        setDisplayName={setDisplayName}
+        onGameEnter={(gameId, players) => {
+          console.log("game enter", gameId, players);
+          setPlayers(players);
+          setGameId(gameId);
+          setGameState(GameState.Lobby);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="w-full h-full">
@@ -322,14 +295,9 @@ export const Board = () => {
         setDropSlotIndex={handleSetDropSlotIndex}
       />
 
-      {/* {gameState === GameState.Lobby && (
+      {gameState === GameState.Lobby && (
         <Lobby userId={userId} gameId={gameId} players={players} />
-      )} */}
-      <Lobby
-        userId={userId}
-        gameId={"DKWIFH"}
-        players={["Orange Smurf", "Red Cactus"]}
-      />
+      )}
     </div>
   );
 };

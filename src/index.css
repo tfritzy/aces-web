@@ -15,22 +15,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
-.card-in {
-  max-width: 0;
-  animation: growWidth 0.2s ease forwards;
-}
-.card-out {
-  max-width: 200px;
-  animation: shrinkWidth 0.2s ease forwards;
-}
-@keyframes growWidth {
-  to { 
-    max-width: 200px;
-  }
-}
-@keyframes shrinkWidth {
-  to { 
-    max-width: 0px;
-  }
-}

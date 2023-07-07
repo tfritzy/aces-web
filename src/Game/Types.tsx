@@ -75,6 +75,7 @@ export enum Suit {
   DIAMONDS,
   HEARTS,
   SPADES,
+  SUITLESS,
 }
 
 export enum CardValue {
@@ -124,6 +125,23 @@ const getCards = () => {
       });
     })
   );
+
+  cards.push({
+    type: CardType.JOKER_A,
+    suit: Suit.SUITLESS,
+    value: CardValue.JOKER,
+    points: valueMap[CardValue.JOKER],
+    deck: 0,
+  });
+
+  cards.push({
+    type: CardType.JOKER_B,
+    suit: Suit.SUITLESS,
+    value: CardValue.JOKER,
+    points: valueMap[CardValue.JOKER],
+    deck: 0,
+  });
+
   return cards;
 };
 

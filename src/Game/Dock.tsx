@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Card, CardType } from "Game/Types";
 import { PlayingCard } from "Game/PlayingCard";
+import autoAnimate from "@formkit/auto-animate";
 
 type DockProps = {
   heldIndex: number;
@@ -12,14 +13,24 @@ type DockProps = {
 };
 
 export const Dock = (props: DockProps) => {
+  const parent = React.useRef(null);
+  console.log("cards", props.cards);
+
+  React.useEffect(() => {
+    parent.current &&
+      autoAnimate(parent.current, {
+        duration: 150,
+      });
+  }, [parent]);
+
   const playingCards = props.cards.map((card, index) => {
     if (card.type === CardType.INVALID) {
-      return <div className="card-out w-32 h-40"></div>;
+      return null;
     }
 
     return (
       <PlayingCard
-        key={card + "-" + index}
+        key={card.type + "-" + card.deck}
         index={index}
         card={card}
         heldIndex={props.heldIndex}
@@ -29,17 +40,13 @@ export const Dock = (props: DockProps) => {
     );
   });
 
-  if (props.dropSlotIndex && props.dropSlotIndex >= 0) {
-    const existingCardId =
-      props.cards[props.dropSlotIndex].type +
-      "-" +
-      props.cards[props.dropSlotIndex].deck;
+  if (props.dropSlotIndex !== null && props.dropSlotIndex >= 0) {
     playingCards.splice(
       props.dropSlotIndex,
       0,
       <div
-        key={"drop-" + existingCardId}
-        className="card-in w-32 h-40 rounded-md border-dashed border-2 p-2 mx-1"
+        key="drop-slot"
+        className="w-32 h-40 rounded-md border-dashed border border-gray-500 p-2 mx-1"
       />
     );
   }
@@ -50,9 +57,10 @@ export const Dock = (props: DockProps) => {
 
   return (
     <div
-      className="absolute bottom-0 left-0 bg-slate-500 w-full flex flex-row"
+      className="absolute bottom-10 flex items-stretch w-screen bg-white p-4 shadow-inner"
       onDrop={props.onDrop}
       onDragOver={handleDrag}
+      ref={parent}
     >
       {playingCards}
     </div>

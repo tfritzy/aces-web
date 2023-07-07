@@ -13,10 +13,12 @@ const getSuitIcon = (card: Card) => {
       return "♥";
     case Suit.SPADES:
       return "♠";
+    case Suit.SUITLESS:
+      return "";
   }
 };
 
-const getValueIcon = (card: Card) => {
+const getValueIcon = (card: Card): string => {
   switch (card.value) {
     case CardValue.TWO:
       return "2";
@@ -44,8 +46,25 @@ const getValueIcon = (card: Card) => {
       return "K";
     case CardValue.ACE:
       return "A";
+    case CardValue.JOKER:
+      return "JOKER";
     default:
       return "";
+  }
+};
+
+const getCardColor = (card: Card) => {
+  switch (card.suit) {
+    case Suit.CLUBS:
+    case Suit.SPADES:
+      return "text-black";
+    case Suit.DIAMONDS:
+    case Suit.HEARTS:
+      return "text-red-600";
+    case Suit.SUITLESS:
+      if (card.type === CardType.JOKER_A) return "text-red-600";
+      if (card.type === CardType.JOKER_B) return "text-black";
+      return "text-gray-400";
   }
 };
 
@@ -59,14 +78,17 @@ const CardCol = (props: CardColProps) => {
     return null;
   }
 
-  const flex = props.reverse ? "flex-col-reverse space-y-reverse" : "flex-col";
-  const className = `flex h-full text-lg leading-3 space-y-2 select-none ${flex}`;
+  const flex = props.reverse ? "flex-col -rotate-180" : "flex-col";
+  const className = `flex h-full text-lg leading-3 space-y-1 select-none items-center ${flex}`;
   const suitIndicator = getSuitIcon(props.card);
   const valueIcon = getValueIcon(props.card);
 
   return (
     <div className={className}>
-      <div>{valueIcon}</div>
+      {valueIcon.split("").map((c) => (
+        <div key={c}>{c}</div>
+      ))}
+
       <div>{suitIndicator}</div>
     </div>
   );
@@ -81,7 +103,7 @@ const CardFace = (props: CardFaceProps) => {
     return null;
   }
 
-  const face = getValueIcon(props.card);
+  const face = getValueIcon(props.card)[0];
 
   return (
     <div className="grow text-4xl select-none">
@@ -121,17 +143,14 @@ export const PlayingCard = (props: PlayingCardProps) => {
     e.preventDefault();
   };
 
-  const heldClasses = isHeld ? "opacity-20 bg-black" : "";
+  const heldClasses = isHeld ? "opacity-30" : "";
 
   let cardElement: JSX.Element;
   if (card && card.type !== CardType.INVALID) {
-    const color =
-      card?.suit === Suit.CLUBS || card?.suit === Suit.SPADES
-        ? "text-zinc-800"
-        : "text-red-700";
+    const color = getCardColor(card);
     cardElement = (
       <div
-        className={`${color} bg-gray-50 border-solid border-2 flex ${cardClasses}`}
+        className={`${color} cursor-pointer drop-shadow-lg shadow-inner bg-gray-50 border-gray-500 border-solid border flex ${cardClasses}`}
       >
         <CardCol card={card} />
         <CardFace card={card} />
