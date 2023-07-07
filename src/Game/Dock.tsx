@@ -14,7 +14,6 @@ type DockProps = {
 
 export const Dock = (props: DockProps) => {
   const parent = React.useRef(null);
-  console.log("cards", props.cards);
 
   React.useEffect(() => {
     parent.current &&

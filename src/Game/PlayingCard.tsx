@@ -112,10 +112,8 @@ const CardFace = (props: CardFaceProps) => {
   );
 };
 
-const cardClasses = "w-32 h-40 p-2 mx-1 rounded-md";
-
 type PlayingCardProps = {
-  card: Card | undefined;
+  card: Card;
   index: number;
   heldIndex: number;
   setHeldIndex: (index: number) => void;
@@ -135,36 +133,51 @@ export const PlayingCard = (props: PlayingCardProps) => {
   };
 
   const handleDragEnter = (e: React.DragEvent) => {
-    const targetBounds = e.currentTarget.getBoundingClientRect();
-    const targetCenter = targetBounds.left + targetBounds.width / 2;
-    const side = e.clientX < targetCenter ? 0 : 1;
+    if (props.index >= 0) {
+      const targetBounds = e.currentTarget.getBoundingClientRect();
+      const targetCenter = targetBounds.left + targetBounds.width / 2;
+      const side = e.clientX < targetCenter ? 0 : 1;
 
-    props.setDropSlotIndex?.(props.index + side);
+      props.setDropSlotIndex?.(props.index + side);
+    } else {
+      props.setDropSlotIndex?.(props.index);
+    }
+
     e.preventDefault();
   };
 
   const heldClasses = isHeld ? "opacity-30" : "";
 
   let cardElement: JSX.Element;
-  if (card && card.type !== CardType.INVALID) {
+  if (card.type === CardType.SPACER) {
+    cardElement = (
+      <div
+        className={`border-dashed border border-white w-32 h-40 p-2 mx-1 rounded-md`}
+      />
+    );
+  } else if (card.type === CardType.CARD_BACK) {
+    cardElement = (
+      <div
+        className={`drop-shadow-lg shadow-inner bg-gradient-to-r from-cyan-500 to-blue-500 border-gray-800 border-solid border border w-32 h-40 p-2 mx-1 rounded-md`}
+      />
+    );
+  } else {
     const color = getCardColor(card);
     cardElement = (
       <div
-        className={`${color} cursor-pointer drop-shadow-lg shadow-inner bg-gray-50 border-gray-500 border-solid border flex ${cardClasses}`}
+        className={`${color} cursor-pointer drop-shadow-lg shadow-inner bg-gray-50 border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md`}
       >
         <CardCol card={card} />
         <CardFace card={card} />
         <CardCol card={card} reverse />
       </div>
     );
-  } else {
-    cardElement = <div className={`border-dashed border-2 ${cardClasses}`} />;
   }
 
   return (
     <div className={heldClasses}>
       <div
-        draggable="true"
+        draggable={!!card}
         onDragStart={handleDragStart}
         onDragOver={handleDragEnter}
         onDragEndCapture={handleDragEndCapture}

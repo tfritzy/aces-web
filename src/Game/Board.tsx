@@ -92,9 +92,7 @@ export const Board = () => {
       });
       let url = await res.json();
       let ws = new WebSocket(url.url);
-      ws.onopen = () => console.log("websocket connected");
       ws.onmessage = (event) => {
-        console.log("recieved message", event);
         handleMessage(JSON.parse(event.data));
       };
 
@@ -108,7 +106,6 @@ export const Board = () => {
           "game-id": gameId,
         },
       });
-      console.log("joined game group", joinResp);
 
       return ws;
     };
@@ -134,7 +131,6 @@ export const Board = () => {
 
     if (gameState === GameState.Playing) {
       getState().then((state) => {
-        console.log("got state", state);
         setHandCards(state.hand.map((c: CardType) => getCard(c, 0)));
         setPile(state.pile.map((c: CardType) => getCard(c, 0)));
         setDeckSize(state.deckSize);
@@ -152,33 +148,37 @@ export const Board = () => {
     });
   };
 
+  const drawFromDeck = async () => {
+    return await fetch(`${API_URL}/api/draw_from_deck`, {
+      method: "POST",
+      headers: {
+        "user-id": userId,
+        "game-id": gameId,
+      },
+    });
+  };
+
   const discard = async () => {
     return await fetch(`${API_URL}/api/discard`, {
       method: "POST",
       headers: {
         "user-id": userId,
         "game-id": gameId,
+        card: heldCards[heldIndex].type.toString(),
       },
-      body: JSON.stringify({
-        card: heldCards[heldIndex],
-      }),
     });
   };
 
   const handleSetDropSlotIndex = (index: number | null) => {
-    console.log("setting drop slot index", index);
     if (index === null) {
-      console.log("index is null");
       return;
     }
 
     if (index === dropSlotIndex) {
-      console.log("index is same as drop slot index");
       return;
     }
 
     if (index - heldIndex === 0 || index - heldIndex === 1) {
-      console.log("index is same as held index");
       setDropSlotIndex(null);
       return;
     }
@@ -190,16 +190,6 @@ export const Board = () => {
     setDropSlotIndex(index);
   };
 
-  const getDroppedCard = (heldIndex: number): Card | undefined => {
-    if (heldIndex === DECK_HELD_INDEX) {
-      return pile.pop(); // TODO: Make api call and what not
-    } else if (heldIndex === PILE_HELD_INDEX) {
-      return pile.pop();
-    } else {
-      return heldCards[heldIndex];
-    }
-  };
-
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
 
@@ -207,41 +197,36 @@ export const Board = () => {
       return;
     }
 
-    let isAddition = false;
-
-    const dropCard = getDroppedCard(heldIndex);
-    console.log("Dropping card at index", heldIndex, "card", dropCard);
-    if (!dropCard) {
-      return;
-    }
-
     if (heldIndex === PILE_HELD_INDEX && dropSlotIndex >= 0) {
       const response = await drawFromPile();
-      isAddition = true;
 
-      if (!response.ok) {
-        console.error("failed to draw from pile", response);
-        setHeldIndex(NULL_HELD_INDEX);
-        setDropSlotIndex(null);
-        return;
+      if (response.ok) {
+        const dropCard = pile[pile.length - 1];
+        heldCards.splice(dropSlotIndex, 0, dropCard);
+        pile.pop();
+        // TODO: Error handle
       }
-    }
-
-    if (dropSlotIndex === PILE_HELD_INDEX) {
+    } else if (dropSlotIndex === PILE_HELD_INDEX && heldIndex >= 0) {
       const response = await discard();
 
-      if (!response.ok) {
-        console.error("failed to discard", response);
-        setHeldIndex(NULL_HELD_INDEX);
-        setDropSlotIndex(null);
-        return;
+      if (response.ok) {
+        const dropCard = heldCards[heldIndex];
+        pile.push(dropCard);
+        heldCards.splice(heldIndex, 1);
+        // TODO: Error handle
       }
-    }
+    } else if (dropSlotIndex >= 0 && heldIndex === DECK_HELD_INDEX) {
+      const response = await drawFromDeck();
 
-    const indexMod = heldIndex > dropSlotIndex ? 1 : 0;
-    heldCards.splice(dropSlotIndex, 0, dropCard);
-
-    if (!isAddition) {
+      if (response.ok) {
+        const dropCardType = (await response.json()).card;
+        const dropCard = getCard(dropCardType, 0);
+        heldCards.splice(dropSlotIndex, 0, dropCard);
+      }
+    } else {
+      const dropCard = heldCards[heldIndex];
+      const indexMod = heldIndex > dropSlotIndex ? 1 : 0;
+      heldCards.splice(dropSlotIndex, 0, dropCard);
       heldCards.splice(heldIndex + indexMod, 1);
     }
 
@@ -276,7 +261,7 @@ export const Board = () => {
         <div className="flex flex-row space-x-8">
           <Deck heldIndex={heldIndex} setHeldIndex={setHeldIndex} />
           <PlayingCard
-            card={pile[pile.length - 1]}
+            card={pile[pile.length - 1] || getCard(CardType.SPACER, 0)}
             index={PILE_HELD_INDEX}
             heldIndex={heldIndex}
             setHeldIndex={setHeldIndex}

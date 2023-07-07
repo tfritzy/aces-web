@@ -18,11 +18,7 @@ export const Lobby = (props: LobbyProps) => {
         "game-id": props.gameId,
       },
     }).then(async (res) => {
-      if (res.ok) {
-        console.log("started game", res);
-      } else {
-        console.log("failed to start game", res);
-      }
+      // todo: handle errors
     });
   };
 

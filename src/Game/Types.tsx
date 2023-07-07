@@ -1,9 +1,9 @@
 export type Card = {
   type: CardType;
-  suit: Suit;
-  value: CardValue;
-  points: number;
-  deck: number;
+  suit?: Suit;
+  value?: CardValue;
+  points?: number;
+  deck?: number;
   createdTimeMs?: number;
 };
 
@@ -68,6 +68,9 @@ export enum CardType {
 
   JOKER_A,
   JOKER_B,
+
+  SPACER,
+  CARD_BACK,
 }
 
 export enum Suit {
@@ -140,6 +143,16 @@ const getCards = () => {
     value: CardValue.JOKER,
     points: valueMap[CardValue.JOKER],
     deck: 0,
+  });
+
+  cards.push({
+    type: CardType.SPACER,
+    suit: Suit.SUITLESS,
+  });
+
+  cards.push({
+    type: CardType.CARD_BACK,
+    suit: Suit.SUITLESS,
   });
 
   return cards;

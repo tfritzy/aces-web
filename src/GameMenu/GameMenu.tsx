@@ -36,10 +36,8 @@ export const GameMenu = (props: GameMenuProps) => {
         "game-id": joinGameInput,
       },
     }).then(async (res) => {
-      console.log("joining game", res);
       if (res.ok) {
         const body = await res.json();
-        console.log("joined game", body);
         handleGameEnter(joinGameInput, body.players);
       }
     });
