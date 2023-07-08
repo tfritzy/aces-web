@@ -1,46 +1,71 @@
 import React from "react";
 
-type Icon = "error";
+type ToastType = "error";
 
-type ToastProps = {
+export type ToastProps = {
   message: string;
-  icon: Icon;
+  type: ToastType;
+  id: string;
 };
 
-const getIcon = (icon: Icon) => {
-  switch (icon) {
+const getColor = (type: ToastType) => {
+  switch (type) {
+    case "error":
+      return "#ef4444";
+    default:
+      return "black";
+  }
+};
+
+const getIcon = (type: ToastType) => {
+  switch (type) {
     case "error":
       return (
-        <path
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"
-        />
+        <svg
+          width="20px"
+          height="20px"
+          strokeWidth="1.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          color={getColor(type)}
+        >
+          <path
+            d="M20.043 21H3.957c-1.538 0-2.5-1.664-1.734-2.997l8.043-13.988c.77-1.337 2.699-1.337 3.468 0l8.043 13.988C22.543 19.336 21.58 21 20.043 21zM12 9v4"
+            stroke={getColor(type)}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          ></path>
+          <path
+            d="M12 17.01l.01-.011"
+            stroke={getColor(type)}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          ></path>
+        </svg>
       );
     default:
       return "text-blue-600 dark:text-blue-500";
   }
 };
 
-export const Toast = (props: ToastProps) => (
-  <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
+export const Toast = (props: ToastProps) => {
+  return (
     <div
       id="toast-simple"
-      className="flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x divide-gray-200 rounded-lg shadow dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"
+      className="flex flex-row items-center h-min p-3 rounded-lg shadow text-gray-400 divide-gray-700 space-x bg-gray-800 my-2 border border-gray-700"
       role="alert"
+      key={props.id}
     >
-      <svg
-        className="w-5 h-5 text-blue-600 dark:text-blue-500 rotate-45"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 18 20"
+      {getIcon(props.type)}
+
+      <div
+        style={{ color: getColor(props.type) }}
+        className="pl-4 text-sm font-normal"
       >
-        {getIcon(props.icon)}
-      </svg>
-      <div className="pl-4 text-sm font-normal">{props.message}</div>
+        {props.message}
+      </div>
     </div>
-  </div>
-);
+  );
+};

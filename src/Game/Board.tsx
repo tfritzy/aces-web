@@ -10,6 +10,7 @@ import Cookies from "universal-cookie";
 import { PlayingCard } from "Game/PlayingCard";
 import { get } from "http";
 import { Toast } from "components/Toast";
+import { Toasts, useToasts } from "components/Toasts";
 
 export const NULL_HELD_INDEX = -3;
 export const DECK_HELD_INDEX = -2;
@@ -52,6 +53,7 @@ export const Board = () => {
   const [players, setPlayers] = useState<string[]>([]);
   const [turnIndex, setTurnIndex] = useState<number>(0);
   const [roundIndex, setRoundIndex] = useState<number>(0);
+  const { toasts, addToast } = useToasts();
 
   const handleMessage = React.useCallback(
     (message: Message) => {
@@ -153,7 +155,7 @@ export const Board = () => {
     }
   }, [gameId, gameState, userId]);
 
-  const drawFromPile = async () => {
+  const drawFromPile = React.useCallback(async () => {
     return await fetch(`${API_URL}/api/draw_from_pile`, {
       method: "POST",
       headers: {
@@ -161,9 +163,9 @@ export const Board = () => {
         "game-id": gameId,
       },
     });
-  };
+  }, [gameId, userId]);
 
-  const drawFromDeck = async () => {
+  const drawFromDeck = React.useCallback(async () => {
     return await fetch(`${API_URL}/api/draw_from_deck`, {
       method: "POST",
       headers: {
@@ -171,9 +173,9 @@ export const Board = () => {
         "game-id": gameId,
       },
     });
-  };
+  }, [gameId, userId]);
 
-  const discard = async () => {
+  const discard = React.useCallback(async () => {
     return await fetch(`${API_URL}/api/discard`, {
       method: "POST",
       headers: {
@@ -182,86 +184,108 @@ export const Board = () => {
         card: heldCards[heldIndex].type.toString(),
       },
     });
-  };
+  }, [gameId, heldCards, heldIndex, userId]);
 
-  const handleSetDropSlotIndex = (index: number | null) => {
-    if (index === null) {
-      return;
-    }
-
-    if (index === dropSlotIndex) {
-      return;
-    }
-
-    if (index - heldIndex === 0 || index - heldIndex === 1) {
-      setDropSlotIndex(null);
-      return;
-    }
-
-    if (dropSlotIndex) {
-      setHandCards([...heldCards.slice(0, index), ...heldCards.slice(index)]);
-    }
-
-    setDropSlotIndex(index);
-  };
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-
-    if (dropSlotIndex === null || heldIndex === null) {
-      return;
-    }
-
-    if (heldIndex === PILE_HELD_INDEX && dropSlotIndex >= 0) {
-      const response = await drawFromPile();
-
-      if (response.ok) {
-        const dropCard = pile[pile.length - 1];
-        heldCards.splice(dropSlotIndex, 0, dropCard);
-        pile.pop();
-        // TODO: Error handle
+  const handleSetDropSlotIndex = React.useCallback(
+    (index: number | null) => {
+      if (index === null) {
+        return;
       }
-    } else if (dropSlotIndex === PILE_HELD_INDEX && heldIndex >= 0) {
-      const response = await discard();
 
-      if (response.ok) {
+      if (index === dropSlotIndex) {
+        return;
+      }
+
+      if (index - heldIndex === 0 || index - heldIndex === 1) {
+        setDropSlotIndex(null);
+        return;
+      }
+
+      if (dropSlotIndex) {
+        setHandCards([...heldCards.slice(0, index), ...heldCards.slice(index)]);
+      }
+
+      setDropSlotIndex(index);
+    },
+    [dropSlotIndex, heldCards, heldIndex]
+  );
+
+  const handleDrop = React.useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+
+      if (dropSlotIndex === null || heldIndex === null) {
+        return;
+      }
+
+      if (heldIndex === PILE_HELD_INDEX && dropSlotIndex >= 0) {
+        const response = await drawFromPile();
+
+        if (response.ok) {
+          const dropCard = pile[pile.length - 1];
+          heldCards.splice(dropSlotIndex, 0, dropCard);
+          pile.pop();
+        } else if (response.status.toString().startsWith("4")) {
+          const body: string = await response.text();
+          addToast({
+            message: body,
+            type: "error",
+            id: generateId("toast", 12),
+          });
+        }
+      } else if (dropSlotIndex === PILE_HELD_INDEX && heldIndex >= 0) {
+        const response = await discard();
+
+        if (response.ok) {
+          const dropCard = heldCards[heldIndex];
+          pile.push(dropCard);
+          heldCards.splice(heldIndex, 1);
+          // TODO: Error handle
+        }
+      } else if (dropSlotIndex >= 0 && heldIndex === DECK_HELD_INDEX) {
+        const response = await drawFromDeck();
+
+        if (response.ok) {
+          const dropCardType = (await response.json()).card;
+          const dropCard = getCard(dropCardType, 0);
+          heldCards.splice(dropSlotIndex, 0, dropCard);
+        }
+      } else {
         const dropCard = heldCards[heldIndex];
-        pile.push(dropCard);
-        heldCards.splice(heldIndex, 1);
-        // TODO: Error handle
-      }
-    } else if (dropSlotIndex >= 0 && heldIndex === DECK_HELD_INDEX) {
-      const response = await drawFromDeck();
-
-      if (response.ok) {
-        const dropCardType = (await response.json()).card;
-        const dropCard = getCard(dropCardType, 0);
+        const indexMod = heldIndex > dropSlotIndex ? 1 : 0;
         heldCards.splice(dropSlotIndex, 0, dropCard);
+        heldCards.splice(heldIndex + indexMod, 1);
       }
-    } else {
-      const dropCard = heldCards[heldIndex];
-      const indexMod = heldIndex > dropSlotIndex ? 1 : 0;
-      heldCards.splice(dropSlotIndex, 0, dropCard);
-      heldCards.splice(heldIndex + indexMod, 1);
-    }
 
-    setHandCards([...heldCards]);
-    setDropSlotIndex(null);
-    setHeldIndex(NULL_HELD_INDEX);
-  };
+      setHandCards([...heldCards]);
+      setDropSlotIndex(null);
+      setHeldIndex(NULL_HELD_INDEX);
+    },
+    [
+      addToast,
+      discard,
+      drawFromDeck,
+      drawFromPile,
+      dropSlotIndex,
+      heldCards,
+      heldIndex,
+      pile,
+    ]
+  );
 
-  const handleSetHeldIndex = (index: number) => {
+  const handleSetHeldIndex = React.useCallback((index: number) => {
     setHeldIndex(index);
-  };
+  }, []);
 
   if (gameState === GameState.None) {
     return (
       <>
-        <Toast message="Meep" icon="error" />
         <GameMenu
           userId={userId}
           displayName={displayName}
-          setDisplayName={setDisplayName}
+          setDisplayName={(name) => {
+            setDisplayName(name);
+          }}
           onGameEnter={(gameId, players) => {
             console.log("game enter", gameId, players);
             setPlayers(players);
@@ -275,6 +299,7 @@ export const Board = () => {
 
   return (
     <div className="w-full h-full">
+      <Toasts toasts={toasts} />
       <div className="text-white">
         <div>Current turn: {players[turnIndex] || "No one"}</div>
         <div>Current round: {roundIndex}</div>
