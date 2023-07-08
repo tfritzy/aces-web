@@ -20,10 +20,12 @@ export type StartGameEvent = {
 
 export type TurnStartEvent = {
   type: EventType.TurnStart;
+  turnIndex: number;
 };
 
 export type RoundStartEvent = {
   type: EventType.RoundStart;
+  round: number;
 };
 
 export type DiscardEvent = {

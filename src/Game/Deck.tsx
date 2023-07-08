@@ -12,7 +12,6 @@ type DeckProps = {
 };
 
 export const Deck = (props: DeckProps) => {
-  console.log("card back", cardBack);
 
   return (
     <PlayingCard

@@ -8,6 +8,8 @@ import { Lobby } from "Game/Lobby";
 import { GameMenu } from "GameMenu/GameMenu";
 import Cookies from "universal-cookie";
 import { PlayingCard } from "Game/PlayingCard";
+import { get } from "http";
+import { Toast } from "components/Toast";
 
 export const NULL_HELD_INDEX = -3;
 export const DECK_HELD_INDEX = -2;
@@ -39,10 +41,17 @@ export const Board = () => {
   const [dropSlotIndex, setDropSlotIndex] = React.useState<number | null>(null);
   const [pile, setPile] = useState<Card[]>([]);
   const [deckSize, setDeckSize] = useState<number>(1);
-  const [heldCards, setHandCards] = React.useState<Card[]>([]);
+  const [heldCards, setHandCards] = React.useState<Card[]>([
+    getCard(CardType.JACK_OF_DIAMONDS, 0),
+    getCard(CardType.JACK_OF_DIAMONDS, 1),
+    getCard(CardType.JACK_OF_DIAMONDS, 2),
+    getCard(CardType.JACK_OF_DIAMONDS, 3),
+  ]);
   const [gameState, setGameState] = useState<GameState>(GameState.None);
   const [websocket, setWebsocket] = React.useState<WebSocket | null>(null);
   const [players, setPlayers] = useState<string[]>([]);
+  const [turnIndex, setTurnIndex] = useState<number>(0);
+  const [roundIndex, setRoundIndex] = useState<number>(0);
 
   const handleMessage = React.useCallback(
     (message: Message) => {
@@ -64,6 +73,12 @@ export const Board = () => {
             const card = getCard(message.card, 0);
             setPile([...pile, card]);
           }
+          break;
+        case EventType.RoundStart:
+          setRoundIndex(message.round);
+          break;
+        case EventType.TurnStart:
+          setTurnIndex(message.turnIndex);
           break;
         default:
           console.error("unhandled message", message);
@@ -241,22 +256,29 @@ export const Board = () => {
 
   if (gameState === GameState.None) {
     return (
-      <GameMenu
-        userId={userId}
-        displayName={displayName}
-        setDisplayName={setDisplayName}
-        onGameEnter={(gameId, players) => {
-          console.log("game enter", gameId, players);
-          setPlayers(players);
-          setGameId(gameId);
-          setGameState(GameState.Lobby);
-        }}
-      />
+      <>
+        <Toast message="Meep" icon="error" />
+        <GameMenu
+          userId={userId}
+          displayName={displayName}
+          setDisplayName={setDisplayName}
+          onGameEnter={(gameId, players) => {
+            console.log("game enter", gameId, players);
+            setPlayers(players);
+            setGameId(gameId);
+            setGameState(GameState.Lobby);
+          }}
+        />
+      </>
     );
   }
 
   return (
     <div className="w-full h-full">
+      <div className="text-white">
+        <div>Current turn: {players[turnIndex] || "No one"}</div>
+        <div>Current round: {roundIndex}</div>
+      </div>
       <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div className="flex flex-row space-x-8">
           <Deck heldIndex={heldIndex} setHeldIndex={setHeldIndex} />

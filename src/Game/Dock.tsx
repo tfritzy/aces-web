@@ -56,7 +56,7 @@ export const Dock = (props: DockProps) => {
 
   return (
     <div
-      className="absolute bottom-10 flex items-stretch w-screen bg-white p-4 shadow-inner"
+      className="absolute bottom-10 flex justify-center w-full bottom-10 bg-white p-4 shadow-inner"
       onDrop={props.onDrop}
       onDragOver={handleDrag}
       ref={parent}
