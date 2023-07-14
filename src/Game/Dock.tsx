@@ -56,7 +56,7 @@ export const Dock = (props: DockProps) => {
 
   return (
     <div
-      className="absolute bottom-10 flex justify-center w-full bottom-10 bg-white p-4 shadow-inner"
+      className="absolute flex justify-center w-full bottom-10 bg-white p-4 shadow-inner border border-gray-100"
       onDrop={props.onDrop}
       onDragOver={handleDrag}
       ref={parent}

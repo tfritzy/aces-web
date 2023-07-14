@@ -4,7 +4,7 @@ import { Board } from "Game/Board";
 
 export const App = (): JSX.Element => {
   return (
-    <div className="w-full h-screen bg-slate-900">
+    <div className="w-full h-screen bg-white">
       <Board />
     </div>
   );

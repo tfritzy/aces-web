@@ -48,19 +48,19 @@ export const GameMenu = (props: GameMenuProps) => {
   };
 
   return (
-    <div className="grid place-content-center h-screen text-white">
-      <div className="rounded-md border-2 border-gray-700 bg-gray-800 p-4 w-80">
+    <div className="grid place-content-center h-screen text-gray-800 dark:text-white">
+      <div className="rounded-md drop-shadow-xl border p-4 w-80 bg-white border-gray-200 dark:border-gray-700 dark:bg-gray-800">
         <div className="text-3xl text-center mb-4">Aces</div>
 
-        <div className="flex flex-col space-y-8 divide-y divide-gray-600">
+        <div className="flex flex-col space-y-8 divide-y divide-gray-300 dark:divide-gray-600">
           <div>
-            <label className="block mb-2 text-sm font-medium text-white">
+            <label className="block mb-2 text-sm font-medium">
               Display name
             </label>
             <input
               type="text"
               id="display_name"
-              className="border text-sm rounded-lg focus:ring-emerald block w-full p-2 bg-gray-700 border-gray-400 placeholder-gray-400 text-white"
+              className="border drop-shadow text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
               value={props.displayName}
               onChange={(e) => props.setDisplayName(e.target.value)}
             />
@@ -72,7 +72,7 @@ export const GameMenu = (props: GameMenuProps) => {
                 <input
                   type="text"
                   id="game"
-                  className="border text-sm rounded-lg focus:ring-emerald block w-full h-full p-2 bg-gray-700 border-gray-400 placeholder-gray-400 text-white"
+                  className="border drop-shadow text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
                   value={joinGameInput}
                   placeholder="AIE-JCS"
                   onChange={(e) => setJoinGameInput(e.target.value)}
@@ -80,7 +80,7 @@ export const GameMenu = (props: GameMenuProps) => {
               </div>
 
               <button
-                className="flex-none rounded-md bg-teal-500 px-4 p-2 text-gray-50 font-semibold"
+                className="flex-none rounded-md bg-teal-500 border border-teal-600 drop-shadow px-4 p-2 text-gray-50 font-semibold"
                 onClick={handleJoinGame}
               >
                 Join
@@ -90,7 +90,7 @@ export const GameMenu = (props: GameMenuProps) => {
             <div className="text-gray-400 text-center">— or —</div>
 
             <button
-              className="rounded-md bg-teal-500 p-2 text-gray-50 font-semibold"
+              className="rounded-md bg-teal-500 border border-teal-600 drop-shadow p-2 text-gray-50 font-semibold"
               onClick={handleCreateGame}
             >
               Create Game

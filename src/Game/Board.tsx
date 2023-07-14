@@ -8,8 +8,6 @@ import { Lobby } from "Game/Lobby";
 import { GameMenu } from "GameMenu/GameMenu";
 import Cookies from "universal-cookie";
 import { PlayingCard } from "Game/PlayingCard";
-import { get } from "http";
-import { Toast } from "components/Toast";
 import { Toasts, useToasts } from "components/Toasts";
 
 export const NULL_HELD_INDEX = -3;
@@ -300,7 +298,7 @@ export const Board = () => {
   return (
     <div className="w-full h-full">
       <Toasts toasts={toasts} />
-      <div className="text-white">
+      <div className="text-gray-700 dark:text-white">
         <div>Current turn: {players[turnIndex] || "No one"}</div>
         <div>Current round: {roundIndex}</div>
       </div>

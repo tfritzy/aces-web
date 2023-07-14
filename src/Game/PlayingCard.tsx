@@ -152,20 +152,20 @@ export const PlayingCard = (props: PlayingCardProps) => {
   if (card.type === CardType.SPACER) {
     cardElement = (
       <div
-        className={`border-dashed border border-white w-32 h-40 p-2 mx-1 rounded-md`}
+        className={`border-dashed border w-32 h-40 p-2 mx-1 rounded-md border-gray-700 dark:border-white`}
       />
     );
   } else if (card.type === CardType.CARD_BACK) {
     cardElement = (
       <div
-        className={`drop-shadow-lg shadow-inner bg-gradient-to-r from-cyan-500 to-blue-500 border-gray-800 border-solid border border w-32 h-40 p-2 mx-1 rounded-md`}
+        className={`drop-shadow-md bg-gradient-to-r from-cyan-300 to-blue-300 border-gray-800 border-solid border w-32 h-40 p-2 mx-1 rounded-md`}
       />
     );
   } else {
     const color = getCardColor(card);
     cardElement = (
       <div
-        className={`${color} cursor-pointer drop-shadow-lg shadow-inner bg-gray-50 border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md`}
+        className={`${color} cursor-pointer drop-shadow-md bg-gray-50 border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md`}
       >
         <CardCol card={card} />
         <CardFace card={card} />
