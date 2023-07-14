@@ -82,6 +82,26 @@ export const Board = () => {
     [players, displayName, roundIndex, turnIndex, pile]
   );
 
+  const handleError = React.useCallback(
+    async (response: Response) => {
+      if (response.status.toString().startsWith("4")) {
+        let body = await response.text();
+        addToast({
+          message: body,
+          type: "error",
+          id: generateId("toast", 12),
+        });
+      } else {
+        addToast({
+          message: "Something went wrong.",
+          type: "error",
+          id: generateId("toast", 12),
+        });
+      }
+    },
+    [addToast]
+  );
+
   React.useEffect(() => {
     const cookies = new Cookies();
     let id = cookies.get("unique-id");
@@ -100,6 +120,10 @@ export const Board = () => {
           "game-id": gameId,
         },
       });
+      if (!res.ok) {
+        await handleError(res);
+      }
+
       let url = await res.json();
       let ws = new WebSocket(url.url);
       ws.onmessage = (event) => {
@@ -116,6 +140,10 @@ export const Board = () => {
           "game-id": gameId,
         },
       });
+
+      if (!joinResp.ok) {
+        await handleError(joinResp);
+      }
 
       return ws;
     };
@@ -149,27 +177,39 @@ export const Board = () => {
   }, [gameId, gameState, userId]);
 
   const drawFromPile = React.useCallback(async () => {
-    return await fetch(`${API_URL}/api/draw_from_pile`, {
+    var res = await fetch(`${API_URL}/api/draw_from_pile`, {
       method: "POST",
       headers: {
         "user-id": userId,
         "game-id": gameId,
       },
     });
-  }, [gameId, userId]);
+
+    if (!res.ok) {
+      await handleError(res);
+    }
+
+    return res;
+  }, [gameId, handleError, userId]);
 
   const drawFromDeck = React.useCallback(async () => {
-    return await fetch(`${API_URL}/api/draw_from_deck`, {
+    var res = await fetch(`${API_URL}/api/draw_from_deck`, {
       method: "POST",
       headers: {
         "user-id": userId,
         "game-id": gameId,
       },
     });
-  }, [gameId, userId]);
+
+    if (!res.ok) {
+      await handleError(res);
+    }
+
+    return res;
+  }, [gameId, handleError, userId]);
 
   const discard = React.useCallback(async () => {
-    return await fetch(`${API_URL}/api/discard`, {
+    var res = await fetch(`${API_URL}/api/discard`, {
       method: "POST",
       headers: {
         "user-id": userId,
@@ -177,7 +217,13 @@ export const Board = () => {
         card: heldCards[heldIndex].type.toString(),
       },
     });
-  }, [gameId, heldCards, heldIndex, userId]);
+
+    if (!res.ok) {
+      await handleError(res);
+    }
+
+    return res;
+  }, [gameId, handleError, heldCards, heldIndex, userId]);
 
   const handleSetDropSlotIndex = React.useCallback(
     (index: number | null) => {
@@ -218,13 +264,6 @@ export const Board = () => {
           const dropCard = pile[pile.length - 1];
           heldCards.splice(dropSlotIndex, 0, dropCard);
           pile.pop();
-        } else if (response.status.toString().startsWith("4")) {
-          const body: string = await response.text();
-          addToast({
-            message: body,
-            type: "error",
-            id: generateId("toast", 12),
-          });
         }
       } else if (dropSlotIndex === PILE_HELD_INDEX && heldIndex >= 0) {
         const response = await discard();
@@ -233,7 +272,6 @@ export const Board = () => {
           const dropCard = heldCards[heldIndex];
           pile.push(dropCard);
           heldCards.splice(heldIndex, 1);
-          // TODO: Error handle
         }
       } else if (dropSlotIndex >= 0 && heldIndex === DECK_HELD_INDEX) {
         const response = await drawFromDeck();
@@ -254,7 +292,6 @@ export const Board = () => {
       setHeldIndex(NULL_HELD_INDEX);
     },
     [
-      addToast,
       discard,
       drawFromDeck,
       drawFromPile,
@@ -269,6 +306,20 @@ export const Board = () => {
     setHeldIndex(index);
   }, []);
 
+  const endTurn = React.useCallback(async () => {
+    var res = await fetch(`${API_URL}/api/end_turn`, {
+      method: "POST",
+      headers: {
+        "user-id": userId,
+        "game-id": gameId,
+      },
+    });
+
+    if (!res.ok) {
+      await handleError(res);
+    }
+  }, [gameId, handleError, userId]);
+
   const buttons = React.useMemo(() => {
     return (
       <div className="flex justify-end space-x-2 p-2">
@@ -278,24 +329,27 @@ export const Board = () => {
         >
           Go out
         </button>
-        <button className="bg-teal-500 hover:bg-teal-700 text-white border border-teal-600 font-medium py-1 px-2 rounded-md drop-shadow">
+        <button
+          onClick={endTurn}
+          className="bg-teal-500 hover:bg-teal-700 text-white border border-teal-600 font-medium py-1 px-2 rounded-md drop-shadow"
+        >
           End turn
         </button>
       </div>
     );
   }, []);
 
-  return (
-    <Dock
-      heldIndex={heldIndex}
-      setHeldIndex={handleSetHeldIndex}
-      onDrop={handleDrop}
-      cards={heldCards}
-      dropSlotIndex={dropSlotIndex}
-      setDropSlotIndex={handleSetDropSlotIndex}
-      buttons={buttons}
-    />
-  );
+  // return (
+  //   <Dock
+  //     heldIndex={heldIndex}
+  //     setHeldIndex={handleSetHeldIndex}
+  //     onDrop={handleDrop}
+  //     cards={heldCards}
+  //     dropSlotIndex={dropSlotIndex}
+  //     setDropSlotIndex={handleSetDropSlotIndex}
+  //     buttons={buttons}
+  //   />
+  // );
 
   if (gameState === GameState.None) {
     return (
