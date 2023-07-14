@@ -10,6 +10,7 @@ type DockProps = {
   onDrop: (e: React.DragEvent) => void;
   dropSlotIndex: number | null;
   setDropSlotIndex: (index: number | null) => void;
+  buttons: React.ReactNode;
 };
 
 export const Dock = (props: DockProps) => {
@@ -55,13 +56,16 @@ export const Dock = (props: DockProps) => {
   };
 
   return (
-    <div
-      className="absolute flex justify-center w-full bottom-10 bg-white p-4 shadow-inner border border-gray-100"
-      onDrop={props.onDrop}
-      onDragOver={handleDrag}
-      ref={parent}
-    >
-      {playingCards}
+    <div className="absolute w-full bottom-10">
+      {props.buttons}
+      <div
+        className="flex justify-center  bg-white p-4 shadow-inner border border-gray-100"
+        onDrop={props.onDrop}
+        onDragOver={handleDrag}
+        ref={parent}
+      >
+        {playingCards}
+      </div>
     </div>
   );
 };

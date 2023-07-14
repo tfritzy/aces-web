@@ -2,9 +2,7 @@ import React from "react";
 
 import { DECK_HELD_INDEX } from "Game/Board";
 import { PlayingCard } from "Game/PlayingCard";
-import { CardType, getCard } from "Game/Types";
-
-const cardBack = getCard(CardType.CARD_BACK, 0);
+import { cardBack } from "./Types";
 
 type DeckProps = {
   heldIndex: number;
@@ -12,7 +10,6 @@ type DeckProps = {
 };
 
 export const Deck = (props: DeckProps) => {
-
   return (
     <PlayingCard
       card={cardBack}

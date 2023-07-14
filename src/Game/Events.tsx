@@ -1,12 +1,16 @@
+import { Card } from "./Types";
+
 export enum EventType {
   Invalid,
   JoinGame,
   StartGame,
-  TurnStart,
-  RoundStart,
-  Discard,
   DrawFromDeck,
   DrawFromPile,
+  Discard,
+  AdvanceTurn,
+  PlayerWentOut,
+  AdvanceRound,
+  GameEndEvent,
 }
 
 export type JoinGameEvent = {
@@ -19,18 +23,18 @@ export type StartGameEvent = {
 };
 
 export type TurnStartEvent = {
-  type: EventType.TurnStart;
+  type: EventType.AdvanceTurn;
   turnIndex: number;
 };
 
 export type RoundStartEvent = {
-  type: EventType.RoundStart;
+  type: EventType.AdvanceRound;
   round: number;
 };
 
 export type DiscardEvent = {
   type: EventType.Discard;
-  card: number;
+  card: Card;
   player: string;
 };
 

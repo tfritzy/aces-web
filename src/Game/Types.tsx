@@ -1,9 +1,8 @@
 export type Card = {
   type: CardType;
-  suit?: Suit;
-  value?: CardValue;
-  points?: number;
-  deck?: number;
+  suit: Suit;
+  value: CardValue;
+  deck: number;
   createdTimeMs?: number;
 };
 
@@ -74,6 +73,7 @@ export enum CardType {
 }
 
 export enum Suit {
+  INVALID,
   CLUBS,
   DIAMONDS,
   HEARTS,
@@ -82,6 +82,7 @@ export enum Suit {
 }
 
 export enum CardValue {
+  INVALID,
   TWO,
   THREE,
   FOUR,
@@ -98,76 +99,16 @@ export enum CardValue {
   JOKER,
 }
 
-const valueMap = {
-  [CardValue.TWO]: 2,
-  [CardValue.THREE]: 3,
-  [CardValue.FOUR]: 4,
-  [CardValue.FIVE]: 5,
-  [CardValue.SIX]: 6,
-  [CardValue.SEVEN]: 7,
-  [CardValue.EIGHT]: 8,
-  [CardValue.NINE]: 9,
-  [CardValue.TEN]: 10,
-  [CardValue.JACK]: 10,
-  [CardValue.QUEEN]: 10,
-  [CardValue.KING]: 10,
-  [CardValue.ACE]: 20,
-  [CardValue.JOKER]: 50,
+export const spacerCard = {
+  type: CardType.SPACER,
+  suit: Suit.SUITLESS,
+  value: CardValue.JOKER,
+  deck: 0,
 };
 
-const getCards = () => {
-  const cards: Card[] = [];
-  (Object.keys(CardValue) as Array<keyof typeof CardValue>).forEach((value) =>
-    (Object.keys(Suit) as Array<keyof typeof Suit>).forEach((suit) => {
-      cards.push({
-        type: CardType[`${value}_OF_${suit}` as keyof typeof CardType],
-        suit: Suit[suit],
-        value: CardValue[value],
-        points: valueMap[CardValue[value]],
-        deck: 0,
-      });
-    })
-  );
-
-  cards.push({
-    type: CardType.JOKER_A,
-    suit: Suit.SUITLESS,
-    value: CardValue.JOKER,
-    points: valueMap[CardValue.JOKER],
-    deck: 0,
-  });
-
-  cards.push({
-    type: CardType.JOKER_B,
-    suit: Suit.SUITLESS,
-    value: CardValue.JOKER,
-    points: valueMap[CardValue.JOKER],
-    deck: 0,
-  });
-
-  cards.push({
-    type: CardType.SPACER,
-    suit: Suit.SUITLESS,
-  });
-
-  cards.push({
-    type: CardType.CARD_BACK,
-    suit: Suit.SUITLESS,
-  });
-
-  return cards;
-};
-
-export const cards = getCards();
-
-export const cardMap: Map<CardType, Card> = new Map(
-  cards.map((card) => [card.type, card])
-);
-
-export const getCard = (card: CardType, deck: number): Card => {
-  const cardObj = cardMap.get(card);
-  return {
-    ...cardObj,
-    deck,
-  } as Card;
+export const cardBack = {
+  type: CardType.CARD_BACK,
+  suit: Suit.SUITLESS,
+  value: CardValue.JOKER,
+  deck: 0,
 };

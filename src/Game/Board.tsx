@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Dock } from "Game/Dock";
 import { Deck } from "Game/Deck";
-import { Card, CardType, getCard } from "Game/Types";
+import { Card, CardType, spacerCard } from "Game/Types";
 import { API_URL } from "Constants";
 import { EventType, Message } from "Game/Events";
 import { Lobby } from "Game/Lobby";
@@ -40,12 +40,7 @@ export const Board = () => {
   const [dropSlotIndex, setDropSlotIndex] = React.useState<number | null>(null);
   const [pile, setPile] = useState<Card[]>([]);
   const [deckSize, setDeckSize] = useState<number>(1);
-  const [heldCards, setHandCards] = React.useState<Card[]>([
-    getCard(CardType.JACK_OF_DIAMONDS, 0),
-    getCard(CardType.JACK_OF_DIAMONDS, 1),
-    getCard(CardType.JACK_OF_DIAMONDS, 2),
-    getCard(CardType.JACK_OF_DIAMONDS, 3),
-  ]);
+  const [heldCards, setHandCards] = React.useState<Card[]>([]);
   const [gameState, setGameState] = useState<GameState>(GameState.None);
   const [websocket, setWebsocket] = React.useState<WebSocket | null>(null);
   const [players, setPlayers] = useState<string[]>([]);
@@ -70,21 +65,21 @@ export const Board = () => {
           break;
         case EventType.Discard:
           if (message.player !== displayName) {
-            const card = getCard(message.card, 0);
+            const card = message.card;
             setPile([...pile, card]);
           }
           break;
-        case EventType.RoundStart:
-          setRoundIndex(message.round);
+        case EventType.AdvanceRound:
+          setRoundIndex(roundIndex + 1);
           break;
-        case EventType.TurnStart:
-          setTurnIndex(message.turnIndex);
+        case EventType.AdvanceTurn:
+          setTurnIndex(turnIndex + 1);
           break;
         default:
           console.error("unhandled message", message);
       }
     },
-    [pile, players, displayName]
+    [players, displayName, roundIndex, turnIndex, pile]
   );
 
   React.useEffect(() => {
@@ -146,8 +141,8 @@ export const Board = () => {
 
     if (gameState === GameState.Playing) {
       getState().then((state) => {
-        setHandCards(state.hand.map((c: CardType) => getCard(c, 0)));
-        setPile(state.pile.map((c: CardType) => getCard(c, 0)));
+        setHandCards(state.hand);
+        setPile(state.pile);
         setDeckSize(state.deckSize);
       });
     }
@@ -244,8 +239,7 @@ export const Board = () => {
         const response = await drawFromDeck();
 
         if (response.ok) {
-          const dropCardType = (await response.json()).card;
-          const dropCard = getCard(dropCardType, 0);
+          const dropCard = (await response.json()).card as Card;
           heldCards.splice(dropSlotIndex, 0, dropCard);
         }
       } else {
@@ -274,6 +268,34 @@ export const Board = () => {
   const handleSetHeldIndex = React.useCallback((index: number) => {
     setHeldIndex(index);
   }, []);
+
+  const buttons = React.useMemo(() => {
+    return (
+      <div className="flex justify-end space-x-2 p-2">
+        <button
+          disabled
+          className="bg-white disabled:opacity-50 hover:bg-gray-100 text-gray-700 border border-gray-300 font-medium py-1 px-2 rounded-md drop-shadow"
+        >
+          Go out
+        </button>
+        <button className="bg-teal-500 hover:bg-teal-700 text-white border border-teal-600 font-medium py-1 px-2 rounded-md drop-shadow">
+          End turn
+        </button>
+      </div>
+    );
+  }, []);
+
+  return (
+    <Dock
+      heldIndex={heldIndex}
+      setHeldIndex={handleSetHeldIndex}
+      onDrop={handleDrop}
+      cards={heldCards}
+      dropSlotIndex={dropSlotIndex}
+      setDropSlotIndex={handleSetDropSlotIndex}
+      buttons={buttons}
+    />
+  );
 
   if (gameState === GameState.None) {
     return (
@@ -306,7 +328,7 @@ export const Board = () => {
         <div className="flex flex-row space-x-8">
           <Deck heldIndex={heldIndex} setHeldIndex={setHeldIndex} />
           <PlayingCard
-            card={pile[pile.length - 1] || getCard(CardType.SPACER, 0)}
+            card={pile[pile.length - 1] || spacerCard}
             index={PILE_HELD_INDEX}
             heldIndex={heldIndex}
             setHeldIndex={setHeldIndex}
@@ -323,6 +345,7 @@ export const Board = () => {
         cards={heldCards}
         dropSlotIndex={dropSlotIndex}
         setDropSlotIndex={handleSetDropSlotIndex}
+        buttons={buttons}
       />
 
       {gameState === GameState.Lobby && (
