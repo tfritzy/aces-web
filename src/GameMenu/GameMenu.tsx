@@ -1,4 +1,5 @@
 import { API_URL } from "Constants";
+import { Modal } from "components/Modal";
 import React, { useState } from "react";
 
 type GameMenuProps = {
@@ -48,8 +49,8 @@ export const GameMenu = (props: GameMenuProps) => {
   };
 
   return (
-    <div className="grid place-content-center h-screen text-gray-800 dark:text-white">
-      <div className="rounded-md drop-shadow-xl border p-4 w-80 bg-white border-gray-200 dark:border-gray-700 dark:bg-gray-800">
+    <Modal>
+      <div className="p-4">
         <div className="text-3xl text-center mb-4">Aces</div>
 
         <div className="flex flex-col space-y-8 divide-y divide-gray-300 dark:divide-gray-600">
@@ -98,6 +99,6 @@ export const GameMenu = (props: GameMenuProps) => {
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };

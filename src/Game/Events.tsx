@@ -15,7 +15,7 @@ export enum EventType {
 
 export type JoinGameEvent = {
   type: EventType.JoinGame;
-  name: string;
+  displayName: string;
 };
 
 export type StartGameEvent = {

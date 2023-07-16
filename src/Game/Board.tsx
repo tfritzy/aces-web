@@ -9,6 +9,7 @@ import { GameMenu } from "GameMenu/GameMenu";
 import Cookies from "universal-cookie";
 import { PlayingCard } from "Game/PlayingCard";
 import { Toasts, useToasts } from "components/Toasts";
+import { RoundSummary } from "Game/RoundSummary";
 
 export const NULL_HELD_INDEX = -3;
 export const DECK_HELD_INDEX = -2;
@@ -30,6 +31,12 @@ enum GameState {
   Playing,
 }
 
+type Player = {
+  displayName: string;
+  score: number;
+  total: number;
+};
+
 export const Board = () => {
   const [userId, setUserId] = React.useState<string>("");
   const [displayName, setDisplayName] = React.useState<string>(
@@ -43,9 +50,10 @@ export const Board = () => {
   const [heldCards, setHandCards] = React.useState<Card[]>([]);
   const [gameState, setGameState] = useState<GameState>(GameState.None);
   const [websocket, setWebsocket] = React.useState<WebSocket | null>(null);
-  const [players, setPlayers] = useState<string[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
   const [turnIndex, setTurnIndex] = useState<number>(0);
-  const [roundIndex, setRoundIndex] = useState<number>(0);
+  const [round, setRoundIndex] = useState<number>(0);
+  const [roundSummaryShown, setRoundSummaryShown] = useState<boolean>(false);
   const { toasts, addToast } = useToasts();
 
   const handleMessage = React.useCallback(
@@ -53,7 +61,10 @@ export const Board = () => {
       console.log("handling message", message);
       switch (message.type) {
         case EventType.JoinGame:
-          setPlayers([...players, message.name]);
+          setPlayers([
+            ...players,
+            { displayName: message.displayName, score: 0, total: 0 },
+          ]);
           break;
         case EventType.StartGame:
           setGameState(GameState.Playing);
@@ -70,7 +81,8 @@ export const Board = () => {
           }
           break;
         case EventType.AdvanceRound:
-          setRoundIndex(roundIndex + 1);
+          setRoundIndex(round + 1);
+          setRoundSummaryShown(true);
           break;
         case EventType.AdvanceTurn:
           setTurnIndex(turnIndex + 1);
@@ -79,7 +91,7 @@ export const Board = () => {
           console.error("unhandled message", message);
       }
     },
-    [players, displayName, roundIndex, turnIndex, pile]
+    [players, displayName, round, turnIndex, pile]
   );
 
   const handleError = React.useCallback(
@@ -153,7 +165,7 @@ export const Board = () => {
         setWebsocket(websocket)
       );
     }
-  }, [gameId, gameState, handleMessage, userId, websocket]);
+  }, [gameId, gameState, handleError, handleMessage, userId, websocket]);
 
   React.useEffect(() => {
     const getState = async () => {
@@ -320,11 +332,25 @@ export const Board = () => {
     }
   }, [gameId, handleError, userId]);
 
+  const goOut = React.useCallback(async () => {
+    var res = await fetch(`${API_URL}/api/go_out`, {
+      method: "POST",
+      headers: {
+        "user-id": userId,
+        "game-id": gameId,
+      },
+    });
+
+    if (!res.ok) {
+      await handleError(res);
+    }
+  }, [gameId, handleError, userId]);
+
   const buttons = React.useMemo(() => {
     return (
       <div className="flex justify-end space-x-2 p-2">
         <button
-          disabled
+          onClick={goOut}
           className="bg-white disabled:opacity-50 hover:bg-gray-100 text-gray-700 border border-gray-300 font-medium py-1 px-2 rounded-md drop-shadow"
         >
           Go out
@@ -337,19 +363,7 @@ export const Board = () => {
         </button>
       </div>
     );
-  }, []);
-
-  // return (
-  //   <Dock
-  //     heldIndex={heldIndex}
-  //     setHeldIndex={handleSetHeldIndex}
-  //     onDrop={handleDrop}
-  //     cards={heldCards}
-  //     dropSlotIndex={dropSlotIndex}
-  //     setDropSlotIndex={handleSetDropSlotIndex}
-  //     buttons={buttons}
-  //   />
-  // );
+  }, [endTurn, goOut]);
 
   if (gameState === GameState.None) {
     return (
@@ -362,7 +376,13 @@ export const Board = () => {
           }}
           onGameEnter={(gameId, players) => {
             console.log("game enter", gameId, players);
-            setPlayers(players);
+            setPlayers(
+              players.map((p) => ({
+                displayName: p,
+                score: 0,
+                total: 0,
+              }))
+            );
             setGameId(gameId);
             setGameState(GameState.Lobby);
           }}
@@ -375,8 +395,8 @@ export const Board = () => {
     <div className="w-full h-full">
       <Toasts toasts={toasts} />
       <div className="text-gray-700 dark:text-white">
-        <div>Current turn: {players[turnIndex] || "No one"}</div>
-        <div>Current round: {roundIndex}</div>
+        <div>Current turn: {players[turnIndex].displayName || "No one"}</div>
+        <div>Current round: {round}</div>
       </div>
       <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div className="flex flex-row space-x-8">
@@ -403,8 +423,21 @@ export const Board = () => {
       />
 
       {gameState === GameState.Lobby && (
-        <Lobby userId={userId} gameId={gameId} players={players} />
+        <Lobby
+          userId={userId}
+          gameId={gameId}
+          players={players}
+          onError={(message) => {
+            addToast({
+              message: message,
+              id: generateId("toast", 5),
+              type: "error",
+            });
+          }}
+        />
       )}
+
+      {roundSummaryShown && <RoundSummary players={players} round={round} />}
     </div>
   );
 };
