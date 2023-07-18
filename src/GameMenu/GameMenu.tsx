@@ -81,7 +81,7 @@ export const GameMenu = (props: GameMenuProps) => {
               </div>
 
               <button
-                className="flex-none rounded-md bg-teal-500 border border-teal-600 drop-shadow px-4 p-2 text-gray-50 font-semibold"
+                className="flex-none rounded-md bg-emerald-500 border border-emerald-600 drop-shadow px-4 p-2 text-gray-50 font-semibold"
                 onClick={handleJoinGame}
               >
                 Join
@@ -91,7 +91,7 @@ export const GameMenu = (props: GameMenuProps) => {
             <div className="text-gray-400 text-center">— or —</div>
 
             <button
-              className="rounded-md bg-teal-500 border border-teal-600 drop-shadow p-2 text-gray-50 font-semibold"
+              className="rounded-md bg-emerald-500 border border-emerald-600 drop-shadow p-2 text-gray-50 font-semibold"
               onClick={handleCreateGame}
             >
               Create Game

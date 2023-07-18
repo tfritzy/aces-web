@@ -2,6 +2,7 @@ import React from "react";
 
 import { Modal } from "components/Modal";
 import autoAnimate from "@formkit/auto-animate";
+import { Button } from "components/Button";
 
 type PlayerProp = {
   displayName: string;
@@ -103,9 +104,9 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                   </div>
                   {getChevron(p)}
                 </div>
-                <div className="rounded-full grid grid-cols-4 items-center justify-between bg-slate-50 w-64 shadow-sm p-1">
+                <div className="rounded-full grid grid-cols-4 items-center justify-between bg-slate-50 w-64 shadow-sm p-1 dark:bg-gray-700">
                   <div className="shadow-sm w-12 h-12 rounded-full">
-                    <div className="overflow-hidden w-12 h-12 rounded-full bg-white">
+                    <div className="overflow-hidden w-12 h-12 rounded-full bg-white dark:bg-gray-600">
                       <img
                         src={icon}
                         className="rounded-full w-10 h-12 mx-auto translate-y-2 -translate-x-1"
@@ -132,9 +133,13 @@ export const RoundSummary = (props: RoundSummaryProps) => {
         </div>
 
         <div className="flex justify-end p-2">
-          <button className="text-sm rounded-md drop-shadow bg-teal-500 border border-teal-600 px-2 p-1 text-white font-semibold hover:bg-teal-600">
-            Next round
-          </button>
+          <Button
+            onClick={() => {
+              console.log("clicked");
+            }}
+            text="Next round"
+            type="primary"
+          />
         </div>
       </div>
     </Modal>

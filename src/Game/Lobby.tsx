@@ -54,7 +54,7 @@ export const Lobby = (props: LobbyProps) => {
 
           <div className="mt-12">
             <button
-              className="rounded-md w-full drop-shadow bg-teal-500 border border-teal-600 px-4 p-2 text-white font-semibold hover:bg-teal-600"
+              className="rounded-md w-full drop-shadow bg-emerald-500 border border-emerald-600 px-4 p-2 text-white font-semibold hover:bg-emerald-600"
               onClick={handleStartGame}
             >
               Start Game

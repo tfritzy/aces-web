@@ -40,10 +40,16 @@ export type DiscardEvent = {
 
 export type DrawFromDeckEvent = {
   type: EventType.DrawFromDeck;
+  player: string;
 };
 
 export type DrawFromPileEvent = {
   type: EventType.DrawFromPile;
+  player: string;
+};
+
+export type PlayerWentOutEvent = {
+  type: EventType.PlayerWentOut;
   player: string;
 };
 
@@ -54,4 +60,5 @@ export type Message =
   | RoundStartEvent
   | DiscardEvent
   | DrawFromDeckEvent
-  | DrawFromPileEvent;
+  | DrawFromPileEvent
+  | PlayerWentOutEvent;

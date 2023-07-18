@@ -49,7 +49,9 @@ export const Board = () => {
   const [deckSize, setDeckSize] = useState<number>(1);
   const [heldCards, setHandCards] = React.useState<Card[]>([]);
   const [gameState, setGameState] = useState<GameState>(GameState.None);
-  const [websocket, setWebsocket] = React.useState<WebSocket | null>(null);
+  const [websocket, setWebsocket] = React.useState<
+    WebSocket | null | undefined
+  >(undefined);
   const [players, setPlayers] = useState<Player[]>([]);
   const [turnIndex, setTurnIndex] = useState<number>(0);
   const [round, setRoundIndex] = useState<number>(0);
@@ -69,8 +71,23 @@ export const Board = () => {
         case EventType.StartGame:
           setGameState(GameState.Playing);
           break;
+        case EventType.DrawFromDeck:
+          if (message.player !== displayName) {
+            addToast({
+              message: `${message.player} drew from the deck`,
+              type: "info",
+              id: generateId("toast", 12),
+            });
+            setDeckSize(deckSize - 1);
+          }
+          break;
         case EventType.DrawFromPile:
           if (message.player !== displayName) {
+            addToast({
+              message: `${message.player} drew from the pile`,
+              type: "info",
+              id: generateId("toast", 12),
+            });
             setPile(pile.slice(0, pile.length - 1));
           }
           break;
@@ -85,13 +102,20 @@ export const Board = () => {
           setRoundSummaryShown(true);
           break;
         case EventType.AdvanceTurn:
-          setTurnIndex(turnIndex + 1);
+          setTurnIndex((turnIndex + 1) % players.length);
+          break;
+        case EventType.PlayerWentOut:
+          addToast({
+            message: `${message.player} went out!`,
+            type: "info",
+            id: generateId("toast", 12),
+          });
           break;
         default:
           console.error("unhandled message", message);
       }
     },
-    [players, displayName, round, turnIndex, pile]
+    [players, displayName, round, turnIndex, addToast, pile]
   );
 
   const handleError = React.useCallback(
@@ -160,7 +184,9 @@ export const Board = () => {
       return ws;
     };
 
-    if (gameState === GameState.Lobby && !websocket) {
+    if (gameState === GameState.Lobby && websocket === undefined) {
+      console.log("Opening websocket");
+      setWebsocket(null);
       openWebsocket(userId, gameId).then((websocket) =>
         setWebsocket(websocket)
       );
@@ -228,6 +254,12 @@ export const Board = () => {
         "game-id": gameId,
         card: heldCards[heldIndex].type.toString(),
       },
+      body: JSON.stringify({
+        card: {
+          type: heldCards[heldIndex].type,
+          deck: heldCards[heldIndex].deck,
+        },
+      }),
     });
 
     if (!res.ok) {
@@ -339,12 +371,15 @@ export const Board = () => {
         "user-id": userId,
         "game-id": gameId,
       },
+      body: JSON.stringify({
+        cards: heldCards,
+      }),
     });
 
     if (!res.ok) {
       await handleError(res);
     }
-  }, [gameId, handleError, userId]);
+  }, [gameId, handleError, heldCards, userId]);
 
   const buttons = React.useMemo(() => {
     return (
@@ -357,7 +392,7 @@ export const Board = () => {
         </button>
         <button
           onClick={endTurn}
-          className="bg-teal-500 hover:bg-teal-700 text-white border border-teal-600 font-medium py-1 px-2 rounded-md drop-shadow"
+          className="bg-emerald-500 hover:bg-emerald-700 text-white border border-emerald-600 font-medium py-1 px-2 rounded-md drop-shadow"
         >
           End turn
         </button>
@@ -395,7 +430,7 @@ export const Board = () => {
     <div className="w-full h-full">
       <Toasts toasts={toasts} />
       <div className="text-gray-700 dark:text-white">
-        <div>Current turn: {players[turnIndex].displayName || "No one"}</div>
+        <div>Current turn: {players[turnIndex]?.displayName || "No one"}</div>
         <div>Current round: {round}</div>
       </div>
       <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
