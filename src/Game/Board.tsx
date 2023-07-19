@@ -33,8 +33,8 @@ enum GameState {
 
 type Player = {
   displayName: string;
-  score: number;
-  total: number;
+  roundScore: number;
+  totalScore: number;
 };
 
 export const Board = () => {
@@ -63,10 +63,16 @@ export const Board = () => {
       console.log("handling message", message);
       switch (message.type) {
         case EventType.JoinGame:
-          setPlayers([
+          const withAdditional = [
             ...players,
-            { displayName: message.displayName, score: 0, total: 0 },
-          ]);
+            { displayName: message.displayName, roundScore: 0, totalScore: 0 },
+          ];
+          setPlayers(withAdditional);
+          addToast({
+            message: `${message.displayName} joined the game`,
+            type: "info",
+            id: generateId("toast", 12),
+          });
           break;
         case EventType.StartGame:
           setGameState(GameState.Playing);
@@ -102,6 +108,7 @@ export const Board = () => {
           setRoundSummaryShown(true);
           break;
         case EventType.AdvanceTurn:
+          console.log(players);
           setTurnIndex((turnIndex + 1) % players.length);
           break;
         case EventType.PlayerWentOut:
@@ -111,11 +118,25 @@ export const Board = () => {
             id: generateId("toast", 12),
           });
           break;
+        case EventType.PlayerDoneForRound:
+          addToast({
+            message: `${message.displayName} ended round with ${message.roundScore}`,
+            type: "info",
+            id: generateId("toast", 12),
+          });
+          const index = players.findIndex(
+            (p) => p.displayName === message.displayName
+          );
+          const updatedPlayers = [...players];
+          updatedPlayers[index].roundScore = message.roundScore;
+          updatedPlayers[index].totalScore = message.totalScore;
+          setPlayers(updatedPlayers);
+          break;
         default:
           console.error("unhandled message", message);
       }
     },
-    [players, displayName, round, turnIndex, addToast, pile]
+    [players, displayName, round, turnIndex, addToast, deckSize, pile]
   );
 
   const handleError = React.useCallback(
@@ -142,7 +163,7 @@ export const Board = () => {
     const cookies = new Cookies();
     let id = cookies.get("unique-id");
     if (!id) {
-      id = generateId("uniq", 12);
+      id = generateId("plr", 12);
       cookies.set("unique-id", id, { path: "/" });
     }
     setUserId(id);
@@ -414,8 +435,8 @@ export const Board = () => {
             setPlayers(
               players.map((p) => ({
                 displayName: p,
-                score: 0,
-                total: 0,
+                roundScore: 0,
+                totalScore: 0,
               }))
             );
             setGameId(gameId);

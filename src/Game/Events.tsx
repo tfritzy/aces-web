@@ -10,6 +10,7 @@ export enum EventType {
   AdvanceTurn,
   PlayerWentOut,
   AdvanceRound,
+  PlayerDoneForRound,
   GameEndEvent,
 }
 
@@ -53,6 +54,13 @@ export type PlayerWentOutEvent = {
   player: string;
 };
 
+export type PlayerDoneForRoundEvent = {
+  type: EventType.PlayerDoneForRound;
+  displayName: string;
+  roundScore: number;
+  totalScore: number;
+};
+
 export type Message =
   | JoinGameEvent
   | StartGameEvent
@@ -61,4 +69,5 @@ export type Message =
   | DiscardEvent
   | DrawFromDeckEvent
   | DrawFromPileEvent
-  | PlayerWentOutEvent;
+  | PlayerWentOutEvent
+  | PlayerDoneForRoundEvent;

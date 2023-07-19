@@ -6,14 +6,14 @@ import { Button } from "components/Button";
 
 type PlayerProp = {
   displayName: string;
-  score: number;
-  total: number;
+  roundScore: number;
+  totalScore: number;
 };
 
 type Player = {
   displayName: string;
-  score: number;
-  total: number;
+  roundScore: number;
+  totalScore: number;
   placement: number;
   prevPlacement: number;
 };
@@ -37,14 +37,14 @@ export const RoundSummary = (props: RoundSummaryProps) => {
   React.useEffect(() => {
     const players = props.players.map((p) => ({
       displayName: p.displayName,
-      score: p.score,
-      total: p.total,
+      roundScore: p.roundScore,
+      totalScore: p.totalScore,
       placement: 0,
       prevPlacement: 0,
     }));
 
     players.sort((a, b) => {
-      return a.score - b.score;
+      return a.roundScore - b.roundScore;
     });
 
     players.forEach((p, i) => {
@@ -52,8 +52,8 @@ export const RoundSummary = (props: RoundSummaryProps) => {
     });
 
     players.sort((a, b) => {
-      const prevA = a.total - a.score;
-      const prevB = b.total - b.score;
+      const prevA = a.totalScore - a.roundScore;
+      const prevB = b.totalScore - b.roundScore;
       return prevA - prevB;
     });
 
@@ -119,12 +119,12 @@ export const RoundSummary = (props: RoundSummaryProps) => {
 
                   <div className="text-center">
                     <div className="text-xs leading-none">Round</div>
-                    <div className="font-bold">{p.score}</div>
+                    <div className="font-bold">{p.roundScore}</div>
                   </div>
 
                   <div className="text-center">
                     <div className="text-xs leading-none">Total</div>
-                    <div className="font-bold">{p.total}</div>
+                    <div className="font-bold">{p.totalScore}</div>
                   </div>
                 </div>
               </div>
