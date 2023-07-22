@@ -11,9 +11,9 @@ export type ToastProps = {
 const getColor = (type: ToastType) => {
   switch (type) {
     case "error":
-      return "#f56e6e";
+      return "#ffe169";
     case "info":
-      return "#5eead4";
+      return "white";
     default:
       return "black";
   }
@@ -24,8 +24,8 @@ const getIcon = (type: ToastType) => {
     case "error":
       return (
         <svg
-          width="20px"
-          height="20px"
+          width="16px"
+          height="16px"
           strokeWidth="1.5"
           viewBox="0 0 24 24"
           fill="none"
@@ -50,8 +50,8 @@ const getIcon = (type: ToastType) => {
     case "info":
       return (
         <svg
-          width="20px"
-          height="20px"
+          width="16px"
+          height="16px"
           strokeWidth="1.5"
           viewBox="0 0 24 24"
           fill="none"
@@ -76,7 +76,7 @@ export const Toast = (props: ToastProps) => {
   return (
     <div
       id="toast-simple"
-      className="flex flex-row items-center h-min p-3 rounded-lg shadow text-gray-400 divide-gray-700 space-x bg-gray-800 my-2 border border-gray-700"
+      className="flex flex-row items-center h-min p-2 px-3 rounded-md shadow text-gray-400 divide-gray-700 space-x bg-gray-800 border border-gray-700 w-min"
       role="alert"
       key={props.id}
     >
@@ -84,7 +84,7 @@ export const Toast = (props: ToastProps) => {
 
       <div
         style={{ color: getColor(props.type) }}
-        className="pl-4 text-sm font-normal"
+        className="pl-2 text-sm font-normal min-w-max"
       >
         {props.message}
       </div>

@@ -22,22 +22,22 @@ export const Button = (props: ButtonProps) => {
         disabled={props.pending}
       >
         {props.pending && (
-          <svg width="15" height="15">
+          <svg width="12" height="12">
             <circle
-              cx="7.5"
-              cy="7.5"
-              r="6"
+              cx="6"
+              cy="6"
+              r="5"
               stroke="white"
               strokeWidth="1"
               fill="none"
-              strokeDasharray="30, 200"
+              strokeDasharray="20, 200"
             >
               <animateTransform
                 attributeName="transform"
                 type="rotate"
                 repeatCount="indefinite"
                 dur=".75s"
-                values="0 7.5 7.5;360 7.5 7.5"
+                values="0 6 6;360 6 6"
                 keyTimes="0;1"
               ></animateTransform>
             </circle>

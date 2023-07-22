@@ -4,13 +4,14 @@ import { API_URL } from "Constants";
 import { Modal } from "components/Modal";
 import Cookies from "universal-cookie";
 import { Button } from "components/Button";
-
-type GameMenuProps = {
-  userId: string;
-  displayName: string;
-  setDisplayName: (displayName: string) => void;
-  onGameEnter: (gameId: string, players: string[]) => void;
-};
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "store/store";
+import { setDisplayName } from "store/selfSlice";
+import { GameState, setGameId } from "store/gameSlice";
+import { addPlayer } from "store/playerSlice";
+import { setState } from "store/gameSlice";
+import { handleError } from "helpers/handleError";
+import { ToastProps } from "components/Toast";
 
 const adjectives = [
   "Joyful",
@@ -58,10 +59,16 @@ const nouns = [
   "Puddlejumper",
 ];
 
+type GameMenuProps = {
+  addToast: (props: ToastProps) => void;
+};
+
 export const GameMenu = (props: GameMenuProps) => {
   const [joinGameInput, setJoinGameInput] = useState("");
   const [joinPending, setJoinPending] = useState(false);
   const [createPending, setCreatePending] = useState(false);
+  const self = useSelector((state: RootState) => state.self);
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     const cookies = new Cookies();
@@ -71,7 +78,8 @@ export const GameMenu = (props: GameMenuProps) => {
         adjectives[Math.floor(Math.random() * adjectives.length)]
       } ${nouns[Math.floor(Math.random() * nouns.length)]}`;
     }
-    props.setDisplayName(displayName);
+    dispatch(setDisplayName(displayName));
+
     // Mount effect
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -81,14 +89,18 @@ export const GameMenu = (props: GameMenuProps) => {
     fetch(`${API_URL}/api/create_game`, {
       method: "POST",
       headers: {
-        "user-id": props.userId,
-        "display-name": props.displayName,
+        "user-id": self.id,
+        "display-name": self.displayName,
       },
     }).then(async (res) => {
       setCreatePending(false);
       if (res.ok) {
         const body = await res.json();
-        handleGameEnter(body.id, [props.displayName]);
+        dispatch(setGameId(body.id));
+        dispatch(setState(GameState.Lobby));
+        dispatch(addPlayer({ displayName: self.displayName }));
+      } else {
+        handleError(res, props.addToast);
       }
     });
   };
@@ -98,25 +110,27 @@ export const GameMenu = (props: GameMenuProps) => {
     fetch(`${API_URL}/api/join_game`, {
       method: "POST",
       headers: {
-        "user-id": props.userId,
-        "display-name": props.displayName,
+        "user-id": self.id,
+        "display-name": self.displayName,
         "game-id": joinGameInput,
       },
     }).then(async (res) => {
       setJoinPending(false);
       if (res.ok) {
         const body = await res.json();
-        handleGameEnter(joinGameInput, body.players);
+        body.players.forEach((displayName: string) => {
+          dispatch(addPlayer({ displayName }));
+        });
+        dispatch(setGameId(joinGameInput));
+        dispatch(setState(GameState.Lobby));
+      } else {
+        handleError(res, props.addToast);
       }
     });
   };
 
-  const handleGameEnter = async (gameId: string, players: string[]) => {
-    props.onGameEnter(gameId, players);
-  };
-
   const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    props.setDisplayName(e.target.value);
+    dispatch(setDisplayName(e.target.value));
     const cookies = new Cookies();
     cookies.set("display-name", e.target.value, { path: "/" });
   };
@@ -135,7 +149,7 @@ export const GameMenu = (props: GameMenuProps) => {
               type="text"
               id="display_name"
               className="border drop-shadow text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
-              value={props.displayName}
+              value={self.displayName}
               onChange={handleDisplayNameChange}
             />
           </div>

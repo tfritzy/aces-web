@@ -11,7 +11,7 @@ export const useToasts = () => {
   const [toasts, setToasts] = React.useState<TimedToastProps[]>([]);
 
   const addToast = (props: ToastProps) => {
-    setToasts([...toasts, { ...props, addedAtMs: Date.now() }]);
+    setToasts([{ ...props, addedAtMs: Date.now() }, ...toasts]);
   };
 
   React.useEffect(() => {
@@ -19,7 +19,7 @@ export const useToasts = () => {
       const now = Date.now();
       setToasts(
         toasts.filter((toast) => {
-          return now - toast.addedAtMs < 3000;
+          return now - toast.addedAtMs < 5000;
         })
       );
     }, 1000);
@@ -39,7 +39,7 @@ export const Toasts = (props: ToastsProps) => {
 
   return (
     <div
-      className="flex flex-col items-center absolute w-96 top-0 left-1/2 transform -translate-x-1/2"
+      className="flex flex-col absolute min-h-screen min-w-full top-0 left-0 p-2 space-y-2"
       ref={animationParent}
     >
       {props.toasts.map((item) => (

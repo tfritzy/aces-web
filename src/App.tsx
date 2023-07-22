@@ -3,6 +3,8 @@ import "./index.css";
 import { Board } from "Game/Board";
 import { RoundSummary } from "Game/RoundSummary";
 import { Toast } from "components/Toast";
+import { Provider } from "react-redux";
+import { store } from "store/store";
 
 const players = [
   {
@@ -31,7 +33,9 @@ export const App = (): JSX.Element => {
   return (
     <div className="dark">
       <div className="w-full h-screen bg-white dark:bg-slate-900">
-        <Board />
+        <Provider store={store}>
+          <Board />
+        </Provider>
       </div>
     </div>
   );

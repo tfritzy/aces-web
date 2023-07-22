@@ -3,12 +3,8 @@ import React from "react";
 import { Modal } from "components/Modal";
 import autoAnimate from "@formkit/auto-animate";
 import { Button } from "components/Button";
-
-type PlayerProp = {
-  displayName: string;
-  roundScore: number;
-  totalScore: number;
-};
+import { useSelector } from "react-redux";
+import { RootState } from "store/store";
 
 type Player = {
   displayName: string;
@@ -18,12 +14,10 @@ type Player = {
   prevPlacement: number;
 };
 
-type RoundSummaryProps = {
-  players: PlayerProp[];
-  round: number;
-};
+export const RoundSummary = () => {
+  const game = useSelector((state: RootState) => state.game);
+  const gamePlayers = useSelector((state: RootState) => state.players.players);
 
-export const RoundSummary = (props: RoundSummaryProps) => {
   const parent = React.useRef(null);
   React.useEffect(() => {
     parent.current &&
@@ -35,7 +29,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
   const [sortedPlayers, setSortedPlayers] = React.useState<Player[]>([]);
 
   React.useEffect(() => {
-    const players = props.players.map((p) => ({
+    const players = gamePlayers.map((p) => ({
       displayName: p.displayName,
       roundScore: p.roundScore,
       totalScore: p.totalScore,
@@ -71,7 +65,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
     }, 1000);
 
     console.log("init", players);
-  }, [props.players]);
+  }, [gamePlayers]);
 
   const getChevron = (p: Player) => {
     if (p.placement === p.prevPlacement) {
@@ -88,7 +82,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
   return (
     <Modal width="small">
       <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-600">
-        <div className="font-semibold text-2xl text-center p-2">{`Round ${props.round} results`}</div>
+        <div className="font-semibold text-2xl text-center p-2">{`Round ${game.round} results`}</div>
 
         <div className="flex flex-col space-y-3 p-4 items-center" ref={parent}>
           {sortedPlayers.map((p, i) => {
