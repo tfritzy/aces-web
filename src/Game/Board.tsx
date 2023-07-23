@@ -27,6 +27,7 @@ import {
 } from "store/gameSlice";
 import { setUserId } from "store/selfSlice";
 import { generateId } from "helpers/generateId";
+import { PlayerList } from "Game/PlayerList";
 
 export const NULL_HELD_INDEX = -3;
 export const DECK_HELD_INDEX = -2;
@@ -82,6 +83,8 @@ const handleMessage = (
       dispatch(setState(GameState.TurnSummary));
       break;
     case EventType.AdvanceTurn:
+      console.log("advancing turn");
+      console.log("Players", state.players.players.length);
       dispatch(setTurn((state.game.turn + 1) % state.players.players.length));
       break;
     case EventType.PlayerWentOut:
@@ -126,7 +129,9 @@ const openWebsocket = async (
 
   let url = await res.json();
   let ws = new WebSocket(url.url);
-  ws.onmessage = onMessage;
+  ws.onmessage = (message) => {
+    onMessage(message);
+  };
 
   // Sleep for a bit so that the connection resolves and the player is known to pub sub.
   await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -147,6 +152,8 @@ const openWebsocket = async (
 };
 
 export const Board = () => {
+  const [recentMessage, setRecentMessage] =
+    React.useState<MessageEvent<any> | null>(null);
   const [heldIndex, setHeldIndex] = React.useState<number>(NULL_HELD_INDEX);
   const [dropSlotIndex, setDropSlotIndex] = React.useState<number | null>(null);
   const [heldCards, setHandCards] = React.useState<Card[]>([]);
@@ -195,27 +202,24 @@ export const Board = () => {
   }, []);
 
   useEffect(() => {
-    if (game.state === GameState.Lobby && websocket === undefined) {
-      console.log("Opening websocket");
-      setWebsocket(null);
-      const onMessage = (event: MessageEvent<any>) => {
-        handleMessage(JSON.parse(event.data), dispatch, addToast, rootState);
-      };
+    if (recentMessage) {
+      const message = JSON.parse(recentMessage.data);
+      console.log("New message", message);
+      setRecentMessage(null);
+      handleMessage(message, dispatch, addToast, rootState);
+    }
 
-      openWebsocket(self.id, game.id, onMessage, handleError).then(
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recentMessage]);
+
+  useEffect(() => {
+    if (game.state === GameState.Lobby && websocket === undefined) {
+      setWebsocket(null);
+      openWebsocket(self.id, game.id, setRecentMessage, handleError).then(
         (websocket) => setWebsocket(websocket)
       );
     }
-  }, [
-    addToast,
-    dispatch,
-    game.id,
-    game.state,
-    handleError,
-    rootState,
-    self.id,
-    websocket,
-  ]);
+  }, [game.id, game.state, handleError, self.id, websocket]);
 
   React.useEffect(() => {
     const getState = async () => {
@@ -433,6 +437,7 @@ export const Board = () => {
   if (game.state === GameState.None) {
     return (
       <>
+        <PlayerList />
         <GameMenu addToast={addToast} />
       </>
     );
@@ -441,6 +446,9 @@ export const Board = () => {
   return (
     <div className="w-full h-full">
       <Toasts toasts={toasts} />
+
+      <PlayerList />
+
       <div className="text-gray-700 dark:text-white">
         <div>Current turn: {players[game.turn]?.displayName || "No one"}</div>
         <div>Current round: {game.round}</div>

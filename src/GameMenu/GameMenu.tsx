@@ -41,7 +41,7 @@ const nouns = [
   "Starlight",
   "Sunshine",
   "Flutterby",
-  "Merrymaker",
+  "Smith",
   "Rainbow",
   "Sparkler",
   "Sweetheart",
@@ -52,10 +52,10 @@ const nouns = [
   "Giggler",
   "Bubbly",
   "Heartwarming",
-  "Laughter",
+  "Laugher",
   "Songbird",
   "Sunbeam",
-  "Happy-Go-Lucky",
+  "Mason",
   "Puddlejumper",
 ];
 
@@ -148,7 +148,7 @@ export const GameMenu = (props: GameMenuProps) => {
             <input
               type="text"
               id="display_name"
-              className="border drop-shadow text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
+              className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
               value={self.displayName}
               onChange={handleDisplayNameChange}
             />
@@ -159,7 +159,7 @@ export const GameMenu = (props: GameMenuProps) => {
               <input
                 type="text"
                 id="game"
-                className="border drop-shadow text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
+                className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
                 value={joinGameInput}
                 placeholder="AIE-JCS"
                 onChange={(e) => setJoinGameInput(e.target.value)}
