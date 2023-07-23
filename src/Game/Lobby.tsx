@@ -28,7 +28,7 @@ export const Lobby = (props: LobbyProps) => {
   };
 
   return (
-    <Modal>
+    <Modal width="w-64">
       <div className="text-gray-700 dark:text-white p-4">
         <div className="text-center mb-3 text-xl font-semibold">Lobby</div>
 

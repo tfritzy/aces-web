@@ -28,6 +28,7 @@ import {
 import { setUserId } from "store/selfSlice";
 import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
+import { Scorecard } from "./Scorecard";
 
 export const NULL_HELD_INDEX = -3;
 export const DECK_HELD_INDEX = -2;
@@ -157,6 +158,7 @@ export const Board = () => {
   const [heldIndex, setHeldIndex] = React.useState<number>(NULL_HELD_INDEX);
   const [dropSlotIndex, setDropSlotIndex] = React.useState<number | null>(null);
   const [heldCards, setHandCards] = React.useState<Card[]>([]);
+  const [scorecardShown, setScorecardShown] = React.useState<boolean>(false);
   const [websocket, setWebsocket] = React.useState<
     WebSocket | null | undefined
   >(undefined);
@@ -437,7 +439,6 @@ export const Board = () => {
   if (game.state === GameState.None) {
     return (
       <>
-        <PlayerList />
         <GameMenu addToast={addToast} />
       </>
     );
@@ -449,10 +450,13 @@ export const Board = () => {
 
       <PlayerList />
 
-      <div className="text-gray-700 dark:text-white">
-        <div>Current turn: {players[game.turn]?.displayName || "No one"}</div>
-        <div>Current round: {game.round}</div>
-      </div>
+      <div
+        className="absolute top-2 right-2 w-8 h-8 bg-gray-300"
+        onMouseEnter={() => setScorecardShown(true)}
+        onMouseLeave={() => setScorecardShown(false)}
+      />
+      {scorecardShown && <Scorecard />}
+
       <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div className="flex flex-row space-x-8">
           <Deck heldIndex={heldIndex} setHeldIndex={setHeldIndex} />

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 type Player = {
   displayName: string;
-  roundScore: number;
+  roundScores: number[];
   totalScore: number;
 };
 
@@ -23,19 +23,18 @@ export const playersSlice = createSlice({
 
       state.players.push({
         displayName,
-        roundScore: 0,
+        roundScores: [],
         totalScore: 0,
       });
     },
     updatePlayer: (state, action) => {
-      const { displayName, roundScore, totalScore } = action.payload;
+      const { displayName, totalScore } = action.payload;
 
       const player = state.players.find(
         (player) => player.displayName === displayName
       );
 
       if (player) {
-        player.roundScore = roundScore;
         player.totalScore = totalScore;
       }
     },

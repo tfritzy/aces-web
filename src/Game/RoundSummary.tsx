@@ -31,7 +31,7 @@ export const RoundSummary = () => {
   React.useEffect(() => {
     const players = gamePlayers.map((p) => ({
       displayName: p.displayName,
-      roundScore: p.roundScore,
+      roundScore: p.roundScores[game.round - 1],
       totalScore: p.totalScore,
       placement: 0,
       prevPlacement: 0,
@@ -80,7 +80,7 @@ export const RoundSummary = () => {
   };
 
   return (
-    <Modal width="small">
+    <Modal width="w-64">
       <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-600">
         <div className="font-semibold text-2xl text-center p-2">{`Round ${game.round} results`}</div>
 

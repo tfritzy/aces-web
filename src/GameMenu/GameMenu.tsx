@@ -136,7 +136,7 @@ export const GameMenu = (props: GameMenuProps) => {
   };
 
   return (
-    <Modal>
+    <Modal width="w-80">
       <div className="p-4">
         <div className="text-3xl text-center mb-4">Aces</div>
 
