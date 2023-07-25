@@ -1,10 +1,10 @@
 import React from "react";
 import "./index.css";
 import { Board } from "Game/Board";
-import { RoundSummary } from "Game/RoundSummary";
-import { Toast } from "components/Toast";
 import { Provider } from "react-redux";
 import { store } from "store/store";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { GameMenu } from "GameMenu/GameMenu";
 
 const players = [
   {
@@ -29,14 +29,27 @@ const players = [
   },
 ];
 
-export const App = (): JSX.Element => {
-  return (
-    <div className="">
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <Provider store={store}>
+        <GameMenu />
+      </Provider>
+    ),
+  },
+  {
+    path: "game/:gameId",
+    element: (
       <div className="w-full h-screen bg-white dark:bg-slate-900">
         <Provider store={store}>
           <Board />
         </Provider>
       </div>
-    </div>
-  );
+    ),
+  },
+]);
+
+export const App = (): JSX.Element => {
+  return <RouterProvider router={router} />;
 };

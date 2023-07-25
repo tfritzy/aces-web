@@ -2,10 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import { Card } from "Game/Types";
 
 export enum GameState {
-  None,
-  Lobby,
-  TurnSummary,
+  Invalid,
+  Setup,
   Playing,
+  Finished,
+  TurnSummary,
 }
 
 type Game = {
@@ -14,13 +15,15 @@ type Game = {
   round: number;
   turn: number;
   pile: Card[];
+  hand: Card[];
   deckSize: number;
 };
 
 const initialGameState: Game = {
   id: "",
-  state: GameState.None,
+  state: GameState.Invalid,
   pile: [],
+  hand: [],
   deckSize: 0,
   round: 0,
   turn: 0,
@@ -49,8 +52,8 @@ export const gameSlice = createSlice({
       const size = action.payload;
       state.deckSize = size;
     },
-    incrementRound: (state) => {
-      state.round++;
+    setRound: (state, action) => {
+      state.round = action.payload;
     },
     setTurn: (state, action) => {
       const turn = action.payload;
@@ -59,6 +62,10 @@ export const gameSlice = createSlice({
     setGameId: (state, action) => {
       const id = action.payload;
       state.id = id;
+    },
+    setHand: (state, action) => {
+      const hand = action.payload;
+      state.hand = hand;
     },
   },
 });
@@ -69,7 +76,8 @@ export const {
   addToPile,
   removeTopFromPile,
   setDeckSize,
-  incrementRound,
+  setRound,
   setTurn,
+  setHand,
   setPile,
 } = gameSlice.actions;

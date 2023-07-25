@@ -8,10 +8,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { setDisplayName } from "store/selfSlice";
 import { GameState, setGameId } from "store/gameSlice";
-import { addPlayer } from "store/playerSlice";
+import { addPlayer, setPlayers } from "store/playerSlice";
 import { setState } from "store/gameSlice";
 import { handleError } from "helpers/handleError";
-import { ToastProps } from "components/Toast";
+import { Toasts, useToasts } from "components/Toasts";
+import { useNavigate } from "react-router-dom";
 
 const adjectives = [
   "Joyful",
@@ -59,16 +60,14 @@ const nouns = [
   "Puddlejumper",
 ];
 
-type GameMenuProps = {
-  addToast: (props: ToastProps) => void;
-};
-
-export const GameMenu = (props: GameMenuProps) => {
+export const GameMenu = () => {
   const [joinGameInput, setJoinGameInput] = useState("");
   const [joinPending, setJoinPending] = useState(false);
   const [createPending, setCreatePending] = useState(false);
   const self = useSelector((state: RootState) => state.self);
   const dispatch = useDispatch();
+  const { toasts, addToast } = useToasts();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const cookies = new Cookies();
@@ -97,10 +96,12 @@ export const GameMenu = (props: GameMenuProps) => {
       if (res.ok) {
         const body = await res.json();
         dispatch(setGameId(body.id));
-        dispatch(setState(GameState.Lobby));
-        dispatch(addPlayer({ displayName: self.displayName }));
+        dispatch(setState(GameState.Setup));
+        dispatch(setPlayers([{ displayName: self.displayName }]));
+
+        return navigate(`/game/${body.id}`);
       } else {
-        handleError(res, props.addToast);
+        handleError(res, addToast);
       }
     });
   };
@@ -122,9 +123,11 @@ export const GameMenu = (props: GameMenuProps) => {
           dispatch(addPlayer({ displayName }));
         });
         dispatch(setGameId(joinGameInput));
-        dispatch(setState(GameState.Lobby));
+        dispatch(setState(GameState.Setup));
+
+        return navigate(`/game/${joinGameInput}`);
       } else {
-        handleError(res, props.addToast);
+        handleError(res, addToast);
       }
     });
   };
@@ -136,54 +139,57 @@ export const GameMenu = (props: GameMenuProps) => {
   };
 
   return (
-    <Modal width="w-80">
-      <div className="p-4">
-        <div className="text-3xl text-center mb-4">Aces</div>
+    <>
+      <Toasts toasts={toasts} />
+      <Modal width="w-80">
+        <div className="p-4">
+          <div className="text-3xl text-center mb-4">Aces</div>
 
-        <div className="flex flex-col space-y-8 divide-y divide-gray-300 dark:divide-gray-600">
-          <div>
-            <label className="block mb-2 text-sm font-medium">
-              Display name
-            </label>
-            <input
-              type="text"
-              id="display_name"
-              className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
-              value={self.displayName}
-              onChange={handleDisplayNameChange}
-            />
-          </div>
-
-          <div className="pt-8 flex flex-col space-y-3">
-            <div className="grow">
+          <div className="flex flex-col space-y-8 divide-y divide-gray-300 dark:divide-gray-600">
+            <div>
+              <label className="block mb-2 text-sm font-medium">
+                Display name
+              </label>
               <input
                 type="text"
-                id="game"
+                id="display_name"
                 className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
-                value={joinGameInput}
-                placeholder="AIE-JCS"
-                onChange={(e) => setJoinGameInput(e.target.value)}
+                value={self.displayName}
+                onChange={handleDisplayNameChange}
               />
             </div>
 
-            <Button
-              text="Join"
-              onClick={handleJoinGame}
-              pending={joinPending}
-              type="primary"
-            />
+            <div className="pt-8 flex flex-col space-y-3">
+              <div className="grow">
+                <input
+                  type="text"
+                  id="game"
+                  className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
+                  value={joinGameInput}
+                  placeholder="AIE-JCS"
+                  onChange={(e) => setJoinGameInput(e.target.value)}
+                />
+              </div>
 
-            <div className="text-gray-400 text-center">— or —</div>
+              <Button
+                text="Join"
+                onClick={handleJoinGame}
+                pending={joinPending}
+                type="primary"
+              />
 
-            <Button
-              onClick={handleCreateGame}
-              text="Create Game"
-              pending={createPending}
-              type="primary"
-            />
+              <div className="text-gray-400 text-center">— or —</div>
+
+              <Button
+                onClick={handleCreateGame}
+                text="Create Game"
+                pending={createPending}
+                type="primary"
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
+    </>
   );
 };

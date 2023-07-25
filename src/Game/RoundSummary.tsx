@@ -14,7 +14,11 @@ type Player = {
   prevPlacement: number;
 };
 
-export const RoundSummary = () => {
+type RoundSummaryProps = {
+  onContinue: () => void;
+};
+
+export const RoundSummary = (props: RoundSummaryProps) => {
   const game = useSelector((state: RootState) => state.game);
   const gamePlayers = useSelector((state: RootState) => state.players.players);
 
@@ -65,7 +69,7 @@ export const RoundSummary = () => {
     }, 1000);
 
     console.log("init", players);
-  }, [gamePlayers]);
+  }, [game.round, gamePlayers]);
 
   const getChevron = (p: Player) => {
     if (p.placement === p.prevPlacement) {
@@ -80,7 +84,7 @@ export const RoundSummary = () => {
   };
 
   return (
-    <Modal width="w-64">
+    <Modal width="w-80">
       <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-600">
         <div className="font-semibold text-2xl text-center p-2">{`Round ${game.round} results`}</div>
 
@@ -127,13 +131,7 @@ export const RoundSummary = () => {
         </div>
 
         <div className="flex justify-end p-2">
-          <Button
-            onClick={() => {
-              console.log("clicked");
-            }}
-            text="Next round"
-            type="primary"
-          />
+          <Button onClick={props.onContinue} text="Next round" type="primary" />
         </div>
       </div>
     </Modal>

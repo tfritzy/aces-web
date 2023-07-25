@@ -38,7 +38,10 @@ export const playersSlice = createSlice({
         player.totalScore = totalScore;
       }
     },
+    setPlayers: (state, action) => {
+      state.players = action.payload;
+    },
   },
 });
 
-export const { addPlayer, updatePlayer } = playersSlice.actions;
+export const { addPlayer, updatePlayer, setPlayers } = playersSlice.actions;
