@@ -4,6 +4,53 @@ type CopyBoxProps = {
   text: string;
 };
 
+const copyIcon = (
+  <svg
+    width="24px"
+    height="24px"
+    strokeWidth="1.5"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    color="#10b981"
+  >
+    <path
+      d="M19.4 20H9.6a.6.6 0 01-.6-.6V9.6a.6.6 0 01.6-.6h9.8a.6.6 0 01.6.6v9.8a.6.6 0 01-.6.6z"
+      stroke="#10b981"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    ></path>
+    <path
+      d="M15 9V4.6a.6.6 0 00-.6-.6H4.6a.6.6 0 00-.6.6v9.8a.6.6 0 00.6.6H9"
+      stroke="#10b981"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    ></path>
+  </svg>
+);
+
+const checkIcon = (
+  <svg
+    width="24px"
+    height="24px"
+    strokeWidth="1.5"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    color="#10b981"
+  >
+    <path
+      d="M5 13l4 4L19 7"
+      stroke="#10b981"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    ></path>
+  </svg>
+);
+
 export const CopyBox = (props: CopyBoxProps) => {
   const [copied, setCopied] = React.useState(false);
   const [hovered, setHovered] = React.useState(false);
@@ -27,25 +74,13 @@ export const CopyBox = (props: CopyBoxProps) => {
             <span>{props.text}</span>
           </div>
           <span className="text-gray-500 w-5 h-5 hover:text-gray-400 duration-200">
-            <img className="fill-blue-500" src="Icons/copy.svg" alt="Copy" />
+            {copyIcon}
           </span>
         </div>
       </div>
       {hovered && (
         <div className="flex flex-row items-center space-x-1 absolute -top-9 right-0 bg-gray-800 rounded-md text-sm px-2 py-1 text-white">
-          {copied ? (
-            <img
-              src="Icons/check.svg"
-              alt="Check"
-              style={{ width: 18, height: 20 }}
-            />
-          ) : (
-            <img
-              src="Icons/copy.svg"
-              alt="Check"
-              style={{ width: 20, height: 20 }}
-            />
-          )}
+          {copied ? checkIcon : copyIcon}
 
           <span>{copied ? "Copied" : "Click to copy"}</span>
         </div>

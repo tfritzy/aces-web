@@ -13,6 +13,7 @@ import { setState } from "store/gameSlice";
 import { handleError } from "helpers/handleError";
 import { Toasts, useToasts } from "components/Toasts";
 import { useNavigate } from "react-router-dom";
+import { GameStateForPlayer } from "Game/Types";
 
 const adjectives = [
   "Joyful",
@@ -88,8 +89,9 @@ export const GameMenu = () => {
     fetch(`${API_URL}/api/create_game`, {
       method: "POST",
       headers: {
-        "user-id": self.id,
+        token: self.token,
         "display-name": self.displayName,
+        "player-id": self.id,
       },
     }).then(async (res) => {
       setCreatePending(false);
@@ -111,16 +113,17 @@ export const GameMenu = () => {
     fetch(`${API_URL}/api/join_game`, {
       method: "POST",
       headers: {
-        "user-id": self.id,
+        token: self.token,
         "display-name": self.displayName,
         "game-id": joinGameInput,
+        "player-id": self.id,
       },
     }).then(async (res) => {
       setJoinPending(false);
       if (res.ok) {
-        const body = await res.json();
-        body.players.forEach((displayName: string) => {
-          dispatch(addPlayer({ displayName }));
+        const body: GameStateForPlayer = await res.json();
+        body.players.forEach((p) => {
+          dispatch(addPlayer(p));
         });
         dispatch(setGameId(joinGameInput));
         dispatch(setState(GameState.Setup));

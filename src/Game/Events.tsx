@@ -17,6 +17,7 @@ export enum EventType {
 export type JoinGameEvent = {
   type: EventType.JoinGame;
   i: number;
+  playerId: string;
   displayName: string;
 };
 
@@ -41,31 +42,31 @@ export type DiscardEvent = {
   type: EventType.Discard;
   i: number;
   card: Card;
-  player: string;
+  playerId: string;
 };
 
 export type DrawFromDeckEvent = {
   type: EventType.DrawFromDeck;
   i: number;
-  player: string;
+  playerId: string;
 };
 
 export type DrawFromPileEvent = {
   type: EventType.DrawFromPile;
   i: number;
-  player: string;
+  playerId: string;
 };
 
 export type PlayerWentOutEvent = {
   type: EventType.PlayerWentOut;
   i: number;
-  player: string;
+  playerId: string;
 };
 
 export type PlayerDoneForRoundEvent = {
   type: EventType.PlayerDoneForRound;
   i: number;
-  displayName: string;
+  playerId: string;
   roundScore: number;
   totalScore: number;
 };

@@ -1,10 +1,12 @@
 import React from "react";
 import "./index.css";
 import { Board } from "Game/Board";
-import { Provider } from "react-redux";
-import { store } from "store/store";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { GameMenu } from "GameMenu/GameMenu";
+import { useDispatch } from "react-redux";
+import Cookies from "universal-cookie";
+import { generateId } from "helpers/generateId";
+import { setToken, setUserId } from "store/selfSlice";
 
 const players = [
   {
@@ -32,24 +34,45 @@ const players = [
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <Provider store={store}>
-        <GameMenu />
-      </Provider>
-    ),
+    element: <GameMenu />,
   },
   {
     path: "game/:gameId",
     element: (
-      <div className="w-full h-screen bg-white dark:bg-slate-900">
-        <Provider store={store}>
-          <Board />
-        </Provider>
+      <div>
+        <Board />
       </div>
     ),
   },
 ]);
 
 export const App = (): JSX.Element => {
-  return <RouterProvider router={router} />;
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    const cookies = new Cookies();
+    let token = cookies.get("token");
+    if (!token) {
+      token = generateId("tkn", 12);
+      cookies.set("token", token, { path: "/" });
+    }
+    dispatch(setToken(token));
+
+    let playerId = cookies.get("playerId");
+    if (!playerId) {
+      playerId = generateId("plyr", 12);
+      cookies.set("playerId", playerId, { path: "/" });
+    }
+    dispatch(setUserId(playerId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="dark">
+      <div className="w-full h-screen bg-white dark:bg-slate-900">
+        <base href="/" />
+        <RouterProvider router={router} />
+      </div>
+    </div>
+  );
 };

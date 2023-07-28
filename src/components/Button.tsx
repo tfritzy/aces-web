@@ -1,6 +1,3 @@
-import { CSSProperties } from "react";
-import ScaleLoader from "react-spinners/ScaleLoader";
-
 type ButtonProps = {
   onClick: () => void;
   text: string;
@@ -11,7 +8,7 @@ type ButtonProps = {
 export const Button = (props: ButtonProps) => {
   const typeClasses =
     props.type === "primary"
-      ? "bg-emerald-500 border-emerald-600 text-white hover:border-emerald-200 "
+      ? "bg-emerald-400 border-emerald-500 text-white hover:border-emerald-200 "
       : "bg-white border-gray-200 text-gray-800 hover:border-black";
 
   return (
@@ -27,10 +24,10 @@ export const Button = (props: ButtonProps) => {
               cx="6"
               cy="6"
               r="5"
-              stroke="white"
               strokeWidth="1"
               fill="none"
               strokeDasharray="20, 200"
+              className="stroke-current"
             >
               <animateTransform
                 attributeName="transform"

@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-type Player = {
+export type Player = {
+  id: string;
   displayName: string;
   roundScores: number[];
   totalScore: number;
@@ -18,24 +19,22 @@ export const playersSlice = createSlice({
   name: "players",
   initialState: initialPlayersState,
   reducers: {
-    addPlayer: (state, action) => {
-      const { displayName } = action.payload;
-
-      state.players.push({
-        displayName,
-        roundScores: [],
-        totalScore: 0,
-      });
+    addPlayer: (state, action: { payload: Player }) => {
+      state.players.push(action.payload);
     },
-    updatePlayer: (state, action) => {
-      const { displayName, totalScore } = action.payload;
-
+    updatePlayer: (
+      state,
+      action: {
+        payload: { playerId: string; totalScore: number; roundScore: number };
+      }
+    ) => {
       const player = state.players.find(
-        (player) => player.displayName === displayName
+        (player) => player.id === action.payload.playerId
       );
 
       if (player) {
-        player.totalScore = totalScore;
+        player.totalScore = action.payload.totalScore;
+        player.roundScores.push(action.payload.roundScore);
       }
     },
     setPlayers: (state, action) => {

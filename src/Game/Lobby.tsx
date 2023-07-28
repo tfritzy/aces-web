@@ -7,7 +7,7 @@ import { Modal } from "components/Modal";
 type LobbyProps = {
   gameId: string;
   players: { displayName: string }[];
-  userId: string;
+  token: string;
   onError: (error: string) => void;
 };
 
@@ -16,7 +16,7 @@ export const Lobby = (props: LobbyProps) => {
     fetch(`${API_URL}/api/start_game`, {
       method: "POST",
       headers: {
-        "user-id": props.userId,
+        token: props.token,
         "game-id": props.gameId,
       },
     }).then(async (res) => {

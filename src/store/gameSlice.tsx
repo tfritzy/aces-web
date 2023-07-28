@@ -33,39 +33,32 @@ export const gameSlice = createSlice({
   name: "game",
   initialState: initialGameState,
   reducers: {
-    setState: (state, action) => {
-      const newState = action.payload;
-      state.state = newState;
+    setState: (state, action: { payload: GameState }) => {
+      state.state = action.payload;
     },
-    addToPile: (state, action) => {
-      const card = action.payload;
-      state.pile.push(card);
+    addToPile: (state, action: { payload: Card }) => {
+      state.pile.push(action.payload);
     },
     removeTopFromPile: (state) => {
       state.pile.pop();
     },
-    setPile: (state, action) => {
-      const pile = action.payload;
-      state.pile = pile;
+    setPile: (state, action: { payload: Card[] }) => {
+      state.pile = action.payload;
     },
-    setDeckSize: (state, action) => {
-      const size = action.payload;
-      state.deckSize = size;
+    setDeckSize: (state, action: { payload: number }) => {
+      state.deckSize = action.payload;
     },
-    setRound: (state, action) => {
+    setRound: (state, action: { payload: number }) => {
       state.round = action.payload;
     },
-    setTurn: (state, action) => {
-      const turn = action.payload;
-      state.turn = turn;
+    setTurn: (state, action: { payload: number }) => {
+      state.turn = action.payload;
     },
-    setGameId: (state, action) => {
-      const id = action.payload;
-      state.id = id;
+    setGameId: (state, action: { payload: string }) => {
+      state.id = action.payload;
     },
-    setHand: (state, action) => {
-      const hand = action.payload;
-      state.hand = hand;
+    setHand: (state, action: { payload: Card[] }) => {
+      state.hand = action.payload;
     },
   },
 });

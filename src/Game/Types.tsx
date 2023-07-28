@@ -1,3 +1,6 @@
+import { GameState } from "store/gameSlice";
+import { Player } from "store/playerSlice";
+
 export type Card = {
   type: CardType;
   suit: Suit;
@@ -111,4 +114,14 @@ export const cardBack = {
   suit: Suit.SUITLESS,
   value: CardValue.JOKER,
   deck: 0,
+};
+
+export type GameStateForPlayer = {
+  hand: Card[];
+  deckSize: number;
+  pile: Card[];
+  players: Player[];
+  turn: number;
+  round: number;
+  state: GameState;
 };

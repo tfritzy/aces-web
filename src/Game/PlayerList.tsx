@@ -10,29 +10,36 @@ type PlayerStatusProps = {
 
 export const PlayerStatus = (props: PlayerStatusProps) => {
   const turn = useSelector((state: RootState) => state.game.turn);
+  const self = useSelector((state: RootState) => state.self);
 
   return (
     <div
-      className="flex flex-row items-center space-x-4"
+      className="flex flex-row items-center space-x-3"
       key={props.displayName}
     >
       {turn === props.index && (
-        <div className="rounded-full bg-emerald-300 w-4 h-4" />
+        <div className="text-3xl text-emerald-300">➜</div>
       )}
-      <div className="rounded-full flex flex-row items-center justify-between bg-slate-50 w-64 shadow-sm p-1 dark:bg-gray-700">
-        <div className="shadow-sm w-12 h-12 rounded-full">
-          <div className="overflow-hidden w-12 h-12 rounded-full bg-white dark:bg-gray-600">
+      <div className="rounded-lg flex flex-row space-x-1 items-center bg-slate-50  shadow-sm border border-gray-200 dark:border-gray-500 dark:bg-gray-700 px-4 overflow-hidden">
+        <div className="w-12 h-12 rounded-lg">
+          <div className="overflow-hidden w-12 h-12 rounded-lg">
             <img
               src={getDefaultAvatar(props.index)}
-              className="rounded-full w-10 h-12 mx-auto translate-y-2 -translate-x-1"
+              className="rounded-lg w-10 h-12 mx-auto translate-y-2 -translate-x-1"
               alt="avatar"
             />
           </div>
         </div>
 
-        <div className="text-left">{props.displayName}</div>
+        <div className="text-gray-800 dark:text-white">{props.displayName}</div>
 
-        <div className="font-bold">{props.score}</div>
+        {props.displayName === self.displayName && (
+          <div className="relative">
+            <div className="absolute rotate-[40deg] bg-emerald-300 w-16 text-center -top-6 -right-9 text-sm text-emerald-700">
+              You
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -54,9 +61,7 @@ export const PlayerList = () => {
 
   return (
     <div className="absolute top-2 left-2">
-      <div className="flex flex-col space-y-3 p-4 items-center">
-        {playerStatuses}
-      </div>
+      <div className="flex flex-col space-y-3 p-4">{playerStatuses}</div>
     </div>
   );
 };

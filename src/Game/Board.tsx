@@ -26,7 +26,7 @@ import {
   setHand,
   setGameId,
 } from "store/gameSlice";
-import { setUserId } from "store/selfSlice";
+import { setToken, setUserId } from "store/selfSlice";
 import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
 import { Scorecard } from "./Scorecard";
@@ -42,10 +42,21 @@ const handleMessage = (
   addToast: (props: ToastProps) => void,
   state: RootState
 ) => {
-  console.log("handling message", EventType[message.type], message);
+  console.log(
+    "handling message",
+    EventType[message.type],
+    JSON.stringify(message)
+  );
   switch (message.type) {
     case EventType.JoinGame:
-      dispatch(addPlayer({ displayName: message.displayName }));
+      dispatch(
+        addPlayer({
+          id: message.playerId,
+          displayName: message.displayName,
+          roundScores: [],
+          totalScore: 0,
+        })
+      );
       addToast({
         message: `${message.displayName} joined the game`,
         type: "info",
@@ -56,9 +67,9 @@ const handleMessage = (
       dispatch(setState(GameState.Playing));
       break;
     case EventType.DrawFromDeck:
-      if (message.player !== state.self.displayName) {
+      if (message.playerId !== state.self.id) {
         addToast({
-          message: `${message.player} drew from the deck`,
+          message: `${message.playerId} drew from the deck`,
           type: "info",
           id: generateId("toast", 12),
         });
@@ -66,9 +77,9 @@ const handleMessage = (
       }
       break;
     case EventType.DrawFromPile:
-      if (message.player !== state.self.displayName) {
+      if (message.playerId !== state.self.id) {
         addToast({
-          message: `${message.player} drew from the pile`,
+          message: `${message.playerId} drew from the pile`,
           type: "info",
           id: generateId("toast", 12),
         });
@@ -76,7 +87,7 @@ const handleMessage = (
       }
       break;
     case EventType.Discard:
-      if (message.player !== state.self.displayName) {
+      if (message.playerId !== state.self.id) {
         const card = message.card;
         dispatch(addToPile(card));
       }
@@ -90,19 +101,19 @@ const handleMessage = (
       break;
     case EventType.PlayerWentOut:
       addToast({
-        message: `${message.player} went out!`,
+        message: `${message.playerId} went out!`,
         type: "info",
         id: generateId("toast", 12),
       });
       break;
     case EventType.PlayerDoneForRound:
       addToast({
-        message: `${message.displayName} ended round with ${message.roundScore}`,
+        message: `${message.playerId} ended round with ${message.roundScore}`,
         type: "info",
         id: generateId("toast", 12),
       });
       updatePlayer({
-        displayName: message.displayName,
+        playerId: message.playerId,
         roundScore: message.roundScore,
         totalScore: message.totalScore,
       });
@@ -113,14 +124,14 @@ const handleMessage = (
 };
 
 const openWebsocket = async (
-  userId: string,
+  playerId: string,
   gameId: string,
   onMessage: (message: MessageEvent<any>) => void,
   handleError: (response: Response) => void
 ) => {
   let res = await fetch(`${API_URL}/api/negotiate`, {
     headers: {
-      "user-id": userId,
+      "user-id": playerId,
       "game-id": gameId,
     },
   });
@@ -140,7 +151,7 @@ const openWebsocket = async (
   let joinResp = await fetch(`${API_URL}/api/join_game_group`, {
     method: "POST",
     headers: {
-      "user-id": userId,
+      "user-id": playerId,
       "game-id": gameId,
     },
   });
@@ -195,10 +206,10 @@ export const Board = (props: BoardProps) => {
   );
 
   React.useEffect(() => {
-    const reconnect = async (userId: string) => {
+    const reconnect = async (token: string) => {
       let gameState = await fetch(`${API_URL}/api/get_game_state`, {
         headers: {
-          "user-id": userId,
+          token: token,
           "game-id": gameId,
         },
       });
@@ -219,26 +230,19 @@ export const Board = (props: BoardProps) => {
         // TODO: Score
         dispatch(
           setPlayers(
-            state.players.map((p: string) => ({
-              displayName: p,
-              roundScores: [],
-              totalScore: 0,
+            state.players.map((p: any) => ({
+              id: p.id,
+              displayName: p.displayName,
+              roundScores: p.scorePerRound,
+              totalScore: p.score,
             }))
           )
         );
       }
     };
 
-    const cookies = new Cookies();
-    let id = cookies.get("unique-id");
-    if (!id) {
-      id = generateId("plr", 12);
-      cookies.set("unique-id", id, { path: "/" });
-    }
-    dispatch(setUserId(id));
-
     if (game.state === GameState.Invalid) {
-      reconnect(id);
+      reconnect(self.token);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -267,7 +271,7 @@ export const Board = (props: BoardProps) => {
     const getState = async () => {
       let joinResp = await fetch(`${API_URL}/api/get_game_state`, {
         headers: {
-          "user-id": self.id,
+          token: self.token,
           "game-id": gameId || "",
         },
       });
@@ -282,13 +286,13 @@ export const Board = (props: BoardProps) => {
         dispatch(setDeckSize(state.deckSize));
       });
     }
-  }, [dispatch, gameId, game.state, self.id]);
+  }, [dispatch, game.state, gameId, self.token]);
 
   const drawFromPile = React.useCallback(async () => {
     var res = await fetch(`${API_URL}/api/draw_from_pile`, {
       method: "POST",
       headers: {
-        "user-id": self.id,
+        token: self.token,
         "game-id": gameId,
       },
     });
@@ -298,13 +302,13 @@ export const Board = (props: BoardProps) => {
     }
 
     return res;
-  }, [gameId, handleError, self.id]);
+  }, [gameId, handleError, self.token]);
 
   const drawFromDeck = React.useCallback(async () => {
     var res = await fetch(`${API_URL}/api/draw_from_deck`, {
       method: "POST",
       headers: {
-        "user-id": self.id,
+        token: self.token,
         "game-id": gameId,
       },
     });
@@ -314,13 +318,13 @@ export const Board = (props: BoardProps) => {
     }
 
     return res;
-  }, [gameId, handleError, self.id]);
+  }, [gameId, handleError, self.token]);
 
   const discard = React.useCallback(async () => {
     var res = await fetch(`${API_URL}/api/discard`, {
       method: "POST",
       headers: {
-        "user-id": self.id,
+        token: self.token,
         "game-id": gameId,
         card: heldCards[heldIndex].type.toString(),
       },
@@ -337,7 +341,7 @@ export const Board = (props: BoardProps) => {
     }
 
     return res;
-  }, [gameId, handleError, heldCards, heldIndex, self.id]);
+  }, [gameId, handleError, heldCards, heldIndex, self.token]);
 
   const handleSetDropSlotIndex = React.useCallback(
     (index: number | null) => {
@@ -430,7 +434,7 @@ export const Board = (props: BoardProps) => {
     var res = await fetch(`${API_URL}/api/end_turn`, {
       method: "POST",
       headers: {
-        "user-id": self.id,
+        token: self.token,
         "game-id": gameId,
       },
     });
@@ -439,14 +443,14 @@ export const Board = (props: BoardProps) => {
     if (!res.ok) {
       await handleError(res);
     }
-  }, [gameId, handleError, self.id]);
+  }, [gameId, handleError, self.token]);
 
   const goOut = React.useCallback(async () => {
     setGoOutPending(true);
     var res = await fetch(`${API_URL}/api/go_out`, {
       method: "POST",
       headers: {
-        "user-id": self.id,
+        token: self.token,
         "game-id": gameId,
       },
       body: JSON.stringify({
@@ -458,7 +462,7 @@ export const Board = (props: BoardProps) => {
     if (!res.ok) {
       await handleError(res);
     }
-  }, [gameId, handleError, heldCards, self.id]);
+  }, [gameId, handleError, heldCards, self.token]);
 
   const buttons = React.useMemo(() => {
     return (
@@ -518,7 +522,7 @@ export const Board = (props: BoardProps) => {
 
       {game.state === GameState.Setup && (
         <Lobby
-          userId={self.id}
+          token={self.token}
           gameId={gameId}
           players={players}
           onError={(message) => {
