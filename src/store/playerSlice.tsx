@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export type Player = {
   id: string;
   displayName: string;
-  roundScores: number[];
+  scorePerRound: number[];
   totalScore: number;
 };
 
@@ -34,7 +34,12 @@ export const playersSlice = createSlice({
 
       if (player) {
         player.totalScore = action.payload.totalScore;
-        player.roundScores.push(action.payload.roundScore);
+
+        if (!player.scorePerRound) {
+          player.scorePerRound = [];
+        }
+
+        player.scorePerRound.push(action.payload.roundScore);
       }
     },
     setPlayers: (state, action) => {

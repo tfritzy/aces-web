@@ -15,7 +15,7 @@ export const Scorecard = () => {
         {players.map((p, j) => {
           return (
             <td className={cellClasses} key={j}>
-              {p.roundScores[i]}
+              {p.scorePerRound[i]}
             </td>
           );
         })}

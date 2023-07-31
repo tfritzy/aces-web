@@ -53,7 +53,7 @@ const handleMessage = (
         addPlayer({
           id: message.playerId,
           displayName: message.displayName,
-          roundScores: [],
+          scorePerRound: [],
           totalScore: 0,
         })
       );
@@ -233,7 +233,7 @@ export const Board = (props: BoardProps) => {
             state.players.map((p: any) => ({
               id: p.id,
               displayName: p.displayName,
-              roundScores: p.scorePerRound,
+              scorePerRound: p.scorePerRound,
               totalScore: p.score,
             }))
           )
@@ -241,11 +241,13 @@ export const Board = (props: BoardProps) => {
       }
     };
 
-    if (game.state === GameState.Invalid) {
+    if (game.state === GameState.Invalid && self.token) {
       reconnect(self.token);
     }
+
+    // Going for a mount effect, but token starts null.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [self.token]);
 
   useEffect(() => {
     if (recentMessage) {
