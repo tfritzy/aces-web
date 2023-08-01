@@ -8,14 +8,14 @@ type ButtonProps = {
 export const Button = (props: ButtonProps) => {
   const typeClasses =
     props.type === "primary"
-      ? "bg-emerald-400 border-emerald-500 text-white hover:border-emerald-200 "
+      ? "bg-emerald-400 border-emerald-500 text-white hover:border-emerald-600 dark:hover:border-emerald-200"
       : "bg-white border-gray-200 text-gray-800 hover:border-black";
 
   return (
     <div className="h-min">
       <button
         onClick={props.onClick}
-        className={`flex items-center flex-row text-sm rounded-md drop-shadow border font-semibold w-fit ${typeClasses} space-x-1 disabled:opacity-50 px-2 py-1`}
+        className={`flex items-center flex-row text-sm rounded-md drop-shadow border font-semibold w-fit ${typeClasses} space-x-1 disabled:opacity-50 px-2 py-1 hover:shadow-md`}
         disabled={props.pending}
       >
         {props.pending && (

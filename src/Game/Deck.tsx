@@ -7,6 +7,7 @@ import { cardBack } from "./Types";
 type DeckProps = {
   heldIndex: number;
   setHeldIndex: (index: number) => void;
+  mousePos: { x: number; y: number };
 };
 
 export const Deck = (props: DeckProps) => {
@@ -14,8 +15,9 @@ export const Deck = (props: DeckProps) => {
     <PlayingCard
       card={cardBack}
       index={DECK_HELD_INDEX}
-      heldIndex={props.heldIndex}
+      isHeld={props.heldIndex === DECK_HELD_INDEX}
       setHeldIndex={props.setHeldIndex}
+      mousePos={props.mousePos}
     />
   );
 };

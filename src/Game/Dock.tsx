@@ -1,71 +1,90 @@
 import * as React from "react";
 import { Card, CardType } from "Game/Types";
 import { PlayingCard } from "Game/PlayingCard";
-import autoAnimate from "@formkit/auto-animate";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { NULL_HELD_INDEX } from "./Board";
 
 type DockProps = {
   heldIndex: number;
   setHeldIndex: (index: number) => void;
   cards: Card[];
-  onDrop: (e: React.DragEvent) => void;
+  onDrop: () => void;
   dropSlotIndex: number | null;
   setDropSlotIndex: (index: number | null) => void;
   buttons: React.ReactNode;
+  mousePos: { x: number; y: number };
 };
 
 export const Dock = (props: DockProps) => {
-  const parent = React.useRef(null);
+  const [parent] = useAutoAnimate({ duration: 200 });
 
-  React.useEffect(() => {
-    parent.current &&
-      autoAnimate(parent.current, {
-        duration: 150,
-      });
-  }, [parent]);
+  const handleDrop = React.useCallback(
+    (e: React.MouseEvent) => {
+      props.onDrop();
+    },
+    [props]
+  );
 
-  const playingCards = props.cards.map((card, index) => {
-    if (card.type === CardType.INVALID) {
-      return null;
+  const playingCards = [];
+  for (let i = 0; i < props.cards.length; i++) {
+    if (i === props.heldIndex) {
+      continue;
     }
 
-    return (
+    const card = props.cards[i];
+    playingCards.push(
       <PlayingCard
         key={card.type + "-" + card.deck}
-        index={index}
+        index={playingCards.length}
         card={card}
-        heldIndex={props.heldIndex}
+        isHeld={false}
         setHeldIndex={props.setHeldIndex}
         setDropSlotIndex={props.setDropSlotIndex}
+        mousePos={props.mousePos}
+        onDrop={props.onDrop}
       />
     );
-  });
+  }
 
   if (props.dropSlotIndex !== null && props.dropSlotIndex >= 0) {
     playingCards.splice(
       props.dropSlotIndex,
       0,
       <div
+        onMouseUp={handleDrop}
         key="drop-slot"
         className="w-32 h-40 rounded-md border-dashed border border-gray-500 p-2 mx-1"
       />
     );
   }
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
+  let heldCard = undefined;
+  if (props.heldIndex >= 0) {
+    const card = props.cards[props.heldIndex];
+    heldCard = (
+      <PlayingCard
+        key={card.type + "-" + card.deck}
+        index={playingCards.length}
+        card={card}
+        isHeld
+        setHeldIndex={props.setHeldIndex}
+        setDropSlotIndex={props.setDropSlotIndex}
+        mousePos={props.mousePos}
+        onDrop={props.onDrop}
+      />
+    );
+  }
 
   return (
     <div className="absolute w-full bottom-10">
       {props.buttons}
       <div
         className="flex justify-center bg-white p-4 shadow-inner border border-gray-100 dark:bg-gray-800 dark:border-gray-600"
-        onDrop={props.onDrop}
-        onDragOver={handleDrag}
         ref={parent}
       >
         {playingCards}
       </div>
+      {heldCard}
     </div>
   );
 };

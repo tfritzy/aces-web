@@ -175,26 +175,28 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
 type PlayingCardProps = {
   card: Card;
   index: number;
-  heldIndex: number;
+  isHeld: boolean;
   setHeldIndex: (index: number) => void;
   setDropSlotIndex?: (index: number) => void;
-  onDrop?: (e: React.DragEvent) => void;
+  onDrop?: (index: number) => void;
+  mousePos: { x: number; y: number };
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
+  const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
-  const isHeld = props.heldIndex === props.index;
-  const handleDragStart = (e: React.DragEvent) => {
+  const handleDragStart = (e: React.MouseEvent) => {
     props.setHeldIndex(props.index);
+    props.setDropSlotIndex?.(props.index);
   };
 
-  const handleDragEndCapture = () => {
-    props.setHeldIndex(NULL_HELD_INDEX);
-  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!selfRef.current) {
+      return;
+    }
 
-  const handleDragEnter = (e: React.DragEvent) => {
     if (props.index >= 0) {
-      const targetBounds = e.currentTarget.getBoundingClientRect();
+      const targetBounds = selfRef.current?.getBoundingClientRect();
       const targetCenter = targetBounds.left + targetBounds.width / 2;
       const side = e.clientX < targetCenter ? 0 : 1;
 
@@ -206,16 +208,10 @@ export const PlayingCard = (props: PlayingCardProps) => {
     e.preventDefault();
   };
 
-  const heldClasses = isHeld ? "opacity-30" : "";
+  const heldClasses = props.isHeld ? `fixed pointer-events-none` : "";
 
   let cardElement: JSX.Element;
-  if (card.type === CardType.SPACER) {
-    cardElement = (
-      <div
-        className={`border-dashed border w-32 h-40 p-2 mx-1 rounded-md border-gray-700 dark:border-white`}
-      />
-    );
-  } else if (card.type === CardType.CARD_BACK) {
+  if (card.type === CardType.CARD_BACK) {
     cardElement = (
       <div
         className={`drop-shadow-md bg-gradient-to-r from-cyan-300 to-blue-300 border-gray-200 border-solid border w-32 h-40 p-2 mx-1 rounded-md`}
@@ -225,16 +221,8 @@ export const PlayingCard = (props: PlayingCardProps) => {
     const color = getCardColor(card);
     cardElement = (
       <div
-        className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md  dark:border-gray-600 dark:drop-shadow-lg overflow-hidden`}
+        className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md  dark:border-gray-600 overflow-hidden`}
       >
-        {/* <div className="fill-red-500">
-          <img
-            src="/Textures/HexGrid.svg"
-            alt=""
-            className="absolute top-0 left-0 w-full h-full"
-          />
-        </div> */}
-
         <CardCol card={card} />
         <CardFace card={card} />
         <CardCol card={card} reverse />
@@ -243,16 +231,23 @@ export const PlayingCard = (props: PlayingCardProps) => {
   }
 
   return (
-    <div className={heldClasses}>
+    <div>
       <div
-        draggable={!!card}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragEnter}
-        onDragEndCapture={handleDragEndCapture}
-        id={props.index.toString()}
-        onDrop={props.onDrop}
+        className={heldClasses}
+        style={
+          props.isHeld
+            ? { top: props.mousePos.y, left: props.mousePos.x }
+            : undefined
+        }
+        ref={selfRef}
       >
-        {cardElement}
+        <div
+          id={props.index.toString()}
+          onMouseUp={handleDragStart}
+          onMouseMove={handleMouseMove}
+        >
+          {cardElement}
+        </div>
       </div>
     </div>
   );
