@@ -421,9 +421,9 @@ export const Board = (props: BoardProps) => {
       }
     } else {
       const dropCard = updatedHand[heldIndex];
-      const indexMod = heldIndex > dropSlotIndex ? 1 : 0;
+      // const indexMod = heldIndex > dropSlotIndex ? 1 : 0;
+      updatedHand.splice(heldIndex, 1);
       updatedHand.splice(dropSlotIndex, 0, dropCard);
-      updatedHand.splice(heldIndex + indexMod, 1);
     }
 
     dispatch(setHand(updatedHand));

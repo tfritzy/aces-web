@@ -46,7 +46,11 @@ export const Dock = (props: DockProps) => {
     );
   }
 
-  if (props.dropSlotIndex !== null && props.dropSlotIndex >= 0) {
+  if (
+    props.heldIndex !== NULL_HELD_INDEX &&
+    props.dropSlotIndex !== null &&
+    props.dropSlotIndex >= 0
+  ) {
     playingCards.splice(
       props.dropSlotIndex,
       0,
