@@ -15,22 +15,6 @@ type DeckProps = {
 export const Deck = (props: DeckProps) => {
   const deckSize = useSelector((state: RootState) => state.game.deckSize);
 
-  if (
-    deckSize === 0 ||
-    (props.heldIndex === DECK_HELD_INDEX && deckSize === 1)
-  ) {
-    return (
-      <PlayingCard
-        key="held-deck-card"
-        card={spacerCard}
-        index={DECK_HELD_INDEX}
-        heldIndex={props.heldIndex}
-        setHeldIndex={props.setHeldIndex}
-        mousePos={props.mousePos}
-      />
-    );
-  }
-
   const cards = [];
   for (let i = 0; i < deckSize / 2; i++) {
     cards.push(
@@ -49,6 +33,7 @@ export const Deck = (props: DeckProps) => {
     <div>
       {props.heldIndex === DECK_HELD_INDEX && (
         <PlayingCard
+          isHeld
           key="held-deck-card"
           card={cardBack}
           index={DECK_HELD_INDEX}
@@ -59,6 +44,7 @@ export const Deck = (props: DeckProps) => {
       )}
 
       <PlayingCard
+        isHeld={false}
         card={cardBack}
         index={DECK_HELD_INDEX}
         heldIndex={props.heldIndex}

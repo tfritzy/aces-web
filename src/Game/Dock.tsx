@@ -8,7 +8,7 @@ type DockProps = {
   heldIndex: number;
   setHeldIndex: (index: number) => void;
   cards: Card[];
-  onDrop: () => void;
+  onDrop: (index: number) => void;
   dropSlotIndex: number | null;
   setDropSlotIndex: (index: number | null) => void;
   buttons: React.ReactNode;
@@ -20,7 +20,11 @@ export const Dock = (props: DockProps) => {
 
   const handleDrop = React.useCallback(
     (e: React.MouseEvent) => {
-      props.onDrop();
+      if (!props.dropSlotIndex) {
+        return;
+      }
+
+      props.onDrop(props.dropSlotIndex);
     },
     [props]
   );
@@ -35,6 +39,7 @@ export const Dock = (props: DockProps) => {
     const card = props.cards[i];
     playingCards.push(
       <PlayingCard
+        isHeld={false}
         key={card.type + "-" + card.deck}
         index={i}
         card={card}
@@ -68,6 +73,7 @@ export const Dock = (props: DockProps) => {
     const card = props.cards[props.heldIndex];
     heldCard = (
       <PlayingCard
+        isHeld
         key={card.type + "-" + card.deck}
         index={props.heldIndex}
         card={card}

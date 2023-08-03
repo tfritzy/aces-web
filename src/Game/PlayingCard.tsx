@@ -66,9 +66,9 @@ const getValueIcon = (card: Card): string[] => {
   }
 };
 
-const themedBlack = "text-black dark:text-blue-400";
+const themedBlack = "text-black dark:text-emerald-400";
 const themedRed = "text-red-600 dark:text-amber-400";
-const themedBorderBlack = "border-black dark:border-blue-400";
+const themedBorderBlack = "border-black dark:border-emerald-400";
 const themedBorderRed = "border-red-600 dark:border-amber-400";
 const cardBackground = "bg-gray-50 dark:bg-slate-950";
 
@@ -175,6 +175,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
 type PlayingCardProps = {
   card: Card;
   index: number;
+  isHeld: boolean;
   heldIndex: number;
   setHeldIndex: (index: number) => void;
   setDropSlotIndex?: (index: number) => void;
@@ -184,12 +185,14 @@ type PlayingCardProps = {
 
 export const PlayingCard = (props: PlayingCardProps) => {
   const selfRef = React.useRef<HTMLDivElement>(null);
-  const isHeld = props.index === props.heldIndex;
   const card = props.card;
-  const handleDragStart = (e: React.MouseEvent) => {
-    props.setHeldIndex(props.index);
-    props.setDropSlotIndex?.(props.index);
-  };
+  const handleDragStart = React.useCallback(
+    (e: React.MouseEvent) => {
+      props.setHeldIndex(props.index);
+      props.setDropSlotIndex?.(props.index);
+    },
+    [props]
+  );
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (e.buttons === 1) {
@@ -215,47 +218,42 @@ export const PlayingCard = (props: PlayingCardProps) => {
 
   const handleClick = React.useCallback(
     (e: React.MouseEvent) => {
+      console.log("click", props.heldIndex, props.heldIndex, props.index);
       if (
         props.heldIndex !== NULL_HELD_INDEX &&
         props.index !== props.heldIndex
       ) {
+        console.log("drop?", props.onDrop);
         props.onDrop?.(props.index);
-      } else {
+      } else if (card.type !== CardType.SPACER) {
         handleDragStart(e);
       }
     },
-    [handleDragStart, props]
+    [card.type, handleDragStart, props]
   );
 
-  const heldClasses = isHeld ? `fixed pointer-events-none z-40` : "";
+  const heldClasses = props.isHeld ? `fixed pointer-events-none z-40` : "";
 
   let cardElement: JSX.Element;
   if (card.type === CardType.SPACER) {
     cardElement = (
       <div
+        key={props.index}
         className={`border-dashed border w-32 h-40 p-2 mx-1 rounded-md border-gray-700 dark:border-white`}
       />
     );
   } else if (card.type === CardType.CARD_BACK) {
     cardElement = (
-      <div
-        id={props.index.toString()}
-        onClick={handleDragStart}
-        onMouseMove={handleMouseMove}
-      >
+      <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
-          className={`drop-shadow-md bg-gradient-to-r from-cyan-600 to-blue-600 border-gray-500 border-solid border w-32 h-40 p-2 rounded-md`}
+          className={`drop-shadow-md bg-gradient-to-r from-cyan-600 to-emerald-600 border-gray-500 border-solid border w-32 h-40 p-2 rounded-md`}
         />
       </div>
     );
   } else {
     const color = getCardColor(card);
     cardElement = (
-      <div
-        id={props.index.toString()}
-        onClick={handleDragStart}
-        onMouseMove={handleMouseMove}
-      >
+      <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
           className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md  dark:border-gray-600 overflow-hidden select-none`}
         >
@@ -270,11 +268,12 @@ export const PlayingCard = (props: PlayingCardProps) => {
   return (
     <div
       className={heldClasses}
+      onClick={handleClick}
       style={
-        isHeld
+        props.isHeld
           ? {
-              top: props.mousePos.y - selfRef.current?.clientHeight! / 2,
-              left: props.mousePos.x - selfRef.current?.clientWidth! / 2,
+              top: props.mousePos.y - 80,
+              left: props.mousePos.x - 64,
             }
           : undefined
       }

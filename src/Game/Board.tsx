@@ -390,56 +390,61 @@ export const Board = (props: BoardProps) => {
     [dispatch, dropSlotIndex, heldCards, throttledSetDropSlotIndex]
   );
 
-  const handleDrop = React.useCallback(async () => {
-    if (dropSlotIndex === null || heldIndex === null) {
-      return;
-    }
-
-    const updatedHand = [...heldCards];
-    if (heldIndex === PILE_HELD_INDEX && dropSlotIndex >= 0) {
-      const response = await drawFromPile();
-
-      if (response.ok) {
-        const dropCard = game.pile[game.pile.length - 1];
-        updatedHand.splice(dropSlotIndex, 0, dropCard);
-        dispatch(removeTopFromPile());
+  const handleDrop = React.useCallback(
+    async (dropIndex: number) => {
+      console.log("drop", dropIndex, heldIndex);
+      if (dropIndex === null || heldIndex === null) {
+        console.log("drop failed");
+        return;
       }
-    } else if (dropSlotIndex === PILE_HELD_INDEX && heldIndex >= 0) {
-      const response = await discard();
 
-      if (response.ok) {
+      const updatedHand = [...heldCards];
+      if (heldIndex === PILE_HELD_INDEX && dropIndex >= 0) {
+        const response = await drawFromPile();
+
+        if (response.ok) {
+          const dropCard = game.pile[game.pile.length - 1];
+          updatedHand.splice(dropIndex, 0, dropCard);
+          dispatch(removeTopFromPile());
+        }
+      } else if (dropIndex === PILE_HELD_INDEX && heldIndex >= 0) {
+        console.log("discard");
+        const response = await discard();
+
+        if (response.ok) {
+          const dropCard = updatedHand[heldIndex];
+          dispatch(addToPile(dropCard));
+          updatedHand.splice(heldIndex, 1);
+        }
+      } else if (dropIndex >= 0 && heldIndex === DECK_HELD_INDEX) {
+        const response = await drawFromDeck();
+
+        if (response.ok) {
+          const dropCard = (await response.json()) as Card;
+          console.log(dropCard);
+          updatedHand.splice(dropIndex, 0, dropCard);
+        }
+      } else {
         const dropCard = updatedHand[heldIndex];
-        dispatch(addToPile(dropCard));
+        const indexMod = dropIndex > heldIndex ? 1 : 0;
         updatedHand.splice(heldIndex, 1);
+        updatedHand.splice(dropIndex - indexMod, 0, dropCard);
       }
-    } else if (dropSlotIndex >= 0 && heldIndex === DECK_HELD_INDEX) {
-      const response = await drawFromDeck();
 
-      if (response.ok) {
-        const dropCard = (await response.json()) as Card;
-        console.log(dropCard);
-        updatedHand.splice(dropSlotIndex, 0, dropCard);
-      }
-    } else {
-      const dropCard = updatedHand[heldIndex];
-      const indexMod = dropSlotIndex > heldIndex ? 1 : 0;
-      updatedHand.splice(heldIndex, 1);
-      updatedHand.splice(dropSlotIndex - indexMod, 0, dropCard);
-    }
-
-    dispatch(setHand(updatedHand));
-    setDropSlotIndex(null);
-    setHeldIndex(NULL_HELD_INDEX);
-  }, [
-    discard,
-    dispatch,
-    drawFromDeck,
-    drawFromPile,
-    dropSlotIndex,
-    game.pile,
-    heldCards,
-    heldIndex,
-  ]);
+      dispatch(setHand(updatedHand));
+      setDropSlotIndex(null);
+      setHeldIndex(NULL_HELD_INDEX);
+    },
+    [
+      discard,
+      dispatch,
+      drawFromDeck,
+      drawFromPile,
+      game.pile,
+      heldCards,
+      heldIndex,
+    ]
+  );
 
   const handleSetHeldIndex = React.useCallback(
     (index: number) => {

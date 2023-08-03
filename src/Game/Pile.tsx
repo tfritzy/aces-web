@@ -8,7 +8,7 @@ type PileProps = {
   setHeldIndex: (index: number) => void;
   heldIndex: number;
   mousePos: { x: number; y: number };
-  handleDrop: () => void;
+  handleDrop: (index: number) => void;
   dropSlotIndex: number | null;
   setDropSlotIndex: (index: number | null) => void;
 };
@@ -22,6 +22,7 @@ export const Pile = (props: PileProps) => {
     <div>
       {heldIndex === PILE_HELD_INDEX && (
         <PlayingCard
+          isHeld
           card={game.pile[game.pile.length - 1]}
           index={PILE_HELD_INDEX}
           heldIndex={heldIndex}
@@ -31,13 +32,14 @@ export const Pile = (props: PileProps) => {
       )}
 
       <PlayingCard
+        isHeld={false}
         card={
           game.pile[
             game.pile.length - (heldIndex === PILE_HELD_INDEX ? 2 : 1)
           ] || spacerCard
         }
         index={PILE_HELD_INDEX}
-        heldIndex={heldIndex}
+        heldIndex={props.heldIndex}
         setHeldIndex={setHeldIndex}
         setDropSlotIndex={setDropSlotIndex}
         onDrop={handleDrop}
