@@ -366,7 +366,7 @@ export const Board = (props: BoardProps) => {
       (index: number | null) => {
         setDropSlotIndex(index);
       },
-      200,
+      100,
       { trailing: true }
     ),
     []
@@ -506,7 +506,7 @@ export const Board = (props: BoardProps) => {
   }, [endTurn, endTurnPending, goOut, goOutPending]);
 
   return (
-    <div className="w-full h-full">
+    <div className="h-full flex flex-col justify-around items-center">
       <Toasts toasts={toasts} />
 
       <PlayerList />
@@ -518,23 +518,21 @@ export const Board = (props: BoardProps) => {
       />
       {scorecardShown && <Scorecard />}
 
-      <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        <div className="flex flex-row space-x-8">
-          <Deck
-            heldIndex={heldIndex}
-            setHeldIndex={setHeldIndex}
-            mousePos={mousePos}
-          />
-          <PlayingCard
-            card={game.pile[game.pile.length - 1] || spacerCard}
-            index={PILE_HELD_INDEX}
-            isHeld={heldIndex === PILE_HELD_INDEX}
-            setHeldIndex={setHeldIndex}
-            setDropSlotIndex={handleSetDropSlotIndex}
-            onDrop={handleDrop}
-            mousePos={mousePos}
-          />
-        </div>
+      <div className="flex flex-row space-x-8">
+        <Deck
+          heldIndex={heldIndex}
+          setHeldIndex={setHeldIndex}
+          mousePos={mousePos}
+        />
+        <PlayingCard
+          card={game.pile[game.pile.length - 1] || spacerCard}
+          index={PILE_HELD_INDEX}
+          isHeld={heldIndex === PILE_HELD_INDEX}
+          setHeldIndex={setHeldIndex}
+          setDropSlotIndex={handleSetDropSlotIndex}
+          onDrop={handleDrop}
+          mousePos={mousePos}
+        />
       </div>
 
       <Dock

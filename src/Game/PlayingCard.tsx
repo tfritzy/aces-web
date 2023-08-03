@@ -191,6 +191,10 @@ export const PlayingCard = (props: PlayingCardProps) => {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (e.buttons === 1) {
+      handleDragStart(e);
+    }
+
     if (!selfRef.current) {
       return;
     }
@@ -208,47 +212,60 @@ export const PlayingCard = (props: PlayingCardProps) => {
     e.preventDefault();
   };
 
-  const heldClasses = props.isHeld ? `fixed pointer-events-none` : "";
+  const heldClasses = props.isHeld ? `fixed pointer-events-none z-40` : "";
 
   let cardElement: JSX.Element;
-  if (card.type === CardType.CARD_BACK) {
+  if (card.type === CardType.SPACER) {
     cardElement = (
       <div
-        className={`drop-shadow-md bg-gradient-to-r from-cyan-300 to-blue-300 border-gray-200 border-solid border w-32 h-40 p-2 mx-1 rounded-md`}
+        className={`border-dashed border w-32 h-40 p-2 mx-1 rounded-md border-gray-700 dark:border-white`}
       />
+    );
+  } else if (card.type === CardType.CARD_BACK) {
+    cardElement = (
+      <div
+        id={props.index.toString()}
+        onClick={handleDragStart}
+        onMouseMove={handleMouseMove}
+      >
+        <div
+          className={`drop-shadow-md bg-gradient-to-r from-cyan-300 to-blue-300 border-gray-200 border-solid border w-32 h-40 p-2 mx-1 rounded-md`}
+        />
+      </div>
     );
   } else {
     const color = getCardColor(card);
     cardElement = (
       <div
-        className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md  dark:border-gray-600 overflow-hidden`}
+        id={props.index.toString()}
+        onClick={handleDragStart}
+        onMouseMove={handleMouseMove}
       >
-        <CardCol card={card} />
-        <CardFace card={card} />
-        <CardCol card={card} reverse />
+        <div
+          className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md  dark:border-gray-600 overflow-hidden select-none`}
+        >
+          <CardCol card={card} />
+          <CardFace card={card} />
+          <CardCol card={card} reverse />
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div
-        className={heldClasses}
-        style={
-          props.isHeld
-            ? { top: props.mousePos.y, left: props.mousePos.x }
-            : undefined
-        }
-        ref={selfRef}
-      >
-        <div
-          id={props.index.toString()}
-          onMouseUp={handleDragStart}
-          onMouseMove={handleMouseMove}
-        >
-          {cardElement}
-        </div>
-      </div>
+    <div
+      className={heldClasses}
+      style={
+        props.isHeld
+          ? {
+              top: props.mousePos.y - selfRef.current?.clientHeight! / 2,
+              left: props.mousePos.x - selfRef.current?.clientWidth! / 2,
+            }
+          : undefined
+      }
+      ref={selfRef}
+    >
+      {cardElement}
     </div>
   );
 };

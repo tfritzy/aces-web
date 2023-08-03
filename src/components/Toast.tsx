@@ -76,7 +76,7 @@ export const Toast = (props: ToastProps) => {
   return (
     <div
       id="toast-simple"
-      className="flex flex-row items-center h-min p-2 px-3 rounded-md shadow text-gray-400 divide-gray-700 space-x bg-gray-800 border border-gray-700 w-min"
+      className="flex flex-row items-center h-min p-2 px-3 rounded-md shadow text-gray-400 divide-gray-700 space-x bg-gray-800 border border-gray-700 w-min pointer-events-auto"
       role="alert"
       key={props.id}
     >

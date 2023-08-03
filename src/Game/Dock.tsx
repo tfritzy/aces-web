@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Card, CardType } from "Game/Types";
+import { Card } from "Game/Types";
 import { PlayingCard } from "Game/PlayingCard";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { NULL_HELD_INDEX } from "./Board";
@@ -16,7 +16,7 @@ type DockProps = {
 };
 
 export const Dock = (props: DockProps) => {
-  const [parent] = useAutoAnimate({ duration: 200 });
+  const [parent] = useAutoAnimate({ duration: 150 });
 
   const handleDrop = React.useCallback(
     (e: React.MouseEvent) => {
@@ -55,7 +55,7 @@ export const Dock = (props: DockProps) => {
       props.dropSlotIndex,
       0,
       <div
-        onMouseUp={handleDrop}
+        onClick={handleDrop}
         key="drop-slot"
         className="w-32 h-40 rounded-md border-dashed border border-gray-500 p-2 mx-1"
       />
@@ -80,7 +80,7 @@ export const Dock = (props: DockProps) => {
   }
 
   return (
-    <div className="absolute w-full bottom-10">
+    <div className="w-full">
       {props.buttons}
       <div
         className="flex justify-center bg-white p-4 shadow-inner border border-gray-100 dark:bg-gray-800 dark:border-gray-600"

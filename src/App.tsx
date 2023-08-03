@@ -38,11 +38,7 @@ const router = createBrowserRouter([
   },
   {
     path: "game/:gameId",
-    element: (
-      <div>
-        <Board />
-      </div>
-    ),
+    element: <Board />,
   },
 ]);
 

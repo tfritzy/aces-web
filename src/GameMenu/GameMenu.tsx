@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 
 import { API_URL } from "Constants";
 import { Modal } from "components/Modal";
@@ -14,6 +14,7 @@ import { handleError } from "helpers/handleError";
 import { Toasts, useToasts } from "components/Toasts";
 import { useNavigate } from "react-router-dom";
 import { GameStateForPlayer } from "Game/Types";
+import { ToastProps } from "components/Toast";
 
 const adjectives = [
   "Joyful",
@@ -61,28 +62,118 @@ const nouns = [
   "Puddlejumper",
 ];
 
-export const GameMenu = () => {
-  const [joinGameInput, setJoinGameInput] = useState("");
+type JoinGameMenuProps = {
+  addToast: (props: ToastProps) => void;
+};
+
+const JoinGameMenu = (props: JoinGameMenuProps) => {
+  const [code, setCode] = useState("");
   const [joinPending, setJoinPending] = useState(false);
-  const [createPending, setCreatePending] = useState(false);
-  const self = useSelector((state: RootState) => state.self);
   const dispatch = useDispatch();
-  const { toasts, addToast } = useToasts();
+  const self = useSelector((state: RootState) => state.self);
   const navigate = useNavigate();
+  const [digitRefs, setDigitRefs] = useState<(HTMLInputElement | null)[]>([
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ]);
 
-  React.useEffect(() => {
-    const cookies = new Cookies();
-    let displayName = cookies.get("display-name");
-    if (!displayName) {
-      displayName = `${
-        adjectives[Math.floor(Math.random() * adjectives.length)]
-      } ${nouns[Math.floor(Math.random() * nouns.length)]}`;
+  const handleJoinGame = () => {
+    setJoinPending(true);
+    fetch(`${API_URL}/api/join_game`, {
+      method: "POST",
+      headers: {
+        token: self.token,
+        "display-name": self.displayName,
+        "game-id": code,
+        "player-id": self.id,
+      },
+    }).then(async (res) => {
+      setJoinPending(false);
+      if (res.ok) {
+        const body: GameStateForPlayer = await res.json();
+        body.players.forEach((p) => {
+          dispatch(addPlayer(p));
+        });
+        dispatch(setGameId(code));
+        dispatch(setState(GameState.Setup));
+
+        return navigate(`/game/${code}`);
+      } else {
+        console.log(digitRefs);
+        digitRefs[0]?.focus();
+        handleError(res, props.addToast);
+        setCode("");
+      }
+    });
+  };
+
+  const handleCodeChange = (value: string, i: number) => {
+    if (joinPending) {
+      return;
     }
-    dispatch(setDisplayName(displayName));
 
-    // Mount effect
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    let newCode = code;
+    while (code.length < i) {
+      newCode += " ";
+    }
+
+    newCode = newCode.slice(0, i) + value + newCode.slice(i + 1);
+    setCode(newCode);
+    if (newCode.length < 6) {
+      digitRefs[newCode.length]?.focus();
+    } else {
+      handleJoinGame();
+    }
+  };
+
+  const digits = [];
+  for (let i = 0; i < 6; i++) {
+    digits.push(
+      <input
+        type="text"
+        onChange={(e) => handleCodeChange(e.target.value, i)}
+        value={code[i] || ""}
+        className={`w-8 h-8 rounded-lg text-center text-black bg-gray-200 ${
+          joinPending ? "opacity-50" : ""
+        }`}
+        ref={(el) => {
+          digitRefs[i] = el;
+          setDigitRefs(digitRefs);
+        }}
+        key={i}
+        onKeyDown={(e) => {
+          if (e.key === "Backspace") {
+            if (code.length > 0) {
+              setCode(code.slice(0, -1));
+              digitRefs[i - 1]?.focus();
+            }
+          }
+        }}
+      />
+    );
+  }
+
+  return (
+    <div>
+      Game code:
+      <div className="flex space-x-2">{digits}</div>
+    </div>
+  );
+};
+
+type GameMenuProps = {
+  addToast: (props: ToastProps) => void;
+};
+
+const CreateGameMenu = (props: GameMenuProps) => {
+  const [createPending, setCreatePending] = useState(false);
+  const dispatch = useDispatch();
+  const self = useSelector((state: RootState) => state.self);
+  const navigate = useNavigate();
 
   const handleCreateGame = async () => {
     setCreatePending(true);
@@ -103,37 +194,43 @@ export const GameMenu = () => {
 
         return navigate(`/game/${body.id}`);
       } else {
-        handleError(res, addToast);
+        handleError(res, props.addToast);
       }
     });
   };
 
-  const handleJoinGame = () => {
-    setJoinPending(true);
-    fetch(`${API_URL}/api/join_game`, {
-      method: "POST",
-      headers: {
-        token: self.token,
-        "display-name": self.displayName,
-        "game-id": joinGameInput,
-        "player-id": self.id,
-      },
-    }).then(async (res) => {
-      setJoinPending(false);
-      if (res.ok) {
-        const body: GameStateForPlayer = await res.json();
-        body.players.forEach((p) => {
-          dispatch(addPlayer(p));
-        });
-        dispatch(setGameId(joinGameInput));
-        dispatch(setState(GameState.Setup));
+  return (
+    <Button
+      onClick={handleCreateGame}
+      text="Create Game"
+      pending={createPending}
+      type="primary"
+    />
+  );
+};
 
-        return navigate(`/game/${joinGameInput}`);
-      } else {
-        handleError(res, addToast);
-      }
-    });
-  };
+export const GameMenu = () => {
+  const [showJoinGame, setShowJoinGame] = useState(true);
+  const [joinGameInput, setJoinGameInput] = useState("");
+
+  const self = useSelector((state: RootState) => state.self);
+  const dispatch = useDispatch();
+  const { toasts, addToast } = useToasts();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const cookies = new Cookies();
+    let displayName = cookies.get("display-name");
+    if (!displayName) {
+      displayName = `${
+        adjectives[Math.floor(Math.random() * adjectives.length)]
+      } ${nouns[Math.floor(Math.random() * nouns.length)]}`;
+    }
+    dispatch(setDisplayName(displayName));
+
+    // Mount effect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setDisplayName(e.target.value));
@@ -162,7 +259,32 @@ export const GameMenu = () => {
               />
             </div>
 
-            <div className="pt-8 flex flex-col space-y-3">
+            <div className="flex flex-row items-center justify-center">
+              <button
+                className={`rounded-l ${
+                  showJoinGame ? "bg-emerald-400" : "bg-white"
+                }`}
+                onClick={() => setShowJoinGame(true)}
+              >
+                Join
+              </button>
+              <button
+                className={`rounded-r ${
+                  showJoinGame ? "bg-white" : "bg-emerald-400"
+                }`}
+                onClick={() => setShowJoinGame(false)}
+              >
+                Create
+              </button>
+            </div>
+
+            {showJoinGame ? (
+              <JoinGameMenu addToast={addToast} />
+            ) : (
+              <CreateGameMenu addToast={addToast} />
+            )}
+
+            {/* <div className="pt-8 flex flex-col space-y-3">
               <div className="grow">
                 <input
                   type="text"
@@ -188,8 +310,8 @@ export const GameMenu = () => {
                 text="Create Game"
                 pending={createPending}
                 type="primary"
-              />
-            </div>
+              /> */}
+            {/* </div> */}
           </div>
         </div>
       </Modal>
