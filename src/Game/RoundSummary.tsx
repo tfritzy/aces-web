@@ -77,7 +77,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
     }
 
     if (p.placement < p.prevPlacement) {
-      return <div className="text-sm text-emerald-400">▲</div>;
+      return <div className="text-sm text-blue-400">▲</div>;
     }
 
     return <div className="text-sm text-red-400">▼</div>;

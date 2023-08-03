@@ -15,6 +15,7 @@ import { Toasts, useToasts } from "components/Toasts";
 import { useNavigate } from "react-router-dom";
 import { GameStateForPlayer } from "Game/Types";
 import { ToastProps } from "components/Toast";
+import { TabRow } from "components/TabRow";
 
 const adjectives = [
   "Joyful",
@@ -81,14 +82,14 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
     null,
   ]);
 
-  const handleJoinGame = () => {
+  const handleJoinGame = (gameId: string) => {
     setJoinPending(true);
     fetch(`${API_URL}/api/join_game`, {
       method: "POST",
       headers: {
         token: self.token,
         "display-name": self.displayName,
-        "game-id": code,
+        "game-id": gameId,
         "player-id": self.id,
       },
     }).then(async (res) => {
@@ -98,10 +99,10 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
         body.players.forEach((p) => {
           dispatch(addPlayer(p));
         });
-        dispatch(setGameId(code));
+        dispatch(setGameId(gameId));
         dispatch(setState(GameState.Setup));
 
-        return navigate(`/game/${code}`);
+        return navigate(`/game/${gameId}`);
       } else {
         console.log(digitRefs);
         digitRefs[0]?.focus();
@@ -126,7 +127,7 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
     if (newCode.length < 6) {
       digitRefs[newCode.length]?.focus();
     } else {
-      handleJoinGame();
+      handleJoinGame(newCode);
     }
   };
 
@@ -137,7 +138,7 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
         type="text"
         onChange={(e) => handleCodeChange(e.target.value, i)}
         value={code[i] || ""}
-        className={`w-8 h-8 rounded-lg text-center text-black bg-gray-200 ${
+        className={`w-8 h-8 rounded-lg text-center border text-black bg-gray-200 dark:bg-gray-600 dark:border-gray-500 dark:text-white ${
           joinPending ? "opacity-50" : ""
         }`}
         ref={(el) => {
@@ -159,8 +160,9 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
 
   return (
     <div>
-      Game code:
-      <div className="flex space-x-2">{digits}</div>
+      <label className="block mb-2 text-sm font-medium">Game code</label>
+
+      <div className="flex justify-between">{digits}</div>
     </div>
   );
 };
@@ -241,78 +243,45 @@ export const GameMenu = () => {
   return (
     <>
       <Toasts toasts={toasts} />
-      <Modal width="w-80">
-        <div className="p-4">
+      <Modal width="w-64">
+        <div className="flex flex-col space-y-4 p-4">
           <div className="text-3xl text-center mb-4">Aces</div>
 
-          <div className="flex flex-col space-y-8 divide-y divide-gray-300 dark:divide-gray-600">
-            <div>
-              <label className="block mb-2 text-sm font-medium">
-                Display name
-              </label>
-              <input
-                type="text"
-                id="display_name"
-                className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
-                value={self.displayName}
-                onChange={handleDisplayNameChange}
-              />
-            </div>
+          <TabRow
+            tabs={[
+              {
+                label: "Join",
+                onClick: () => setShowJoinGame(true),
+                isSelected: showJoinGame,
+              },
+              {
+                label: "Create",
+                onClick: () => setShowJoinGame(false),
+                isSelected: !showJoinGame,
+              },
+            ]}
+          />
 
-            <div className="flex flex-row items-center justify-center">
-              <button
-                className={`rounded-l ${
-                  showJoinGame ? "bg-emerald-400" : "bg-white"
-                }`}
-                onClick={() => setShowJoinGame(true)}
-              >
-                Join
-              </button>
-              <button
-                className={`rounded-r ${
-                  showJoinGame ? "bg-white" : "bg-emerald-400"
-                }`}
-                onClick={() => setShowJoinGame(false)}
-              >
-                Create
-              </button>
-            </div>
+          <div className="w-full dark:bg-gray-600 h-[1px]" />
 
-            {showJoinGame ? (
-              <JoinGameMenu addToast={addToast} />
-            ) : (
-              <CreateGameMenu addToast={addToast} />
-            )}
-
-            {/* <div className="pt-8 flex flex-col space-y-3">
-              <div className="grow">
-                <input
-                  type="text"
-                  id="game"
-                  className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-400"
-                  value={joinGameInput}
-                  placeholder="AIE-JCS"
-                  onChange={(e) => setJoinGameInput(e.target.value)}
-                />
-              </div>
-
-              <Button
-                text="Join"
-                onClick={handleJoinGame}
-                pending={joinPending}
-                type="primary"
-              />
-
-              <div className="text-gray-400 text-center">— or —</div>
-
-              <Button
-                onClick={handleCreateGame}
-                text="Create Game"
-                pending={createPending}
-                type="primary"
-              /> */}
-            {/* </div> */}
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Display name
+            </label>
+            <input
+              type="text"
+              id="display_name"
+              className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:placeholder-gray-400"
+              value={self.displayName}
+              onChange={handleDisplayNameChange}
+            />
           </div>
+
+          {showJoinGame ? (
+            <JoinGameMenu addToast={addToast} />
+          ) : (
+            <CreateGameMenu addToast={addToast} />
+          )}
         </div>
       </Modal>
     </>

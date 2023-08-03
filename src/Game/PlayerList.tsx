@@ -17,9 +17,7 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
 
   return (
     <div className="flex flex-row items-center space-x-3" key={props.player.id}>
-      {turn === props.index && (
-        <div className="text-3xl text-emerald-300">➜</div>
-      )}
+      {turn === props.index && <div className="text-3xl text-blue-300">➜</div>}
       <div
         className={`rounded-lg flex flex-row space-x-1 items-center bg-slate-50  shadow-sm border border-gray-200 dark:border-gray-500 dark:bg-gray-700 pl-3 pr-5 overflow-hidden ${
           isSelf ? "pr-5" : "pr-3"
@@ -41,7 +39,7 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
 
         {isSelf && (
           <div className="relative">
-            <div className="absolute rotate-[40deg] bg-emerald-300 w-16 text-center -top-[22px] -right-[40px] text-sm text-emerald-700">
+            <div className="absolute rotate-[40deg] bg-blue-300 w-16 text-center -top-[22px] -right-[40px] text-sm text-blue-700">
               You
             </div>
           </div>

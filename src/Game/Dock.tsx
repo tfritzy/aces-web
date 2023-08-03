@@ -28,6 +28,7 @@ export const Dock = (props: DockProps) => {
   const playingCards = [];
   for (let i = 0; i < props.cards.length; i++) {
     if (i === props.heldIndex) {
+      playingCards.push(<div />);
       continue;
     }
 
@@ -35,9 +36,9 @@ export const Dock = (props: DockProps) => {
     playingCards.push(
       <PlayingCard
         key={card.type + "-" + card.deck}
-        index={playingCards.length}
+        index={i}
         card={card}
-        isHeld={false}
+        heldIndex={props.heldIndex}
         setHeldIndex={props.setHeldIndex}
         setDropSlotIndex={props.setDropSlotIndex}
         mousePos={props.mousePos}
@@ -68,9 +69,9 @@ export const Dock = (props: DockProps) => {
     heldCard = (
       <PlayingCard
         key={card.type + "-" + card.deck}
-        index={playingCards.length}
+        index={props.heldIndex}
         card={card}
-        isHeld
+        heldIndex={props.heldIndex}
         setHeldIndex={props.setHeldIndex}
         setDropSlotIndex={props.setDropSlotIndex}
         mousePos={props.mousePos}

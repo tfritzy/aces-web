@@ -66,9 +66,9 @@ const getValueIcon = (card: Card): string[] => {
   }
 };
 
-const themedBlack = "text-black dark:text-emerald-400";
+const themedBlack = "text-black dark:text-blue-400";
 const themedRed = "text-red-600 dark:text-amber-400";
-const themedBorderBlack = "border-black dark:border-emerald-400";
+const themedBorderBlack = "border-black dark:border-blue-400";
 const themedBorderRed = "border-red-600 dark:border-amber-400";
 const cardBackground = "bg-gray-50 dark:bg-slate-950";
 
@@ -175,7 +175,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
 type PlayingCardProps = {
   card: Card;
   index: number;
-  isHeld: boolean;
+  heldIndex: number;
   setHeldIndex: (index: number) => void;
   setDropSlotIndex?: (index: number) => void;
   onDrop?: (index: number) => void;
@@ -184,6 +184,7 @@ type PlayingCardProps = {
 
 export const PlayingCard = (props: PlayingCardProps) => {
   const selfRef = React.useRef<HTMLDivElement>(null);
+  const isHeld = props.index === props.heldIndex;
   const card = props.card;
   const handleDragStart = (e: React.MouseEvent) => {
     props.setHeldIndex(props.index);
@@ -212,7 +213,21 @@ export const PlayingCard = (props: PlayingCardProps) => {
     e.preventDefault();
   };
 
-  const heldClasses = props.isHeld ? `fixed pointer-events-none z-40` : "";
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent) => {
+      if (
+        props.heldIndex !== NULL_HELD_INDEX &&
+        props.index !== props.heldIndex
+      ) {
+        props.onDrop?.(props.index);
+      } else {
+        handleDragStart(e);
+      }
+    },
+    [handleDragStart, props]
+  );
+
+  const heldClasses = isHeld ? `fixed pointer-events-none z-40` : "";
 
   let cardElement: JSX.Element;
   if (card.type === CardType.SPACER) {
@@ -229,7 +244,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
         onMouseMove={handleMouseMove}
       >
         <div
-          className={`drop-shadow-md bg-gradient-to-r from-cyan-300 to-blue-300 border-gray-200 border-solid border w-32 h-40 p-2 mx-1 rounded-md`}
+          className={`drop-shadow-md bg-gradient-to-r from-cyan-600 to-blue-600 border-gray-500 border-solid border w-32 h-40 p-2 rounded-md`}
         />
       </div>
     );
@@ -256,7 +271,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
     <div
       className={heldClasses}
       style={
-        props.isHeld
+        isHeld
           ? {
               top: props.mousePos.y - selfRef.current?.clientHeight! / 2,
               left: props.mousePos.x - selfRef.current?.clientWidth! / 2,

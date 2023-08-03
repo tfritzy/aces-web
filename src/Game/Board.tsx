@@ -31,6 +31,7 @@ import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
 import { Scorecard } from "./Scorecard";
 import { useParams } from "react-router-dom";
+import { Pile } from "./Pile";
 
 export const NULL_HELD_INDEX = -3;
 export const DECK_HELD_INDEX = -2;
@@ -421,9 +422,9 @@ export const Board = (props: BoardProps) => {
       }
     } else {
       const dropCard = updatedHand[heldIndex];
-      // const indexMod = heldIndex > dropSlotIndex ? 1 : 0;
+      const indexMod = dropSlotIndex > heldIndex ? 1 : 0;
       updatedHand.splice(heldIndex, 1);
-      updatedHand.splice(dropSlotIndex, 0, dropCard);
+      updatedHand.splice(dropSlotIndex - indexMod, 0, dropCard);
     }
 
     dispatch(setHand(updatedHand));
@@ -490,12 +491,14 @@ export const Board = (props: BoardProps) => {
     return (
       <div className="flex justify-end space-x-2 p-2">
         <Button
+          key="goOut"
           onClick={goOut}
           text="Go out"
           type="secondary"
           pending={goOutPending}
         />
         <Button
+          key="endTurn"
           onClick={endTurn}
           text="End turn"
           type="primary"
@@ -506,36 +509,40 @@ export const Board = (props: BoardProps) => {
   }, [endTurn, endTurnPending, goOut, goOutPending]);
 
   return (
-    <div className="h-full flex flex-col justify-around items-center">
-      <Toasts toasts={toasts} />
+    <div className="flex flex-col items-center">
+      <Toasts toasts={toasts} key="toasts" />
 
-      <PlayerList />
+      <PlayerList key="playerList" />
 
       <div
+        key="scorecard"
         className="absolute top-2 right-2 w-8 h-8 bg-gray-300"
         onMouseEnter={() => setScorecardShown(true)}
         onMouseLeave={() => setScorecardShown(false)}
       />
       {scorecardShown && <Scorecard />}
 
-      <div className="flex flex-row space-x-8">
+      <div className="flex flex-row space-x-8" key="cards">
         <Deck
+          key="deck"
           heldIndex={heldIndex}
           setHeldIndex={setHeldIndex}
           mousePos={mousePos}
         />
-        <PlayingCard
-          card={game.pile[game.pile.length - 1] || spacerCard}
-          index={PILE_HELD_INDEX}
-          isHeld={heldIndex === PILE_HELD_INDEX}
-          setHeldIndex={setHeldIndex}
+
+        <Pile
+          key="pile"
+          heldIndex={heldIndex}
+          setHeldIndex={handleSetHeldIndex}
+          handleDrop={handleDrop}
+          dropSlotIndex={dropSlotIndex}
           setDropSlotIndex={handleSetDropSlotIndex}
-          onDrop={handleDrop}
           mousePos={mousePos}
         />
       </div>
 
       <Dock
+        key="dock"
         heldIndex={heldIndex}
         setHeldIndex={handleSetHeldIndex}
         onDrop={handleDrop}
@@ -548,6 +555,7 @@ export const Board = (props: BoardProps) => {
 
       {game.state === GameState.Setup && (
         <Lobby
+          key="lobby"
           token={self.token}
           gameId={gameId}
           players={players}
@@ -563,6 +571,7 @@ export const Board = (props: BoardProps) => {
 
       {game.state === GameState.TurnSummary && (
         <RoundSummary
+          key="roundSummary"
           onContinue={() => {
             dispatch(setState(GameState.Playing));
           }}

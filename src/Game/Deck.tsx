@@ -21,22 +21,52 @@ export const Deck = (props: DeckProps) => {
   ) {
     return (
       <PlayingCard
+        key="held-deck-card"
         card={spacerCard}
         index={DECK_HELD_INDEX}
-        isHeld={false}
+        heldIndex={props.heldIndex}
         setHeldIndex={props.setHeldIndex}
         mousePos={props.mousePos}
       />
     );
   }
 
+  const cards = [];
+  for (let i = 0; i < deckSize / 2; i++) {
+    cards.push(
+      <div className="relative h-[.5px] -translate-y-[15px]">
+        <div
+          key={i}
+          className={`absolute w-32 h-4 border-b rounded ${
+            i % 2 === 0 ? "border-gray-500" : "border-gray-600"
+          } }`}
+        ></div>
+      </div>
+    );
+  }
+
   return (
-    <PlayingCard
-      card={cardBack}
-      index={DECK_HELD_INDEX}
-      isHeld={props.heldIndex === DECK_HELD_INDEX}
-      setHeldIndex={props.setHeldIndex}
-      mousePos={props.mousePos}
-    />
+    <div>
+      {props.heldIndex === DECK_HELD_INDEX && (
+        <PlayingCard
+          key="held-deck-card"
+          card={cardBack}
+          index={DECK_HELD_INDEX}
+          heldIndex={props.heldIndex}
+          setHeldIndex={props.setHeldIndex}
+          mousePos={props.mousePos}
+        />
+      )}
+
+      <PlayingCard
+        card={cardBack}
+        index={DECK_HELD_INDEX}
+        heldIndex={props.heldIndex}
+        setHeldIndex={props.setHeldIndex}
+        mousePos={props.mousePos}
+        key="deck"
+      />
+      {cards}
+    </div>
   );
 };
