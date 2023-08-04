@@ -1,15 +1,14 @@
 import React from "react";
 
-import { DECK_HELD_INDEX } from "Game/Board";
 import { PlayingCard } from "Game/PlayingCard";
-import { CardType, cardBack, spacerCard } from "./Types";
+import { cardBack } from "./Types";
 import { useSelector } from "react-redux";
 import { RootState } from "store/store";
+import { DECK_HELD_INDEX } from "store/cardManagementSlice";
 
 type DeckProps = {
   heldIndex: number;
   setHeldIndex: (index: number) => void;
-  mousePos: { x: number; y: number };
 };
 
 export const Deck = (props: DeckProps) => {
@@ -18,7 +17,7 @@ export const Deck = (props: DeckProps) => {
   const cards = [];
   for (let i = 0; i < deckSize / 2; i++) {
     cards.push(
-      <div className="relative h-[.5px] -translate-y-[15px]">
+      <div className="relative h-[.5px] -translate-y-[15px]" key={i}>
         <div
           key={i}
           className={`absolute w-32 h-4 border-b rounded ${
@@ -37,9 +36,6 @@ export const Deck = (props: DeckProps) => {
           key="held-deck-card"
           card={cardBack}
           index={DECK_HELD_INDEX}
-          heldIndex={props.heldIndex}
-          setHeldIndex={props.setHeldIndex}
-          mousePos={props.mousePos}
         />
       )}
 
@@ -47,9 +43,6 @@ export const Deck = (props: DeckProps) => {
         isHeld={false}
         card={cardBack}
         index={DECK_HELD_INDEX}
-        heldIndex={props.heldIndex}
-        setHeldIndex={props.setHeldIndex}
-        mousePos={props.mousePos}
         key="deck"
       />
       {cards}

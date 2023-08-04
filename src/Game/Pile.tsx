@@ -1,21 +1,18 @@
 import { useSelector } from "react-redux";
-import { PILE_HELD_INDEX } from "./Board";
 import { spacerCard } from "./Types";
 import { RootState } from "store/store";
 import { PlayingCard } from "./PlayingCard";
+import { PILE_HELD_INDEX } from "store/cardManagementSlice";
 
 type PileProps = {
-  setHeldIndex: (index: number) => void;
-  heldIndex: number;
-  mousePos: { x: number; y: number };
   handleDrop: (index: number) => void;
-  dropSlotIndex: number | null;
-  setDropSlotIndex: (index: number | null) => void;
 };
 
 export const Pile = (props: PileProps) => {
-  const { setHeldIndex, heldIndex, mousePos, handleDrop, setDropSlotIndex } =
-    props;
+  const heldIndex = useSelector(
+    (state: RootState) => state.cardManagement.heldIndex
+  );
+  const { handleDrop } = props;
   const game = useSelector((state: RootState) => state.game);
 
   return (
@@ -25,9 +22,6 @@ export const Pile = (props: PileProps) => {
           isHeld
           card={game.pile[game.pile.length - 1]}
           index={PILE_HELD_INDEX}
-          heldIndex={heldIndex}
-          setHeldIndex={setHeldIndex}
-          mousePos={mousePos}
         />
       )}
 
@@ -39,11 +33,7 @@ export const Pile = (props: PileProps) => {
           ] || spacerCard
         }
         index={PILE_HELD_INDEX}
-        heldIndex={props.heldIndex}
-        setHeldIndex={setHeldIndex}
-        setDropSlotIndex={setDropSlotIndex}
         onDrop={handleDrop}
-        mousePos={mousePos}
       />
     </div>
   );

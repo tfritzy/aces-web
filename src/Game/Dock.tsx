@@ -2,36 +2,39 @@ import * as React from "react";
 import { Card } from "Game/Types";
 import { PlayingCard } from "Game/PlayingCard";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { NULL_HELD_INDEX } from "./Board";
+import { useSelector } from "react-redux";
+import { RootState } from "store/store";
+import { NULL_HELD_INDEX } from "store/cardManagementSlice";
 
 type DockProps = {
-  heldIndex: number;
-  setHeldIndex: (index: number) => void;
   cards: Card[];
   onDrop: (index: number) => void;
-  dropSlotIndex: number | null;
-  setDropSlotIndex: (index: number | null) => void;
   buttons: React.ReactNode;
-  mousePos: { x: number; y: number };
 };
 
 export const Dock = (props: DockProps) => {
   const [parent] = useAutoAnimate({ duration: 150 });
+  const heldIndex = useSelector(
+    (state: RootState) => state.cardManagement.heldIndex
+  );
+  const dropSlotIndex = useSelector(
+    (state: RootState) => state.cardManagement.dropSlotIndex
+  );
 
   const handleDrop = React.useCallback(
     (e: React.MouseEvent) => {
-      if (!props.dropSlotIndex) {
+      if (dropSlotIndex === null) {
         return;
       }
 
-      props.onDrop(props.dropSlotIndex);
+      props.onDrop(dropSlotIndex);
     },
-    [props]
+    [dropSlotIndex, props]
   );
 
   const playingCards = [];
   for (let i = 0; i < props.cards.length; i++) {
-    if (i === props.heldIndex) {
+    if (i === heldIndex) {
       playingCards.push(<div />);
       continue;
     }
@@ -43,22 +46,18 @@ export const Dock = (props: DockProps) => {
         key={card.type + "-" + card.deck}
         index={i}
         card={card}
-        heldIndex={props.heldIndex}
-        setHeldIndex={props.setHeldIndex}
-        setDropSlotIndex={props.setDropSlotIndex}
-        mousePos={props.mousePos}
         onDrop={props.onDrop}
       />
     );
   }
 
   if (
-    props.heldIndex !== NULL_HELD_INDEX &&
-    props.dropSlotIndex !== null &&
-    props.dropSlotIndex >= 0
+    heldIndex !== NULL_HELD_INDEX &&
+    dropSlotIndex !== null &&
+    dropSlotIndex >= 0
   ) {
     playingCards.splice(
-      props.dropSlotIndex,
+      dropSlotIndex,
       0,
       <div
         onClick={handleDrop}
@@ -69,33 +68,36 @@ export const Dock = (props: DockProps) => {
   }
 
   let heldCard = undefined;
-  if (props.heldIndex >= 0) {
-    const card = props.cards[props.heldIndex];
-    heldCard = (
-      <PlayingCard
-        isHeld
-        key={card.type + "-" + card.deck}
-        index={props.heldIndex}
-        card={card}
-        heldIndex={props.heldIndex}
-        setHeldIndex={props.setHeldIndex}
-        setDropSlotIndex={props.setDropSlotIndex}
-        mousePos={props.mousePos}
-        onDrop={props.onDrop}
-      />
-    );
+  if (heldIndex >= 0) {
+    const card = props.cards[heldIndex];
+
+    if (card) {
+      heldCard = (
+        <PlayingCard
+          isHeld
+          key={card.type + "-" + card.deck}
+          index={heldIndex}
+          card={card}
+          onDrop={props.onDrop}
+        />
+      );
+    } else {
+      console.error("The held card is null");
+    }
   }
 
   return (
-    <div className="w-full">
-      {props.buttons}
-      <div
-        className="flex justify-center bg-white p-4 shadow-inner border border-gray-100 dark:bg-gray-800 dark:border-gray-600"
-        ref={parent}
-      >
-        {playingCards}
+    <div className="w-full fixed bottom-[15%]">
+      <div className="relative">
+        {props.buttons}
+        <div
+          className="flex justify-center bg-white p-4 shadow-inner border border-gray-100 dark:bg-gray-800 dark:border-gray-600"
+          ref={parent}
+        >
+          {playingCards}
+        </div>
+        {heldCard}
       </div>
-      {heldCard}
     </div>
   );
 };

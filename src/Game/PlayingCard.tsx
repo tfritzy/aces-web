@@ -2,6 +2,9 @@ import * as React from "react";
 import { CardType } from "./Types";
 import { Suit, Card, CardValue } from "Game/Types";
 import { NULL_HELD_INDEX } from "Game/Board";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "store/store";
+import { setDropSlotIndex, setHeldIndex } from "store/cardManagementSlice";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -176,22 +179,25 @@ type PlayingCardProps = {
   card: Card;
   index: number;
   isHeld: boolean;
-  heldIndex: number;
-  setHeldIndex: (index: number) => void;
-  setDropSlotIndex?: (index: number) => void;
   onDrop?: (index: number) => void;
-  mousePos: { x: number; y: number };
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
+  const dispatch = useDispatch();
+  const cardManagement = useSelector(
+    (state: RootState) => state.cardManagement
+  );
+  const mousePos = useSelector(
+    (state: RootState) => state.cardManagement.mousePos
+  );
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
   const handleDragStart = React.useCallback(
     (e: React.MouseEvent) => {
-      props.setHeldIndex(props.index);
-      props.setDropSlotIndex?.(props.index);
+      dispatch(setHeldIndex(props.index));
+      dispatch(setDropSlotIndex(props.index));
     },
-    [props]
+    [dispatch, props]
   );
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -208,9 +214,9 @@ export const PlayingCard = (props: PlayingCardProps) => {
       const targetCenter = targetBounds.left + targetBounds.width / 2;
       const side = e.clientX < targetCenter ? 0 : 1;
 
-      props.setDropSlotIndex?.(props.index + side);
+      dispatch(setDropSlotIndex(props.index + side));
     } else {
-      props.setDropSlotIndex?.(props.index);
+      dispatch(setDropSlotIndex(props.index));
     }
 
     e.preventDefault();
@@ -218,27 +224,30 @@ export const PlayingCard = (props: PlayingCardProps) => {
 
   const handleClick = React.useCallback(
     (e: React.MouseEvent) => {
-      console.log("click", props.heldIndex, props.heldIndex, props.index);
       if (
-        props.heldIndex !== NULL_HELD_INDEX &&
-        props.index !== props.heldIndex
+        cardManagement.heldIndex !== NULL_HELD_INDEX &&
+        props.index !== cardManagement.heldIndex
       ) {
-        console.log("drop?", props.onDrop);
         props.onDrop?.(props.index);
       } else if (card.type !== CardType.SPACER) {
         handleDragStart(e);
       }
     },
-    [card.type, handleDragStart, props]
+    [card?.type, cardManagement.heldIndex, handleDragStart, props]
   );
 
   const heldClasses = props.isHeld ? `fixed pointer-events-none z-40` : "";
 
   let cardElement: JSX.Element;
+  if (!card) {
+    console.error("Trying to render a null card");
+    return null;
+  }
+
   if (card.type === CardType.SPACER) {
     cardElement = (
       <div
-        key={props.index}
+        key={"spacer"}
         className={`border-dashed border w-32 h-40 p-2 mx-1 rounded-md border-gray-700 dark:border-white`}
       />
     );
@@ -267,13 +276,14 @@ export const PlayingCard = (props: PlayingCardProps) => {
 
   return (
     <div
+      id={card.type + "-" + card.deck}
       className={heldClasses}
       onClick={handleClick}
       style={
         props.isHeld
           ? {
-              top: props.mousePos.y - 80,
-              left: props.mousePos.x - 64,
+              top: mousePos.y - 80,
+              left: mousePos.x - 64,
             }
           : undefined
       }
