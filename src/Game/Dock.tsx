@@ -61,6 +61,7 @@ export const Dock = (props: DockProps) => {
       0,
       <div
         onClick={handleDrop}
+        onMouseUp={handleDrop}
         key="drop-slot"
         className="w-32 h-40 rounded-md border-dashed border border-gray-500 p-2 mx-1"
       />

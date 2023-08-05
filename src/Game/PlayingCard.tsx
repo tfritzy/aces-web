@@ -184,6 +184,9 @@ type PlayingCardProps = {
 
 export const PlayingCard = (props: PlayingCardProps) => {
   const dispatch = useDispatch();
+  const heldIndex = useSelector(
+    (state: RootState) => state.cardManagement.heldIndex
+  );
   const cardManagement = useSelector(
     (state: RootState) => state.cardManagement
   );
@@ -201,7 +204,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
   );
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (e.buttons === 1) {
+    if (e.buttons === 1 && heldIndex === NULL_HELD_INDEX) {
       handleDragStart(e);
     }
 
@@ -234,6 +237,15 @@ export const PlayingCard = (props: PlayingCardProps) => {
       }
     },
     [card?.type, cardManagement.heldIndex, handleDragStart, props]
+  );
+
+  const handleMouseUp = React.useCallback(
+    (e: React.MouseEvent) => {
+      if (cardManagement.heldIndex !== NULL_HELD_INDEX) {
+        props.onDrop?.(props.index);
+      }
+    },
+    [cardManagement.heldIndex, props]
   );
 
   const heldClasses = props.isHeld ? `fixed pointer-events-none z-40` : "";
@@ -279,6 +291,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
       id={card.type + "-" + card.deck}
       className={heldClasses}
       onClick={handleClick}
+      onMouseUp={handleMouseUp}
       style={
         props.isHeld
           ? {
