@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { throttle } from "lodash";
 
 import { Dock } from "Game/Dock";
 import { Deck } from "Game/Deck";
@@ -116,11 +115,13 @@ const handleMessage = (
         type: "info",
         id: generateId("toast", 12),
       });
-      updatePlayer({
-        playerId: message.playerId,
-        roundScore: message.roundScore,
-        totalScore: message.totalScore,
-      });
+      dispatch(
+        updatePlayer({
+          playerId: message.playerId,
+          roundScore: message.roundScore,
+          totalScore: message.totalScore,
+        })
+      );
       break;
     default:
       console.error("unhandled message", message);
@@ -362,34 +363,6 @@ export const Board = (props: BoardProps) => {
     return res;
   }, [gameId, handleError, heldCards, heldIndex, self.token]);
 
-  // const throttledSetDropSlotIndex = React.useCallback(
-  //   throttle(
-  //     (index: number | null) => {
-  //       dispatch(setDropSlotIndex(index));
-  //     },
-  //     100,
-  //     { trailing: true }
-  //   ),
-  //   []
-  // );
-
-  // const handleSetDropSlotIndex = React.useCallback(
-  //   (index: number | null) => {
-  //     if (index === null) {
-  //       return;
-  //     }
-
-  //     if (dropSlotIndex) {
-  //       dispatch(
-  //         setHand([...heldCards.slice(0, index), ...heldCards.slice(index)])
-  //       );
-  //     }
-
-  //     throttledSetDropSlotIndex(index);
-  //   },
-  //   [dispatch, dropSlotIndex, heldCards, throttledSetDropSlotIndex]
-  // );
-
   const handleDrop = React.useCallback(
     async (dropIndex: number) => {
       if (dropIndex === null || heldIndex === null) {
@@ -503,18 +476,52 @@ export const Board = (props: BoardProps) => {
   }, [endTurn, endTurnPending, goOut, goOutPending]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div
+      className="min-w-screen min-h-screen flex flex-col items-center"
+      onMouseUp={() => {
+        dispatch(setHeldIndex(NULL_HELD_INDEX));
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          dispatch(setHeldIndex(NULL_HELD_INDEX));
+        }
+      }}
+    >
       <Toasts toasts={toasts} key="toasts" />
 
       <PlayerList key="playerList" />
 
-      <div
-        key="scorecard"
-        className="absolute top-2 right-2 w-8 h-8 bg-gray-300"
-        onMouseEnter={() => setScorecardShown(true)}
-        onMouseLeave={() => setScorecardShown(false)}
-      />
-      {scorecardShown && <Scorecard />}
+      <div key="top-right-buttons" className="absolute top-2 right-2">
+        <Button
+          onClick={() => setScorecardShown(!scorecardShown)}
+          type="secondary"
+          text={
+            <svg
+              width="24px"
+              height="24px"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8.5 4H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2.5"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                className="stroke-gray-600 dark:stroke-white"
+              ></path>
+              <path
+                d="M8 6.4V4.5a.5.5 0 01.5-.5c.276 0 .504-.224.552-.496C9.2 2.652 9.774 1 12 1s2.8 1.652 2.948 2.504c.048.272.276.496.552.496a.5.5 0 01.5.5v1.9a.6.6 0 01-.6.6H8.6a.6.6 0 01-.6-.6z"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                className="stroke-gray-600 dark:stroke-white"
+              ></path>
+            </svg>
+          }
+        />
+      </div>
+
+      {scorecardShown && <Scorecard onClose={() => setScorecardShown(false)} />}
 
       <Dock
         key="dock"
@@ -547,14 +554,22 @@ export const Board = (props: BoardProps) => {
         />
       )}
 
-      {game.state === GameState.TurnSummary && (
+      <RoundSummary
+        shown={game.state === GameState.TurnSummary}
+        key="roundSummary"
+        onContinue={() => {
+          dispatch(setState(GameState.Playing));
+        }}
+      />
+
+      {/* {game.state === GameState.TurnSummary && (
         <RoundSummary
           key="roundSummary"
           onContinue={() => {
             dispatch(setState(GameState.Playing));
           }}
         />
-      )}
+      )} */}
     </div>
   );
 };

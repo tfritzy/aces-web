@@ -5,17 +5,17 @@ import autoAnimate from "@formkit/auto-animate";
 import { Button } from "components/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "store/store";
+import { Player } from "store/playerSlice";
 
-type Player = {
-  displayName: string;
-  roundScore: number;
-  totalScore: number;
+type SummaryPlayer = Player & {
   placement: number;
   prevPlacement: number;
+  roundScore: number;
 };
 
 type RoundSummaryProps = {
   onContinue: () => void;
+  shown: boolean;
 };
 
 export const RoundSummary = (props: RoundSummaryProps) => {
@@ -30,19 +30,18 @@ export const RoundSummary = (props: RoundSummaryProps) => {
       });
   }, [parent]);
 
-  const [sortedPlayers, setSortedPlayers] = React.useState<Player[]>([]);
+  const [sortedPlayers, setSortedPlayers] = React.useState<SummaryPlayer[]>([]);
 
   React.useEffect(() => {
     const players = gamePlayers.map((p) => ({
-      displayName: p.displayName,
-      roundScore: p.scorePerRound[game.round - 1],
-      totalScore: p.totalScore,
+      ...p,
+      roundScore: p.scorePerRound[game.round - 1] || 0,
       placement: 0,
       prevPlacement: 0,
     }));
 
     players.sort((a, b) => {
-      return a.roundScore - b.roundScore;
+      return a.totalScore - b.totalScore;
     });
 
     players.forEach((p, i) => {
@@ -69,9 +68,9 @@ export const RoundSummary = (props: RoundSummaryProps) => {
     }, 1000);
 
     console.log("init", players);
-  }, [game.round, gamePlayers]);
+  }, [game.round, gamePlayers, props.shown]);
 
-  const getChevron = (p: Player) => {
+  const getChevron = (p: SummaryPlayer) => {
     if (p.placement === p.prevPlacement) {
       return "";
     }
@@ -83,8 +82,12 @@ export const RoundSummary = (props: RoundSummaryProps) => {
     return <div className="text-sm text-red-400">▼</div>;
   };
 
+  if (!props.shown) {
+    return null;
+  }
+
   return (
-    <Modal width="w-80">
+    <Modal width="w-96">
       <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-600">
         <div className="font-semibold text-2xl text-center p-2">{`Round ${game.round} results`}</div>
 
@@ -92,18 +95,15 @@ export const RoundSummary = (props: RoundSummaryProps) => {
           {sortedPlayers.map((p, i) => {
             const icon = "Icons/characters/" + (i % 5) + ".png";
             return (
-              <div
-                className="flex flex-row items-center space-x-4"
-                key={p.displayName}
-              >
+              <div className="flex flex-row items-center space-x-4" key={p.id}>
                 <div>
                   <div className="font-bold text-xl leading-none">
                     {p.placement}
                   </div>
                   {getChevron(p)}
                 </div>
-                <div className="rounded-full grid grid-cols-4 items-center justify-between bg-slate-50 w-64 shadow-sm p-1 dark:bg-gray-700">
-                  <div className="shadow-sm w-12 h-12 rounded-full">
+                <div className="rounded-full flex flex-row items-center  bg-slate-50 w-80 shadow-sm p-1 dark:bg-gray-700">
+                  <div className="shadow-sm w-12 h-12 rounded-full mr-2">
                     <div className="overflow-hidden w-12 h-12 rounded-full bg-white dark:bg-gray-600">
                       <img
                         src={icon}
@@ -113,14 +113,14 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                     </div>
                   </div>
 
-                  <div className="text-left">{p.displayName}</div>
+                  <div className="text-left grow truncate">{p.displayName}</div>
 
-                  <div className="text-center">
+                  <div className="text-center px-3">
                     <div className="text-xs leading-none">Round</div>
                     <div className="font-bold">{p.roundScore}</div>
                   </div>
 
-                  <div className="text-center">
+                  <div className="text-center px-3 mr-3">
                     <div className="text-xs leading-none">Total</div>
                     <div className="font-bold">{p.totalScore}</div>
                   </div>

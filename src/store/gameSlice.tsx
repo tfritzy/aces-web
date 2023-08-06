@@ -33,6 +33,9 @@ export const gameSlice = createSlice({
   name: "game",
   initialState: initialGameState,
   reducers: {
+    resetAll: () => {
+      return initialGameState;
+    },
     setState: (state, action: { payload: GameState }) => {
       state.state = action.payload;
     },
@@ -64,6 +67,7 @@ export const gameSlice = createSlice({
 });
 
 export const {
+  resetAll,
   setGameId,
   setState,
   addToPile,

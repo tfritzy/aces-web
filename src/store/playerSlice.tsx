@@ -20,7 +20,11 @@ export const playersSlice = createSlice({
   initialState: initialPlayersState,
   reducers: {
     addPlayer: (state, action: { payload: Player }) => {
-      state.players.push(action.payload);
+      const player = action.payload;
+      if (!player.scorePerRound) {
+        player.scorePerRound = [];
+      }
+      state.players.push(player);
     },
     updatePlayer: (
       state,
@@ -44,6 +48,11 @@ export const playersSlice = createSlice({
     },
     setPlayers: (state, action) => {
       state.players = action.payload;
+      state.players.forEach((player) => {
+        if (!player.scorePerRound) {
+          player.scorePerRound = [];
+        }
+      });
     },
   },
 });

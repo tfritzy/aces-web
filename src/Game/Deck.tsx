@@ -21,7 +21,9 @@ export const Deck = (props: DeckProps) => {
         <div
           key={i}
           className={`absolute w-32 h-4 border-b rounded ${
-            i % 2 === 0 ? "border-gray-500" : "border-gray-600"
+            i % 2 === 0
+              ? "border-gray-200 dark:border-gray-500"
+              : "border-gray-300 dark:border-gray-600"
           } }`}
         ></div>
       </div>

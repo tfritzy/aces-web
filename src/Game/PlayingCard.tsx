@@ -69,25 +69,21 @@ const getValueIcon = (card: Card): string[] => {
   }
 };
 
-const themedBlack = "text-black dark:text-emerald-400";
-const themedRed = "text-red-600 dark:text-amber-400";
-const themedBorderBlack = "border-black dark:border-emerald-400";
-const themedBorderRed = "border-red-600 dark:border-amber-400";
+const themedBlack = "text-black dark:text-emerald-300";
+const themedRed = "text-red-600 dark:text-amber-300";
 const cardBackground = "bg-gray-50 dark:bg-slate-950";
 
-const getCardColor = (card: Card, border?: boolean) => {
+const getCardColor = (card: Card) => {
   switch (card.suit) {
     case Suit.CLUBS:
     case Suit.SPADES:
-      return border ? themedBorderBlack : themedBlack;
+      return themedBlack;
     case Suit.DIAMONDS:
     case Suit.HEARTS:
-      return border ? themedBorderRed : themedRed;
+      return themedRed;
     case Suit.SUITLESS:
-      if (card.type === CardType.JOKER_A)
-        return border ? themedBorderRed : themedRed;
-      if (card.type === CardType.JOKER_B)
-        return border ? themedBorderBlack : themedBlack;
+      if (card.type === CardType.JOKER_A) return themedRed;
+      if (card.type === CardType.JOKER_B) return themedBlack;
       return "text-gray-400";
   }
 };
@@ -103,9 +99,9 @@ const CardCol = (props: CardColProps) => {
   }
 
   const flex = props.reverse ? "flex-col -rotate-180" : "flex-col";
-  const className = `flex h-full text-lg font-mono leading-3 select-none items-center ${flex} w-4`;
+  const className = `flex h-full text-lg leading-3 select-none items-center ${flex} w-4 space-y-2`;
   const suitIndicator = (
-    <div className="text-xs">{getSuitIcon(props.card)}</div>
+    <div className="text-md">{getSuitIcon(props.card)}</div>
   );
   const valueIcon = getValueIcon(props.card);
 
@@ -204,9 +200,9 @@ export const PlayingCard = (props: PlayingCardProps) => {
   );
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (e.buttons === 1 && heldIndex === NULL_HELD_INDEX) {
-      handleDragStart(e);
-    }
+    // if (e.buttons === 1 && heldIndex === NULL_HELD_INDEX) {
+    //   handleDragStart(e);
+    // }
 
     if (!selfRef.current) {
       return;
@@ -221,31 +217,22 @@ export const PlayingCard = (props: PlayingCardProps) => {
     } else {
       dispatch(setDropSlotIndex(props.index));
     }
-
-    e.preventDefault();
   };
 
-  const handleClick = React.useCallback(
+  const handleMouseUp = React.useCallback(
     (e: React.MouseEvent) => {
-      if (
-        cardManagement.heldIndex !== NULL_HELD_INDEX &&
-        props.index !== cardManagement.heldIndex
-      ) {
-        props.onDrop?.(props.index);
+      e.stopPropagation();
+      if (cardManagement.heldIndex !== NULL_HELD_INDEX) {
+        if (props.index === cardManagement.heldIndex) {
+          dispatch(setHeldIndex(NULL_HELD_INDEX));
+        } else {
+          props.onDrop?.(props.index);
+        }
       } else if (card.type !== CardType.SPACER) {
         handleDragStart(e);
       }
     },
-    [card?.type, cardManagement.heldIndex, handleDragStart, props]
-  );
-
-  const handleMouseUp = React.useCallback(
-    (e: React.MouseEvent) => {
-      if (cardManagement.heldIndex !== NULL_HELD_INDEX) {
-        props.onDrop?.(props.index);
-      }
-    },
-    [cardManagement.heldIndex, props]
+    [card.type, cardManagement.heldIndex, dispatch, handleDragStart, props]
   );
 
   const heldClasses = props.isHeld ? `fixed pointer-events-none z-40` : "";
@@ -260,14 +247,14 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div
         key={"spacer"}
-        className={`border-dashed border w-32 h-40 p-2 mx-1 rounded-md border-gray-700 dark:border-white`}
+        className={`border-dashed border w-32 h-40 p-2 mx-1 rounded-md border-gray-700 dark:border-white select-none`}
       />
     );
   } else if (card.type === CardType.CARD_BACK) {
     cardElement = (
       <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
-          className={`drop-shadow-md bg-gradient-to-r from-cyan-600 to-emerald-600 border-gray-500 border-solid border w-32 h-40 p-2 rounded-md`}
+          className={`drop-shadow-md bg-gradient-to-r from-cyan-200 dark:from-cyan-600 to-emerald-200 dark:to-emerald-600 border-gray-400 dark:border-gray-500 border-solid border w-32 h-40 p-2 rounded-md select-none`}
         />
       </div>
     );
@@ -276,7 +263,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
-          className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md  dark:border-gray-600 overflow-hidden select-none`}
+          className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md dark:border-gray-600 overflow-hidden select-none`}
         >
           <CardCol card={card} />
           <CardFace card={card} />
@@ -290,7 +277,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
     <div
       id={card.type + "-" + card.deck}
       className={heldClasses}
-      onClick={handleClick}
       onMouseUp={handleMouseUp}
       style={
         props.isHeld

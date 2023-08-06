@@ -2,7 +2,11 @@ import { Modal } from "components/Modal";
 import { useSelector } from "react-redux";
 import { RootState } from "store/store";
 
-export const Scorecard = () => {
+type ScorecardProps = {
+  onClose: () => void;
+};
+
+export const Scorecard = (props: ScorecardProps) => {
   const players = useSelector((state: RootState) => state.players.players);
 
   const cellClasses = "py-1 px-2 border border-gray-400";
@@ -15,7 +19,7 @@ export const Scorecard = () => {
         {players.map((p, j) => {
           return (
             <td className={cellClasses} key={j}>
-              {p.scorePerRound[i]}
+              {p.scorePerRound && p.scorePerRound[i]}
             </td>
           );
         })}
@@ -29,6 +33,14 @@ export const Scorecard = () => {
         <thead>
           <th className={cellClasses} colSpan={players.length + 1}>
             Scorecard
+            {
+              <button
+                className="absolute top-1 right-2 text-red-500"
+                onClick={props.onClose}
+              >
+                🗙
+              </button>
+            }
           </th>
         </thead>
         <thead>

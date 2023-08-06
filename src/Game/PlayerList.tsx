@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { getDefaultAvatar } from "helpers/getDefaultAvatar";
 import { useSelector } from "react-redux";
 import { Player } from "store/playerSlice";
@@ -10,16 +11,25 @@ type PlayerStatusProps = {
 };
 
 export const PlayerStatus = (props: PlayerStatusProps) => {
+  const [parent] = useAutoAnimate();
   const turn = useSelector((state: RootState) => state.game.turn);
   const self = useSelector((state: RootState) => state.self);
 
   const isSelf = props.player.id === self.id;
 
   return (
-    <div className="flex flex-row items-center space-x-3" key={props.player.id}>
-      {turn === props.index && <div className="text-3xl text-blue-300">➜</div>}
+    <div
+      className="flex flex-row items-center space-x-3"
+      key={props.player.id}
+      ref={parent}
+    >
+      {turn === props.index && (
+        <div key="arrow" className="text-3xl text-blue-300">
+          ➜
+        </div>
+      )}
       <div
-        className={`rounded-lg flex flex-row space-x-1 items-center bg-slate-50  shadow-sm border border-gray-200 dark:border-gray-500 dark:bg-gray-700 pl-3 pr-5 overflow-hidden ${
+        className={`rounded-lg flex flex-row space-x-1 items-center bg-slate-50  shadow-md border border-gray-300 dark:border-gray-500 dark:bg-gray-700 pl-3 pr-5 overflow-hidden ${
           isSelf ? "pr-5" : "pr-3"
         }`}
       >

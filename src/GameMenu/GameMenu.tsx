@@ -7,7 +7,7 @@ import { Button } from "components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { setDisplayName } from "store/selfSlice";
-import { GameState, setGameId } from "store/gameSlice";
+import { GameState, resetAll as resetGame, setGameId } from "store/gameSlice";
 import { addPlayer, setPlayers } from "store/playerSlice";
 import { setState } from "store/gameSlice";
 import { handleError } from "helpers/handleError";
@@ -16,6 +16,8 @@ import { useNavigate } from "react-router-dom";
 import { GameStateForPlayer } from "Game/Types";
 import { ToastProps } from "components/Toast";
 import { TabRow } from "components/TabRow";
+import { resetCards } from "store/cardManagementSlice";
+import { Dispatch } from "@reduxjs/toolkit";
 
 const adjectives = [
   "Joyful",
@@ -67,6 +69,12 @@ type JoinGameMenuProps = {
   addToast: (props: ToastProps) => void;
 };
 
+const resetAll = (dispatch: Dispatch) => {
+  dispatch(resetCards());
+  dispatch(resetGame());
+  dispatch(setPlayers([]));
+};
+
 const JoinGameMenu = (props: JoinGameMenuProps) => {
   const [code, setCode] = useState("");
   const [joinPending, setJoinPending] = useState(false);
@@ -96,9 +104,8 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
       setJoinPending(false);
       if (res.ok) {
         const body: GameStateForPlayer = await res.json();
-        body.players.forEach((p) => {
-          dispatch(addPlayer(p));
-        });
+        resetAll(dispatch);
+        dispatch(setPlayers(body.players));
         dispatch(setGameId(gameId));
         dispatch(setState(GameState.Setup));
 
@@ -190,6 +197,7 @@ const CreateGameMenu = (props: GameMenuProps) => {
       setCreatePending(false);
       if (res.ok) {
         const body = await res.json();
+        resetAll(dispatch);
         dispatch(setGameId(body.id));
         dispatch(setState(GameState.Setup));
         dispatch(setPlayers([{ displayName: self.displayName }]));

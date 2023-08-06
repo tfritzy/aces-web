@@ -1,5 +1,5 @@
 type ModalProps = {
-  width?: "w-80" | "w-64" | "min-w-max";
+  width?: "w-96" | "w-80" | "w-64" | "min-w-max";
   children: React.ReactNode;
 };
 

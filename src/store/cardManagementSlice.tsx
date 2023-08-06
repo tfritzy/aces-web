@@ -20,6 +20,9 @@ export const cardManagementSlice = createSlice({
   name: "cardManagement",
   initialState: initialState,
   reducers: {
+    resetCards: () => {
+      return initialState;
+    },
     setHeldIndex: (state, action: { payload: number }) => {
       state.heldIndex = action.payload;
     },
@@ -32,5 +35,5 @@ export const cardManagementSlice = createSlice({
   },
 });
 
-export const { setHeldIndex, setDropSlotIndex, setMousePos } =
+export const { setHeldIndex, setDropSlotIndex, setMousePos, resetCards } =
   cardManagementSlice.actions;

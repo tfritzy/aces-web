@@ -2,9 +2,9 @@ import * as React from "react";
 import { Card } from "Game/Types";
 import { PlayingCard } from "Game/PlayingCard";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
-import { NULL_HELD_INDEX } from "store/cardManagementSlice";
+import { NULL_HELD_INDEX, setDropSlotIndex } from "store/cardManagementSlice";
 
 type DockProps = {
   cards: Card[];
@@ -14,6 +14,7 @@ type DockProps = {
 
 export const Dock = (props: DockProps) => {
   const [parent] = useAutoAnimate({ duration: 150 });
+  const dispatch = useDispatch();
   const heldIndex = useSelector(
     (state: RootState) => state.cardManagement.heldIndex
   );
@@ -23,6 +24,7 @@ export const Dock = (props: DockProps) => {
 
   const handleDrop = React.useCallback(
     (e: React.MouseEvent) => {
+      e.stopPropagation();
       if (dropSlotIndex === null) {
         return;
       }
@@ -30,6 +32,13 @@ export const Dock = (props: DockProps) => {
       props.onDrop(dropSlotIndex);
     },
     [dropSlotIndex, props]
+  );
+
+  const handleMouseExit = React.useCallback(
+    (e: React.MouseEvent) => {
+      dispatch(setDropSlotIndex(null));
+    },
+    [dispatch]
   );
 
   const playingCards = [];
@@ -88,11 +97,11 @@ export const Dock = (props: DockProps) => {
   }
 
   return (
-    <div className="w-full fixed bottom-[15%]">
+    <div className="w-full fixed bottom-[12%]" onMouseLeave={handleMouseExit}>
       <div className="relative">
         {props.buttons}
         <div
-          className="flex justify-center bg-white p-4 shadow-inner border border-gray-100 dark:bg-gray-800 dark:border-gray-600"
+          className="flex justify-center bg-white p-4 shadow-inner border border-gray-300 dark:bg-gray-800 dark:border-gray-600"
           ref={parent}
         >
           {playingCards}
