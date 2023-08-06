@@ -5,6 +5,7 @@ import { NULL_HELD_INDEX } from "Game/Board";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { setDropSlotIndex, setHeldIndex } from "store/cardManagementSlice";
+import { DropSlot } from "components/DropSlot";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -134,7 +135,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
       cardSuitColPlacements[card.value as keyof typeof cardSuitColPlacements];
 
     face = (
-      <div className="flex flex-row w-full px-2">
+      <div className="flex flex-row w-full px-1">
         <div className="flex flex-col grow items-center justify-evenly text-2xl">
           {Array.from({ length: counts[0] }).map((_, i) => (
             <div className={i >= counts[0] / 2 ? "rotate-180" : ""} key={i}>
@@ -244,17 +245,12 @@ export const PlayingCard = (props: PlayingCardProps) => {
   }
 
   if (card.type === CardType.SPACER) {
-    cardElement = (
-      <div
-        key={"spacer"}
-        className={`border-dashed border w-32 h-40 p-2 mx-1 rounded-md border-gray-700 dark:border-white select-none`}
-      />
-    );
+    cardElement = <DropSlot />;
   } else if (card.type === CardType.CARD_BACK) {
     cardElement = (
       <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
-          className={`drop-shadow-md bg-gradient-to-r from-cyan-200 dark:from-cyan-600 to-emerald-200 dark:to-emerald-600 border-gray-400 dark:border-gray-500 border-solid border w-32 h-40 p-2 rounded-md select-none`}
+          className={`drop-shadow-md bg-gradient-to-r from-cyan-200 dark:from-cyan-600 to-emerald-200 dark:to-emerald-600 border-gray-400 border-solid border w-32 h-40 p-2 rounded-md select-none`}
         />
       </div>
     );
@@ -263,7 +259,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
-          className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-500 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md dark:border-gray-600 overflow-hidden select-none`}
+          className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-400 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md overflow-hidden select-none`}
         >
           <CardCol card={card} />
           <CardFace card={card} />

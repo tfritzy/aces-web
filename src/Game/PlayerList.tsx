@@ -49,7 +49,7 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
 
         {isSelf && (
           <div className="relative">
-            <div className="absolute rotate-[40deg] bg-blue-300 w-16 text-center -top-[22px] -right-[40px] text-sm text-blue-700">
+            <div className="absolute rotate-[40deg] bg-violet-300 w-16 text-center -top-[22px] -right-[40px] text-sm text-violet-800">
               You
             </div>
           </div>

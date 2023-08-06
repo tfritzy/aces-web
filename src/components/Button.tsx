@@ -8,7 +8,7 @@ type ButtonProps = {
 export const Button = (props: ButtonProps) => {
   const typeClasses =
     props.type === "primary"
-      ? "bg-blue-500 border-blue-600 text-white hover:border-blue-600 dark:hover:border-blue-200"
+      ? "bg-blue-500 border-blue-600 text-white hover:border-blue-800 dark:hover:border-blue-200"
       : "bg-white dark:bg-slate-700 border-gray-400 dark:border-slate-500 text-gray-800 dark:text-white hover:border-black";
 
   return (

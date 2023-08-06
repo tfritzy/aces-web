@@ -5,6 +5,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { NULL_HELD_INDEX, setDropSlotIndex } from "store/cardManagementSlice";
+import { DropSlot } from "components/DropSlot";
 
 type DockProps = {
   cards: Card[];
@@ -65,16 +66,7 @@ export const Dock = (props: DockProps) => {
     dropSlotIndex !== null &&
     dropSlotIndex >= 0
   ) {
-    playingCards.splice(
-      dropSlotIndex,
-      0,
-      <div
-        onClick={handleDrop}
-        onMouseUp={handleDrop}
-        key="drop-slot"
-        className="w-32 h-40 rounded-md border-dashed border border-gray-500 p-2 mx-1"
-      />
-    );
+    playingCards.splice(dropSlotIndex, 0, <DropSlot drop={handleDrop} />);
   }
 
   let heldCard = undefined;
@@ -101,7 +93,7 @@ export const Dock = (props: DockProps) => {
       <div className="relative">
         {props.buttons}
         <div
-          className="flex justify-center bg-white p-4 shadow-inner border border-gray-300 dark:bg-gray-800 dark:border-gray-600"
+          className="flex justify-center bg-white py-6 shadow-inner border-2 border-gray-100 dark:bg-gray-800 dark:border-gray-600"
           ref={parent}
         >
           {playingCards}

@@ -216,10 +216,18 @@ export const Board = (props: BoardProps) => {
       dispatch(setMousePos({ x: event.clientX, y: event.clientY }));
     };
 
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        dispatch(setHeldIndex(NULL_HELD_INDEX));
+      }
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("keydown", handleEscape);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
@@ -530,7 +538,10 @@ export const Board = (props: BoardProps) => {
         buttons={buttons}
       />
 
-      <div className="fixed top-[20%]">
+      <div
+        key="cards"
+        className="fixed top-[20%] py-8 px-10 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner"
+      >
         <div className="relative flex flex-row space-x-8" key="cards">
           <Deck key="deck" heldIndex={heldIndex} setHeldIndex={setHeldIndex} />
 

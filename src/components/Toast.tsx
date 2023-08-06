@@ -8,12 +8,12 @@ export type ToastProps = {
   id: string;
 };
 
-const getColor = (type: ToastType) => {
+const getColorClasses = (type: ToastType) => {
   switch (type) {
     case "error":
-      return "#ffe169";
+      return "text-amber-600 dark:text-amber-500 stroke-amber-600 dark:stroke-amber-500";
     case "info":
-      return "white";
+      return "text-black dark:text-white stroke-black dark:stroke-white";
     default:
       return "black";
   }
@@ -30,17 +30,17 @@ const getIcon = (type: ToastType) => {
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          color={getColor(type)}
+          className={getColorClasses(type)}
         >
           <path
             d="M20.043 21H3.957c-1.538 0-2.5-1.664-1.734-2.997l8.043-13.988c.77-1.337 2.699-1.337 3.468 0l8.043 13.988C22.543 19.336 21.58 21 20.043 21zM12 9v4"
-            stroke={getColor(type)}
+            className={getColorClasses(type)}
             strokeWidth="1.5"
             strokeLinecap="round"
           ></path>
           <path
             d="M12 17.01l.01-.011"
-            stroke={getColor(type)}
+            className={getColorClasses(type)}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -56,11 +56,11 @@ const getIcon = (type: ToastType) => {
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          color={getColor(type)}
+          className={getColorClasses(type)}
         >
           <path
             d="M12 11.5v5M12 7.51l.01-.011M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
-            stroke={getColor(type)}
+            className={getColorClasses(type)}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -76,15 +76,16 @@ export const Toast = (props: ToastProps) => {
   return (
     <div
       id="toast-simple"
-      className="flex flex-row items-center h-min p-2 px-3 rounded-md shadow text-gray-400 divide-gray-700 space-x bg-gray-800 border border-gray-700 w-min pointer-events-auto"
+      className="flex flex-row items-center h-min p-2 px-3 rounded-md shadow-md text-black dark:text-gray-400 divide-gray-700 space-x bg-white dark:bg-gray-800  border border-gray-300 dark:border-gray-700 w-min pointer-events-auto"
       role="alert"
       key={props.id}
     >
       {getIcon(props.type)}
 
       <div
-        style={{ color: getColor(props.type) }}
-        className="pl-2 text-sm font-normal min-w-max"
+        className={`pl-2 text-sm font-normal min-w-max ${getColorClasses(
+          props.type
+        )}`}
       >
         {props.message}
       </div>
