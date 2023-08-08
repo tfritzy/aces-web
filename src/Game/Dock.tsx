@@ -93,7 +93,7 @@ export const Dock = (props: DockProps) => {
       <div className="relative">
         {props.buttons}
         <div
-          className="flex justify-center bg-white py-6 shadow-inner border-2 border-gray-100 dark:bg-gray-800 dark:border-gray-600"
+          className="flex justify-center bg-white py-6 shadow-inner border-t-2 border-b-2 border-gray-100 dark:bg-gray-800 dark:border-gray-700"
           ref={parent}
         >
           {playingCards}

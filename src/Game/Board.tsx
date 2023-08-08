@@ -529,7 +529,10 @@ export const Board = (props: BoardProps) => {
         />
       </div>
 
-      {scorecardShown && <Scorecard onClose={() => setScorecardShown(false)} />}
+      <Scorecard
+        shown={scorecardShown}
+        onClose={() => setScorecardShown(false)}
+      />
 
       <Dock
         key="dock"
@@ -549,21 +552,21 @@ export const Board = (props: BoardProps) => {
         </div>
       </div>
 
-      {game.state === GameState.Setup && (
-        <Lobby
-          key="lobby"
-          token={self.token}
-          gameId={gameId}
-          players={players}
-          onError={(message) => {
-            addToast({
-              message: message,
-              id: generateId("toast", 5),
-              type: "error",
-            });
-          }}
-        />
-      )}
+      <Lobby
+        shown={game.state === GameState.Setup}
+        key="lobby"
+        token={self.token}
+        gameId={gameId}
+        players={players}
+        onError={(message) => {
+          addToast({
+            message: message,
+            id: generateId("toast", 5),
+            type: "error",
+          });
+        }}
+        onClose={() => {}}
+      />
 
       <RoundSummary
         shown={game.state === GameState.TurnSummary}

@@ -34,7 +34,7 @@ const players = [
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <GameMenu />,
+    element: <GameMenu shown />,
   },
   {
     path: "game/:gameId",
@@ -64,7 +64,7 @@ export const App = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="">
+    <div className="dark">
       <div className="w-full h-screen bg-white dark:bg-gray-900">
         <base href="/" />
         <RouterProvider router={router} />

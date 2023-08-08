@@ -4,6 +4,7 @@ import { RootState } from "store/store";
 
 type ScorecardProps = {
   onClose: () => void;
+  shown: boolean;
 };
 
 export const Scorecard = (props: ScorecardProps) => {
@@ -28,7 +29,7 @@ export const Scorecard = (props: ScorecardProps) => {
   }
 
   return (
-    <Modal width="min-w-max">
+    <Modal width="min-w-max" shown={props.shown} onClose={props.onClose}>
       <table className="table-auto">
         <thead>
           <th className={cellClasses} colSpan={players.length + 1}>

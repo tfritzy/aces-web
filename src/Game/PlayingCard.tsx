@@ -100,7 +100,7 @@ const CardCol = (props: CardColProps) => {
   }
 
   const flex = props.reverse ? "flex-col -rotate-180" : "flex-col";
-  const className = `flex h-full text-lg leading-3 select-none items-center ${flex} w-4 space-y-2`;
+  const className = `flex h-full text-lg leading-5 select-none items-center ${flex} w-4`;
   const suitIndicator = (
     <div className="text-md">{getSuitIcon(props.card)}</div>
   );
@@ -164,7 +164,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
   } else {
     face = (
       <div className="w-full h-full flex justify-center items-center text-5xl">
-        {getValueIcon(card)[0]}
+        {getSuitIcon(card)}
       </div>
     );
   }
@@ -250,7 +250,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
-          className={`drop-shadow-md bg-gradient-to-r from-cyan-200 dark:from-cyan-600 to-emerald-200 dark:to-emerald-600 border-gray-400 border-solid border w-32 h-40 p-2 rounded-md select-none`}
+          className={`drop-shadow-md bg-gradient-to-r from-cyan-200 dark:from-cyan-600 to-emerald-200 dark:to-emerald-600 border-gray-400 dark:border-gray-700 border-solid border w-32 h-40 p-2 rounded-md select-none`}
         />
       </div>
     );
@@ -259,7 +259,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
-          className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-400 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md overflow-hidden select-none`}
+          className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-400 dark:border-gray-700 border-solid border flex w-32 h-40 p-2 mx-1 rounded-md overflow-hidden select-none`}
         >
           <CardCol card={card} />
           <CardFace card={card} />

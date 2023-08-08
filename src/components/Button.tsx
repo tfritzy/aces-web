@@ -3,19 +3,25 @@ type ButtonProps = {
   text: JSX.Element | string;
   type: "primary" | "secondary";
   pending?: boolean;
+  size?: "small" | "jumbo";
 };
 
 export const Button = (props: ButtonProps) => {
   const typeClasses =
     props.type === "primary"
-      ? "bg-blue-500 border-blue-600 text-white hover:border-blue-800 dark:hover:border-blue-200"
+      ? "bg-blue-500 border-blue-600 text-white hover:border-blue-800 dark:hover:border-blue-300"
       : "bg-white dark:bg-slate-700 border-gray-400 dark:border-slate-500 text-gray-800 dark:text-white hover:border-black";
+
+  const sizeClasses =
+    !props.size || props.size === "small"
+      ? "px-2 py-1 text-sm"
+      : "py-2 text-md font-semibold w-full text-center";
 
   return (
     <div className="h-min">
       <button
         onClick={props.onClick}
-        className={`flex items-center flex-row text-sm rounded-md drop-shadow border font-semibold w-fit ${typeClasses} space-x-1 disabled:opacity-50 px-2 py-1 hover:shadow-md`}
+        className={`flex justify-center rounded-md drop-shadow border ${typeClasses} ${sizeClasses} space-x-1 disabled:opacity-50 px-2 py-1 hover:shadow-md`}
         disabled={props.pending}
       >
         {props.pending && (
@@ -41,7 +47,7 @@ export const Button = (props: ButtonProps) => {
           </svg>
         )}
 
-        <div>{props.text}</div>
+        {!props.pending && <div className="text-center">{props.text}</div>}
       </button>
     </div>
   );

@@ -3,12 +3,15 @@ import React from "react";
 import { API_URL } from "Constants";
 import { CopyBox } from "components/CopyBox";
 import { Modal } from "components/Modal";
+import { Button } from "components/Button";
 
 type LobbyProps = {
   gameId: string;
   players: { displayName: string }[];
   token: string;
   onError: (error: string) => void;
+  shown: boolean;
+  onClose: () => void;
 };
 
 export const Lobby = (props: LobbyProps) => {
@@ -28,17 +31,17 @@ export const Lobby = (props: LobbyProps) => {
   };
 
   return (
-    <Modal width="w-64">
-      <div className="text-gray-700 dark:text-white p-4">
-        <div className="text-center mb-3 text-xl font-semibold">Lobby</div>
+    <Modal shown={props.shown} width="w-64" onClose={props.onClose}>
+      <div className="text-gray-700 dark:text-white divide-y divide-gray-200 dark:divide-gray-600">
+        <div className="text-center p-3 text-xl font-semibold">Lobby</div>
 
-        <div className="flex flex-col space-y-3">
+        <div className="flex flex-col space-y-4 p-3 py-4">
           <div>
-            <div className="mb-1">Game code</div>
+            <div className="mb-2">Game code</div>
             <CopyBox text={props.gameId} />
           </div>
 
-          <div className="pb-2">
+          <div className="">
             <div className="flex flex-col space-y-2">
               <span>Players</span>
               {props.players.map((player) => (
@@ -51,15 +54,15 @@ export const Lobby = (props: LobbyProps) => {
               ))}
             </div>
           </div>
+        </div>
 
-          <div className="mt-12">
-            <button
-              className="rounded-md w-full drop-shadow bg-emerald-500 border border-emerald-600 px-4 p-2 text-white font-semibold hover:bg-emerald-600"
-              onClick={handleStartGame}
-            >
-              Start Game
-            </button>
-          </div>
+        <div className="p-3">
+          <Button
+            onClick={handleStartGame}
+            text="Start Game"
+            type="primary"
+            size="jumbo"
+          />
         </div>
       </div>
     </Modal>

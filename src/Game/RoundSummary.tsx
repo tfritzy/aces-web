@@ -82,12 +82,8 @@ export const RoundSummary = (props: RoundSummaryProps) => {
     return <div className="text-sm text-red-400">▼</div>;
   };
 
-  if (!props.shown) {
-    return null;
-  }
-
   return (
-    <Modal width="w-96">
+    <Modal width="w-96" shown={props.shown} onClose={props.onContinue}>
       <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-600">
         <div className="font-semibold text-2xl text-center p-2">{`Round ${game.round} results`}</div>
 

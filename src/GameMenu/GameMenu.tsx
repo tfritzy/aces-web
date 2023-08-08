@@ -1,14 +1,13 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { useState } from "react";
 
 import { API_URL } from "Constants";
-import { Modal } from "components/Modal";
 import Cookies from "universal-cookie";
 import { Button } from "components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { setDisplayName } from "store/selfSlice";
 import { GameState, resetAll as resetGame, setGameId } from "store/gameSlice";
-import { addPlayer, setPlayers } from "store/playerSlice";
+import { setPlayers } from "store/playerSlice";
 import { setState } from "store/gameSlice";
 import { handleError } from "helpers/handleError";
 import { Toasts, useToasts } from "components/Toasts";
@@ -145,7 +144,7 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
         type="text"
         onChange={(e) => handleCodeChange(e.target.value, i)}
         value={code[i] || ""}
-        className={`w-8 h-8 rounded-lg text-center border text-black bg-gray-200 dark:bg-gray-600 dark:border-gray-500 dark:text-white ${
+        className={`w-8 h-9 shadow-sm rounded-lg text-center border text-black bg-gray-100 dark:bg-gray-600 dark:border-gray-400 dark:text-white ${
           joinPending ? "opacity-50" : ""
         }`}
         ref={(el) => {
@@ -174,11 +173,11 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
   );
 };
 
-type GameMenuProps = {
+type CreateGameMenuProps = {
   addToast: (props: ToastProps) => void;
 };
 
-const CreateGameMenu = (props: GameMenuProps) => {
+const CreateGameMenu = (props: CreateGameMenuProps) => {
   const [createPending, setCreatePending] = useState(false);
   const dispatch = useDispatch();
   const self = useSelector((state: RootState) => state.self);
@@ -210,23 +209,27 @@ const CreateGameMenu = (props: GameMenuProps) => {
   };
 
   return (
-    <Button
-      onClick={handleCreateGame}
-      text="Create Game"
-      pending={createPending}
-      type="primary"
-    />
+    <div className="flex flex-row justify-end">
+      <Button
+        onClick={handleCreateGame}
+        text="Create Game"
+        pending={createPending}
+        type="primary"
+      />
+    </div>
   );
 };
 
-export const GameMenu = () => {
+type GameMenuProps = {
+  shown: boolean;
+};
+
+export const GameMenu = (props: GameMenuProps) => {
   const [showJoinGame, setShowJoinGame] = useState(true);
-  const [joinGameInput, setJoinGameInput] = useState("");
 
   const self = useSelector((state: RootState) => state.self);
   const dispatch = useDispatch();
   const { toasts, addToast } = useToasts();
-  const navigate = useNavigate();
 
   React.useEffect(() => {
     const cookies = new Cookies();
@@ -251,19 +254,19 @@ export const GameMenu = () => {
   return (
     <>
       <Toasts toasts={toasts} />
-      <Modal width="w-64">
-        <div className="flex flex-col space-y-4 p-4">
+      <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center text-black dark:text-white">
+        <div className="flex flex-col space-y-4 border border-gray-200 dark:border-gray-600 shadow-xl p-4 rounded-md bg-white dark:bg-gray-800">
           <div className="text-3xl text-center mb-4">Aces</div>
 
           <TabRow
             tabs={[
               {
-                label: "Join",
+                label: "Join game",
                 onClick: () => setShowJoinGame(true),
                 isSelected: showJoinGame,
               },
               {
-                label: "Create",
+                label: "Create new",
                 onClick: () => setShowJoinGame(false),
                 isSelected: !showJoinGame,
               },
@@ -279,7 +282,7 @@ export const GameMenu = () => {
             <input
               type="text"
               id="display_name"
-              className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:placeholder-gray-400"
+              className="border shadow-inner text-sm rounded-lg focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-600 dark:border-gray-400 dark:placeholder-gray-400"
               value={self.displayName}
               onChange={handleDisplayNameChange}
             />
@@ -291,7 +294,7 @@ export const GameMenu = () => {
             <CreateGameMenu addToast={addToast} />
           )}
         </div>
-      </Modal>
+      </div>
     </>
   );
 };
