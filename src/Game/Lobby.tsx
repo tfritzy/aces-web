@@ -15,7 +15,10 @@ type LobbyProps = {
 };
 
 export const Lobby = (props: LobbyProps) => {
+  const [startGamePending, setStartGamePending] = React.useState(false);
+
   const handleStartGame = () => {
+    setStartGamePending(true);
     fetch(`${API_URL}/api/start_game`, {
       method: "POST",
       headers: {
@@ -23,6 +26,7 @@ export const Lobby = (props: LobbyProps) => {
         "game-id": props.gameId,
       },
     }).then(async (res) => {
+      setStartGamePending(false);
       if (!res.ok) {
         const body = await res.text();
         props.onError(body);
@@ -59,6 +63,7 @@ export const Lobby = (props: LobbyProps) => {
         <div className="p-3">
           <Button
             onClick={handleStartGame}
+            pending={startGamePending}
             text="Start Game"
             type="primary"
             size="jumbo"

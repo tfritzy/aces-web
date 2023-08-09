@@ -13,7 +13,7 @@ export const TabRow = (prosp: TabRowProps) => {
         <button
           className={`px-3 py-1 rounded ${
             tab.isSelected
-              ? "text-white bg-emerald-500 border border-emerald-300"
+              ? "text-white bg-blue-500 border border-blue-400"
               : "text-gray-600 dark:text-gray-400"
           }`}
           onClick={tab.onClick}

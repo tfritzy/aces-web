@@ -14,24 +14,42 @@ type DeckProps = {
 export const Deck = (props: DeckProps) => {
   const deckSize = useSelector((state: RootState) => state.game.deckSize);
 
-  const cards = [];
-  for (let i = 0; i < deckSize / 2; i++) {
-    cards.push(
-      <div className="relative h-[.5px] -translate-y-[15px]" key={i}>
+  const cards = Array.from({ length: deckSize / 2 }, (_, i) => {
+    return (
+      <div className="relative">
         <div
-          key={i}
-          className={`absolute w-32 h-4 border-b rounded ${
-            i % 2 === 0
-              ? "border-gray-200 dark:border-gray-500"
-              : "border-gray-300 dark:border-gray-600"
-          } }`}
-        ></div>
+          className="absolute"
+          style={{ position: "absolute", top: -1 * i + "px" }}
+        >
+          <PlayingCard
+            isHeld={false}
+            card={cardBack}
+            index={DECK_HELD_INDEX}
+            key={i}
+          />
+        </div>
       </div>
     );
-  }
+  });
+
+  // const cards = [];
+  // for (let i = 0; i < deckSize / 2; i++) {
+  //   cards.push(
+  //     <div className="relative h-[.5px] -translate-y-[15px]" key={i}>
+  //       <div
+  //         key={i}
+  //         className={`absolute w-32 h-4 border-b rounded ${
+  //           i % 2 === 0
+  //             ? "border-gray-200 dark:border-gray-500"
+  //             : "border-gray-300 dark:border-gray-600"
+  //         } }`}
+  //       ></div>
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div>
+    <div className="w-32 h-44">
       {props.heldIndex === DECK_HELD_INDEX && (
         <PlayingCard
           isHeld
@@ -41,12 +59,6 @@ export const Deck = (props: DeckProps) => {
         />
       )}
 
-      <PlayingCard
-        isHeld={false}
-        card={cardBack}
-        index={DECK_HELD_INDEX}
-        key="deck"
-      />
       {cards}
     </div>
   );

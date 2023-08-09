@@ -16,25 +16,33 @@ export const Pile = (props: PileProps) => {
   const game = useSelector((state: RootState) => state.game);
 
   return (
-    <div>
-      {heldIndex === PILE_HELD_INDEX && (
-        <PlayingCard
-          isHeld
-          card={game.pile[game.pile.length - 1]}
-          index={PILE_HELD_INDEX}
-        />
-      )}
-
-      <PlayingCard
-        isHeld={false}
-        card={
-          game.pile[
-            game.pile.length - (heldIndex === PILE_HELD_INDEX ? 2 : 1)
-          ] || spacerCard
+    <div className="w-32 h-44">
+      {game.pile.map((card, index) => {
+        if (index === game.pile.length - 1 && heldIndex === PILE_HELD_INDEX) {
+          return (
+            <PlayingCard
+              isHeld
+              card={card}
+              index={PILE_HELD_INDEX}
+              key={card.type + "-" + card.deck}
+            />
+          );
         }
-        index={PILE_HELD_INDEX}
-        onDrop={handleDrop}
-      />
+
+        return (
+          <div className="relative">
+            <div style={{ position: "absolute", top: -1 * index + "px" }}>
+              <PlayingCard
+                isHeld={false}
+                card={card}
+                index={PILE_HELD_INDEX}
+                key={card.type + "-" + card.deck}
+                onDrop={handleDrop}
+              />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

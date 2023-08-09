@@ -12,7 +12,12 @@ import { RoundSummary } from "Game/RoundSummary";
 import { Button } from "components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "store/store";
-import { addPlayer, setPlayers, updatePlayer } from "store/playerSlice";
+import {
+  addPlayer,
+  playersSlice,
+  setPlayers,
+  updatePlayer,
+} from "store/playerSlice";
 import {
   GameState,
   addToPile,
@@ -38,11 +43,13 @@ import {
   setHeldIndex,
   setMousePos,
 } from "store/cardManagementSlice";
+import { Alert } from "components/Alert";
 
 const handleMessage = (
   message: Message,
   dispatch: AppDispatch,
   addToast: (props: ToastProps) => void,
+  setAlertMessage: (message: string) => void,
   state: RootState
 ) => {
   console.log(
@@ -101,13 +108,19 @@ const handleMessage = (
       break;
     case EventType.AdvanceTurn:
       dispatch(setTurn(message.turn));
+      if (state.self.id === state.players.players[message.turn].id) {
+        addToast({
+          message: "It's your turn",
+          type: "info",
+          id: generateId("toast", 12),
+        });
+      }
       break;
     case EventType.PlayerWentOut:
-      addToast({
-        message: `${message.playerId} went out!`,
-        type: "info",
-        id: generateId("toast", 12),
-      });
+      const displayName =
+        state.players.players.find((p) => p.id === message.playerId)
+          ?.displayName || "A player";
+      setAlertMessage(`${displayName} went out! You have one more turn.`);
       break;
     case EventType.PlayerDoneForRound:
       addToast({
@@ -182,6 +195,11 @@ export const Board = (props: BoardProps) => {
   >(undefined);
   const [endTurnPending, setEndTurnPending] = React.useState<boolean>(false);
   const [goOutPending, setGoOutPending] = React.useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = React.useState<string | undefined>(
+    undefined
+  );
+  const [alertMessageShown, setAlertMessageShown] =
+    React.useState<boolean>(false);
   const { toasts, addToast } = useToasts();
   const players = useSelector((state: RootState) => state.players.players);
   const game = useSelector((state: RootState) => state.game);
@@ -275,12 +293,23 @@ export const Board = (props: BoardProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [self.token]);
 
+  const setAlertMessageAndShow = React.useCallback((message: string) => {
+    setAlertMessage(message);
+    setAlertMessageShown(true);
+  }, []);
+
   useEffect(() => {
     if (recentMessage) {
       const message = JSON.parse(recentMessage.data);
       console.log("New message", message);
       setRecentMessage(null);
-      handleMessage(message, dispatch, addToast, rootState);
+      handleMessage(
+        message,
+        dispatch,
+        addToast,
+        setAlertMessageAndShow,
+        rootState
+      );
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -576,14 +605,11 @@ export const Board = (props: BoardProps) => {
         }}
       />
 
-      {/* {game.state === GameState.TurnSummary && (
-        <RoundSummary
-          key="roundSummary"
-          onContinue={() => {
-            dispatch(setState(GameState.Playing));
-          }}
-        />
-      )} */}
+      <Alert
+        close={() => setAlertMessageShown(false)}
+        shown={alertMessageShown}
+        message={alertMessage || ""}
+      />
     </div>
   );
 };

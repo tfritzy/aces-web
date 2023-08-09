@@ -19,49 +19,43 @@ import { resetCards } from "store/cardManagementSlice";
 import { Dispatch } from "@reduxjs/toolkit";
 
 const adjectives = [
-  "Joyful",
-  "Radiant",
-  "Whimsical",
-  "Playful",
-  "Cheerful",
-  "Enchanting",
-  "Lively",
-  "Sunny",
-  "Breezy",
-  "Delightful",
-  "Sparkling",
-  "Charming",
-  "Sprightly",
-  "Jolly",
-  "Festive",
-  "Blissful",
-  "Grinning",
-  "Magical",
-  "Harmonious",
-  "Carefree",
+  "Stealthy",
+  "Shadowy",
+  "Covert",
+  "Veiled",
+  "Masked",
+  "Mysterious",
+  "Incognito",
+  "Silent",
+  "Camouflaged",
+  "Disguised",
+  "Anonymous",
+  "Cloaked",
+  "Ghostly",
+  "Concealed",
 ];
 
 const nouns = [
-  "Dreamer",
-  "Starlight",
-  "Sunshine",
-  "Flutterby",
-  "Smith",
-  "Rainbow",
-  "Sparkler",
-  "Sweetheart",
-  "Wishmaker",
-  "Smiler",
-  "Joybringer",
-  "Hugbug",
-  "Giggler",
-  "Bubbly",
-  "Heartwarming",
-  "Laugher",
-  "Songbird",
-  "Sunbeam",
-  "Mason",
-  "Puddlejumper",
+  "Bear",
+  "Hawk",
+  "Lynx",
+  "Wolf",
+  "Lion",
+  "Deer",
+  "Fox",
+  "Crow",
+  "Swan",
+  "Snake",
+  "Toad",
+  "Cat",
+  "Bat",
+  "Frog",
+  "Owl",
+  "Dove",
+  "Fish",
+  "Moth",
+  "Wasp",
+  "Crab",
 ];
 
 type JoinGameMenuProps = {
@@ -209,14 +203,13 @@ const CreateGameMenu = (props: CreateGameMenuProps) => {
   };
 
   return (
-    <div className="flex flex-row justify-end">
-      <Button
-        onClick={handleCreateGame}
-        text="Create Game"
-        pending={createPending}
-        type="primary"
-      />
-    </div>
+    <Button
+      onClick={handleCreateGame}
+      text="Create Game"
+      pending={createPending}
+      type="primary"
+      size="jumbo"
+    />
   );
 };
 
@@ -255,27 +248,27 @@ export const GameMenu = (props: GameMenuProps) => {
     <>
       <Toasts toasts={toasts} />
       <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center text-black dark:text-white">
-        <div className="flex flex-col space-y-4 border border-gray-200 dark:border-gray-600 shadow-xl p-4 rounded-md bg-white dark:bg-gray-800">
-          <div className="text-3xl text-center mb-4">Aces</div>
+        <div className="flex flex-col border border-gray-200 dark:border-gray-600 shadow-xl rounded-md bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-500">
+          <div className="text-3xl text-center p-4">Aces</div>
 
-          <TabRow
-            tabs={[
-              {
-                label: "Join game",
-                onClick: () => setShowJoinGame(true),
-                isSelected: showJoinGame,
-              },
-              {
-                label: "Create new",
-                onClick: () => setShowJoinGame(false),
-                isSelected: !showJoinGame,
-              },
-            ]}
-          />
+          <div className="p-4">
+            <TabRow
+              tabs={[
+                {
+                  label: "Join game",
+                  onClick: () => setShowJoinGame(true),
+                  isSelected: showJoinGame,
+                },
+                {
+                  label: "Create new",
+                  onClick: () => setShowJoinGame(false),
+                  isSelected: !showJoinGame,
+                },
+              ]}
+            />
+          </div>
 
-          <div className="w-full dark:bg-gray-600 h-[1px]" />
-
-          <div>
+          <div className="p-4">
             <label className="block mb-2 text-sm font-medium">
               Display name
             </label>
@@ -288,11 +281,13 @@ export const GameMenu = (props: GameMenuProps) => {
             />
           </div>
 
-          {showJoinGame ? (
-            <JoinGameMenu addToast={addToast} />
-          ) : (
-            <CreateGameMenu addToast={addToast} />
-          )}
+          <div className="p-4">
+            {showJoinGame ? (
+              <JoinGameMenu addToast={addToast} />
+            ) : (
+              <CreateGameMenu addToast={addToast} />
+            )}
+          </div>
         </div>
       </div>
     </>
