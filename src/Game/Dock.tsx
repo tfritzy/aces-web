@@ -45,7 +45,7 @@ export const Dock = (props: DockProps) => {
   const playingCards = [];
   for (let i = 0; i < props.cards.length; i++) {
     if (i === heldIndex) {
-      playingCards.push(<div />);
+      playingCards.push(null);
       continue;
     }
 
@@ -89,11 +89,11 @@ export const Dock = (props: DockProps) => {
   }
 
   return (
-    <div className="w-full fixed bottom-[12%]" onMouseLeave={handleMouseExit}>
+    <div className="w-full" onMouseLeave={handleMouseExit}>
       <div className="relative">
         {props.buttons}
         <div
-          className="flex justify-center bg-white py-6 shadow-inner border-t-2 border-b-2 border-gray-100 dark:bg-gray-800 dark:border-gray-700"
+          className="flex justify-center bg-white py-6 shadow-inner border-t-2 border-b-2 border-gray-100 dark:bg-gray-800 dark:border-gray-700 space-x-2"
           ref={parent}
         >
           {playingCards}

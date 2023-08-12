@@ -64,7 +64,7 @@ export const App = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="dark">
+    <div className="">
       <div className="w-full h-screen bg-white dark:bg-gray-900">
         <base href="/" />
         <RouterProvider router={router} />

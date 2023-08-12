@@ -181,9 +181,6 @@ type PlayingCardProps = {
 
 export const PlayingCard = (props: PlayingCardProps) => {
   const dispatch = useDispatch();
-  const heldIndex = useSelector(
-    (state: RootState) => state.cardManagement.heldIndex
-  );
   const cardManagement = useSelector(
     (state: RootState) => state.cardManagement
   );
@@ -236,7 +233,9 @@ export const PlayingCard = (props: PlayingCardProps) => {
     [card.type, cardManagement.heldIndex, dispatch, handleDragStart, props]
   );
 
-  const heldClasses = props.isHeld ? `fixed pointer-events-none z-40` : "";
+  const heldClasses = props.isHeld
+    ? `fixed pointer-events-none z-40 drop-shadow-xl`
+    : "";
 
   let cardElement: JSX.Element;
   if (!card) {
@@ -250,7 +249,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
-          className={`drop-shadow-md bg-gradient-to-r from-cyan-200 dark:from-cyan-600 to-emerald-200 dark:to-emerald-600 border-gray-400 dark:border-gray-700 border-solid border w-32 h-44 p-2 rounded-md select-none`}
+          className={`bg-gradient-to-r from-cyan-200 dark:from-cyan-600 to-emerald-200 dark:to-emerald-600 border-gray-400 dark:border-gray-700 border-solid border w-32 h-44 p-2 rounded-md select-none`}
         />
       </div>
     );
@@ -259,7 +258,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()} onMouseMove={handleMouseMove}>
         <div
-          className={`${color} ${cardBackground} cursor-pointer drop-shadow-md border-gray-400 dark:border-gray-700 border-solid border flex w-32 h-44 p-2 mx-1 rounded-md overflow-hidden select-none`}
+          className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border flex w-32 h-44 p-2 rounded-md overflow-hidden select-none`}
         >
           <CardCol card={card} />
           <CardFace card={card} />

@@ -11,7 +11,7 @@ export type ToastProps = {
 const getColorClasses = (type: ToastType) => {
   switch (type) {
     case "error":
-      return "text-amber-600 dark:text-amber-400 stroke-amber-600 dark:stroke-amber-400";
+      return "text-rose-400 stroke-rose-400";
     case "info":
       return "text-black dark:text-white stroke-black dark:stroke-white";
     default:

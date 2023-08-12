@@ -8,12 +8,12 @@ type TabRowProps = {
 
 export const TabRow = (prosp: TabRowProps) => {
   return (
-    <div className="flex flex-row justify-center rounded-md bg-gray-100 dark:bg-gray-700 p-1 space-x-1 border dark:border-gray-500">
+    <div className="flex flex-row justify-center rounded-md bg-gray-100 dark:bg-gray-700 p-1 space-x-1 border dark:border-gray-500 border-gray-300">
       {prosp.tabs.map((tab) => (
         <button
           className={`px-3 py-1 rounded ${
             tab.isSelected
-              ? "text-white bg-blue-500 border border-blue-400"
+              ? "text-white bg-blue-500 border border-blue-600 dark:border-blue-400"
               : "text-gray-600 dark:text-gray-400"
           }`}
           onClick={tab.onClick}

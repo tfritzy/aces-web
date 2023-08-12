@@ -14,9 +14,29 @@ export const Pile = (props: PileProps) => {
   );
   const { handleDrop } = props;
   const game = useSelector((state: RootState) => state.game);
+  const actualPileSize =
+    game.pile.length - (heldIndex === PILE_HELD_INDEX ? 1 : 0);
+
+  let shadowSize = "";
+  if (actualPileSize > 0) {
+    shadowSize = "shadow-sm";
+  } else if (actualPileSize > 3) {
+    shadowSize = "shadow-lg";
+  }
+
+  if (game.pile.length === 0) {
+    return (
+      <PlayingCard
+        isHeld={false}
+        card={spacerCard}
+        index={PILE_HELD_INDEX}
+        onDrop={handleDrop}
+      />
+    );
+  }
 
   return (
-    <div className="w-32 h-44">
+    <div className={`w-32 h-44 ${shadowSize} shadow-[#00000033] rounded-md`}>
       {game.pile.map((card, index) => {
         if (index === game.pile.length - 1 && heldIndex === PILE_HELD_INDEX) {
           return (

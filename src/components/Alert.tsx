@@ -15,7 +15,7 @@ export const Alert = (props: AlertProps) => {
     if (props.shown) {
       setTimeout(() => {
         props.close();
-      }, 2000);
+      }, 3000);
     }
   }, [props.shown]);
 

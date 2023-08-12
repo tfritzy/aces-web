@@ -32,7 +32,7 @@ import {
 } from "store/gameSlice";
 import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
-import { Scorecard } from "./Scorecard";
+import { ScorecardButton } from "./Scorecard";
 import { useParams } from "react-router-dom";
 import { Pile } from "./Pile";
 import {
@@ -117,10 +117,12 @@ const handleMessage = (
       }
       break;
     case EventType.PlayerWentOut:
-      const displayName =
-        state.players.players.find((p) => p.id === message.playerId)
-          ?.displayName || "A player";
-      setAlertMessage(`${displayName} went out! You have one more turn.`);
+      if (message.playerId !== state.self.id) {
+        const displayName =
+          state.players.players.find((p) => p.id === message.playerId)
+            ?.displayName || "A player";
+        setAlertMessage(`${displayName} went out! You have one more turn.`);
+      }
       break;
     case EventType.PlayerDoneForRound:
       addToast({
@@ -403,7 +405,10 @@ export const Board = (props: BoardProps) => {
   const handleDrop = React.useCallback(
     async (dropIndex: number) => {
       if (dropIndex === null || heldIndex === null) {
-        console.log("drop failed");
+        return;
+      }
+
+      if (dropIndex === PILE_HELD_INDEX && heldIndex === DECK_HELD_INDEX) {
         return;
       }
 
@@ -493,21 +498,23 @@ export const Board = (props: BoardProps) => {
 
   const buttons = React.useMemo(() => {
     return (
-      <div className="flex justify-end space-x-2 p-2">
-        <Button
-          key="goOut"
-          onClick={goOut}
-          text="Go out"
-          type="secondary"
-          pending={goOutPending}
-        />
-        <Button
-          key="endTurn"
-          onClick={endTurn}
-          text="End turn"
-          type="primary"
-          pending={endTurnPending}
-        />
+      <div className="flex justify-center w-full">
+        <div className="flex justify-end space-x-2 p-2 w-full max-w-[1200px]">
+          <Button
+            key="goOut"
+            onClick={goOut}
+            text="Go out"
+            type="secondary"
+            pending={goOutPending}
+          />
+          <Button
+            key="endTurn"
+            onClick={endTurn}
+            text="End turn"
+            type="primary"
+            pending={endTurnPending}
+          />
+        </div>
       </div>
     );
   }, [endTurn, endTurnPending, goOut, goOutPending]);
@@ -526,58 +533,49 @@ export const Board = (props: BoardProps) => {
     >
       <Toasts toasts={toasts} key="toasts" />
 
-      <PlayerList key="playerList" />
+      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1200px] bg-white dark: h-screen border-2 border-dashed border-gray-100">
+        <PlayerList key="playerList" />
 
-      <div key="top-right-buttons" className="absolute top-2 right-2">
-        <Button
-          onClick={() => setScorecardShown(!scorecardShown)}
-          type="secondary"
-          text={
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+        <ScorecardButton />
+
+        <div className="flex flex-col h-screen">
+          <div key="cards" className="flex grow-[3] items-center">
+            <div
+              className="relative flex flex-row justify-center space-x-8 w-full"
+              key="cards"
             >
-              <path
-                d="M8.5 4H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2.5"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                className="stroke-gray-600 dark:stroke-white"
-              ></path>
-              <path
-                d="M8 6.4V4.5a.5.5 0 01.5-.5c.276 0 .504-.224.552-.496C9.2 2.652 9.774 1 12 1s2.8 1.652 2.948 2.504c.048.272.276.496.552.496a.5.5 0 01.5.5v1.9a.6.6 0 01-.6.6H8.6a.6.6 0 01-.6-.6z"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                className="stroke-gray-600 dark:stroke-white"
-              ></path>
-            </svg>
-          }
-        />
-      </div>
+              <div>
+                <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
+                  Deck
+                </div>
+                <div className="py-4 px-6 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
+                  <Deck
+                    key="deck"
+                    heldIndex={heldIndex}
+                    setHeldIndex={setHeldIndex}
+                  />
+                </div>
+              </div>
 
-      <Scorecard
-        shown={scorecardShown}
-        onClose={() => setScorecardShown(false)}
-      />
+              <div>
+                <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
+                  Discard
+                </div>
+                <div className="py-4 px-6 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
+                  <Pile key="pile" handleDrop={handleDrop} />
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <Dock
-        key="dock"
-        onDrop={handleDrop}
-        cards={heldCards}
-        buttons={buttons}
-      />
-
-      <div
-        key="cards"
-        className="fixed top-[20%] py-8 px-10 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner"
-      >
-        <div className="relative flex flex-row space-x-8" key="cards">
-          <Deck key="deck" heldIndex={heldIndex} setHeldIndex={setHeldIndex} />
-
-          <Pile key="pile" handleDrop={handleDrop} />
+          <div className="flex grow-[1]">
+            <Dock
+              key="dock"
+              onDrop={handleDrop}
+              cards={heldCards}
+              buttons={buttons}
+            />
+          </div>
         </div>
       </div>
 
