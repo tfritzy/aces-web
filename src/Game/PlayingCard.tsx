@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { setDropSlotIndex, setHeldIndex } from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
+import { gameSlice } from "store/gameSlice";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -187,6 +188,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
   const mousePos = useSelector(
     (state: RootState) => state.cardManagement.mousePos
   );
+  const handSize = useSelector((state: RootState) => state.game.hand.length);
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
   const handleDragStart = React.useCallback(
@@ -198,10 +200,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
   );
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    // if (e.buttons === 1 && heldIndex === NULL_HELD_INDEX) {
-    //   handleDragStart(e);
-    // }
-
     if (!selfRef.current) {
       return;
     }
@@ -268,22 +266,29 @@ export const PlayingCard = (props: PlayingCardProps) => {
     );
   }
 
+  const maxClass =
+    props.index === handSize - 1 || card.type === CardType.SPACER
+      ? "min-w-32"
+      : "";
+
   return (
-    <div
-      id={card.type + "-" + card.deck}
-      className={heldClasses}
-      onMouseUp={handleMouseUp}
-      style={
-        props.isHeld
-          ? {
-              top: mousePos.y - 80,
-              left: mousePos.x - 64,
-            }
-          : undefined
-      }
-      ref={selfRef}
-    >
-      {cardElement}
+    <div className={`max-w-32 overflow-clip ${maxClass} px-1`}>
+      <div
+        id={card.type + "-" + card.deck}
+        className={`${heldClasses}`}
+        onMouseUp={handleMouseUp}
+        style={
+          props.isHeld
+            ? {
+                top: mousePos.y - 80,
+                left: mousePos.x - 64,
+              }
+            : undefined
+        }
+        ref={selfRef}
+      >
+        {cardElement}
+      </div>
     </div>
   );
 };

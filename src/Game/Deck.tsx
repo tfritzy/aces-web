@@ -39,7 +39,6 @@ export const Deck = (props: DeckProps) => {
           index={DECK_HELD_INDEX}
         />
       )}
-
       {cards}
     </div>
   );

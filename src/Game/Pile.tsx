@@ -3,12 +3,14 @@ import { spacerCard } from "./Types";
 import { RootState } from "store/store";
 import { PlayingCard } from "./PlayingCard";
 import { PILE_HELD_INDEX } from "store/cardManagementSlice";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 type PileProps = {
   handleDrop: (index: number) => void;
 };
 
 export const Pile = (props: PileProps) => {
+  const [parent] = useAutoAnimate({ duration: 75 });
   const heldIndex = useSelector(
     (state: RootState) => state.cardManagement.heldIndex
   );
@@ -35,34 +37,43 @@ export const Pile = (props: PileProps) => {
     );
   }
 
-  return (
-    <div className={`w-32 h-44 ${shadowSize} shadow-[#00000033] rounded-md`}>
-      {game.pile.map((card, index) => {
-        if (index === game.pile.length - 1 && heldIndex === PILE_HELD_INDEX) {
-          return (
-            <PlayingCard
-              isHeld
-              card={card}
-              index={PILE_HELD_INDEX}
-              key={card.type + "-" + card.deck}
-            />
-          );
-        }
+  const heldCard = game.pile[game.pile.length - 1];
 
-        return (
-          <div className="relative">
-            <div style={{ position: "absolute", top: -1 * index + "px" }}>
-              <PlayingCard
-                isHeld={false}
-                card={card}
-                index={PILE_HELD_INDEX}
-                key={card.type + "-" + card.deck}
-                onDrop={handleDrop}
-              />
+  return (
+    <>
+      {heldIndex === PILE_HELD_INDEX && (
+        <PlayingCard
+          isHeld
+          card={heldCard}
+          index={PILE_HELD_INDEX}
+          key={heldCard.type + "-" + heldCard.deck}
+        />
+      )}
+
+      <div
+        className={`w-32 h-44 ${shadowSize} shadow-[#00000033] rounded-md`}
+        ref={parent}
+      >
+        {game.pile.map((card, index) => {
+          if (index === game.pile.length - 1 && heldIndex === PILE_HELD_INDEX) {
+            return null;
+          }
+
+          return (
+            <div className="relative">
+              <div style={{ position: "absolute", top: -1 * index + "px" }}>
+                <PlayingCard
+                  isHeld={false}
+                  card={card}
+                  index={PILE_HELD_INDEX}
+                  key={card.type + "-" + card.deck}
+                  onDrop={handleDrop}
+                />
+              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    </>
   );
 };

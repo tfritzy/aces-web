@@ -29,6 +29,7 @@ import {
   setTurn,
   setHand,
   setGameId,
+  setTurnPhase,
 } from "store/gameSlice";
 import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
@@ -44,6 +45,7 @@ import {
   setMousePos,
 } from "store/cardManagementSlice";
 import { Alert } from "components/Alert";
+import { TurnFlowchart } from "./TurnFlowchart";
 
 const handleMessage = (
   message: Message,
@@ -52,11 +54,6 @@ const handleMessage = (
   setAlertMessage: (message: string) => void,
   state: RootState
 ) => {
-  console.log(
-    "handling message",
-    EventType[message.type],
-    JSON.stringify(message)
-  );
   switch (message.type) {
     case EventType.JoinGame:
       dispatch(
@@ -67,44 +64,33 @@ const handleMessage = (
           totalScore: 0,
         })
       );
-      addToast({
-        message: `${message.displayName} joined the game`,
-        type: "info",
-        id: generateId("toast", 12),
-      });
       break;
     case EventType.StartGame:
       dispatch(setState(GameState.Playing));
       break;
     case EventType.DrawFromDeck:
       if (message.playerId !== state.self.id) {
-        addToast({
-          message: `${message.playerId} drew from the deck`,
-          type: "info",
-          id: generateId("toast", 12),
-        });
         dispatch(setDeckSize(state.game.deckSize - 1));
       }
+      dispatch(setTurnPhase("discarding"));
       break;
     case EventType.DrawFromPile:
       if (message.playerId !== state.self.id) {
-        addToast({
-          message: `${message.playerId} drew from the pile`,
-          type: "info",
-          id: generateId("toast", 12),
-        });
         dispatch(removeTopFromPile());
       }
+      dispatch(setTurnPhase("discarding"));
       break;
     case EventType.Discard:
       if (message.playerId !== state.self.id) {
         const card = message.card;
         dispatch(addToPile(card));
       }
+      dispatch(setTurnPhase("ending"));
       break;
     case EventType.AdvanceRound:
       dispatch(setRound(message.round));
       dispatch(setState(GameState.TurnSummary));
+      dispatch(setTurnPhase("drawing"));
       break;
     case EventType.AdvanceTurn:
       dispatch(setTurn(message.turn));
@@ -115,6 +101,7 @@ const handleMessage = (
           id: generateId("toast", 12),
         });
       }
+      dispatch(setTurnPhase("drawing"));
       break;
     case EventType.PlayerWentOut:
       if (message.playerId !== state.self.id) {
@@ -533,10 +520,15 @@ export const Board = (props: BoardProps) => {
     >
       <Toasts toasts={toasts} key="toasts" />
 
-      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1200px] bg-white dark: h-screen border-2 border-dashed border-gray-100">
+      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1200px] h-screen border-l-2 border-r-2 border-dashed border-gray-100 dark:border-slate-700">
         <PlayerList key="playerList" />
 
-        <ScorecardButton />
+        <div className="absolute top-0 right-0">
+          <div className="relative flex flex-col items-end p-2 space-y-2">
+            <ScorecardButton />
+            <TurnFlowchart />
+          </div>
+        </div>
 
         <div className="flex flex-col h-screen">
           <div key="cards" className="flex grow-[3] items-center">

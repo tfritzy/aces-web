@@ -1,3 +1,5 @@
+import { Spinner } from "./Spinner";
+
 type ButtonProps = {
   onClick: () => void;
   text: JSX.Element | string;
@@ -21,33 +23,12 @@ export const Button = (props: ButtonProps) => {
     <div className="h-min">
       <button
         onClick={props.onClick}
-        className={`flex justify-center rounded-md drop-shadow border ${typeClasses} ${sizeClasses} space-x-1 disabled:opacity-50 px-2 py-1 hover:shadow-md transition-all`}
+        className={`flex justify-center items-center rounded-md drop-shadow border ${typeClasses} ${sizeClasses} space-x-1 disabled:opacity-50 px-2 py-1 hover:shadow-md transition-all`}
         disabled={props.pending}
       >
-        {props.pending && (
-          <svg width="12" height="12">
-            <circle
-              cx="6"
-              cy="6"
-              r="5"
-              strokeWidth="1"
-              fill="none"
-              strokeDasharray="20, 200"
-              className="stroke-current"
-            >
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                repeatCount="indefinite"
-                dur=".75s"
-                values="0 6 6;360 6 6"
-                keyTimes="0;1"
-              ></animateTransform>
-            </circle>
-          </svg>
-        )}
+        {props.pending && <Spinner />}
 
-        {!props.pending && <div className="text-center">{props.text}</div>}
+        <div className="text-center">{props.text}</div>
       </button>
     </div>
   );

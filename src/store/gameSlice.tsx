@@ -17,6 +17,7 @@ type Game = {
   pile: Card[];
   hand: Card[];
   deckSize: number;
+  turnPhase: "drawing" | "discarding" | "ending";
 };
 
 const initialGameState: Game = {
@@ -27,6 +28,7 @@ const initialGameState: Game = {
   deckSize: 0,
   round: 0,
   turn: 0,
+  turnPhase: "drawing",
 };
 
 export const gameSlice = createSlice({
@@ -63,6 +65,12 @@ export const gameSlice = createSlice({
     setHand: (state, action: { payload: Card[] }) => {
       state.hand = action.payload;
     },
+    setTurnPhase: (
+      state,
+      action: { payload: "drawing" | "discarding" | "ending" }
+    ) => {
+      state.turnPhase = action.payload;
+    },
   },
 });
 
@@ -77,4 +85,5 @@ export const {
   setTurn,
   setHand,
   setPile,
+  setTurnPhase,
 } = gameSlice.actions;
