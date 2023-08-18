@@ -104,7 +104,6 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
 
         return navigate(`/game/${gameId}`);
       } else {
-        console.log(digitRefs);
         digitRefs[0]?.focus();
         handleError(res, props.addToast);
         setCode("");

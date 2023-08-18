@@ -2,6 +2,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Spinner } from "components/Spinner";
 import { getDefaultAvatar } from "helpers/getDefaultAvatar";
 import { useSelector } from "react-redux";
+import { TurnPhase } from "store/gameSlice";
 import { Player } from "store/playerSlice";
 import { RootState } from "store/store";
 
@@ -19,9 +20,9 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
 
   const isSelf = props.player.id === self.id;
   let turnPhaseString;
-  if (turnPhase === "drawing") {
+  if (turnPhase === TurnPhase.Drawing) {
     turnPhaseString = "Drawing…";
-  } else if (turnPhase === "discarding") {
+  } else if (turnPhase === TurnPhase.Discarding) {
     turnPhaseString = "Discarding…";
   } else {
     turnPhaseString = "Ending…";

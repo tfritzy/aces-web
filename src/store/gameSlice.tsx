@@ -9,6 +9,13 @@ export enum GameState {
   TurnSummary,
 }
 
+export enum TurnPhase {
+  Invalid,
+  Drawing,
+  Discarding,
+  Ending,
+}
+
 type Game = {
   id: string;
   state: GameState;
@@ -17,7 +24,7 @@ type Game = {
   pile: Card[];
   hand: Card[];
   deckSize: number;
-  turnPhase: "drawing" | "discarding" | "ending";
+  turnPhase: TurnPhase;
 };
 
 const initialGameState: Game = {
@@ -28,7 +35,7 @@ const initialGameState: Game = {
   deckSize: 0,
   round: 0,
   turn: 0,
-  turnPhase: "drawing",
+  turnPhase: TurnPhase.Drawing,
 };
 
 export const gameSlice = createSlice({
@@ -65,10 +72,7 @@ export const gameSlice = createSlice({
     setHand: (state, action: { payload: Card[] }) => {
       state.hand = action.payload;
     },
-    setTurnPhase: (
-      state,
-      action: { payload: "drawing" | "discarding" | "ending" }
-    ) => {
+    setTurnPhase: (state, action: { payload: TurnPhase }) => {
       state.turnPhase = action.payload;
     },
   },

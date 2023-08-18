@@ -64,10 +64,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
       const newPlayers = [...players];
       newPlayers.sort((a, b) => a.placement - b.placement);
       setSortedPlayers(newPlayers);
-      console.log("updated", players);
     }, 1000);
-
-    console.log("init", players);
   }, [game.round, gamePlayers, props.shown]);
 
   const getChevron = (p: SummaryPlayer) => {

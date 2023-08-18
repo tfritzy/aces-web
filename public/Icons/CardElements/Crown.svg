@@ -1,13 +1,70 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 <!-- Created using Krita: https://krita.org -->
-<svg xmlns="http://www.w3.org/2000/svg" 
+<svg xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:krita="http://krita.org/namespaces/svg/krita"
     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
     width="576pt"
     height="576pt"
     viewBox="0 0 576 576">
-<defs/>
-<rect id="shape0" transform="matrix(0.999999953878781 0 -0.279354846524113 0.823306846216706 258.198332828794 314.250425390696)" fill="#1a1a1a" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" width="203.797296207655" height="64.125" rx="5.80205825502221" ry="4.5"/><path id="shape0" transform="matrix(1 0 0 0.823306884188622 51.1105641116052 81.2452744430188)" fill="#000000" fill-rule="evenodd" stroke="none" stroke-width="5.625" stroke-linecap="square" stroke-linejoin="bevel" d="M80.0964 325.054L0 102.663L174.006 178.594L237.287 0L237.287 325.125L80.1958 324.905" sodipodi:nodetypes="cccccc"/><path id="shape1" transform="matrix(1 0 0 0.823306884188622 225.678998946371 81.0137173645523)" fill="#1a1a1a" fill-rule="evenodd" stroke="none" stroke-width="5.625" stroke-linecap="square" stroke-linejoin="bevel" d="M54.7031 335.496L0 178.594L62.7187 0L135.281 178.594L287.438 104.625L221.063 336.094L62.7187 342.041" sodipodi:nodetypes="ccccccc"/><rect id="shape01" transform="matrix(0.999999979004807 0 0.352397876862073 0.823306866903135 115.901215785421 314.192543489356)" fill="#000000" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" width="146.28174276448" height="64.125" rx="4.16460477621294" ry="4.5"/><rect id="shape2" transform="matrix(1 0 0.300985904219634 0.706445034371208 141.535781520542 376.045677026989)" fill="#000000" fill-rule="evenodd" stroke="none" stroke-width="5.625" stroke-linecap="square" stroke-linejoin="bevel" width="146.806680658159" height="64.125" rx="4.83630902770682" ry="4.83630902770682"/><ellipse id="shape3" transform="translate(276.156305769192, 68.7410800216274)" rx="12.9375" ry="13.21875" cx="12.9375" cy="13.21875" fill="#1a1a1a" fill-rule="evenodd" stroke="none" stroke-width="5.625" stroke-linecap="square" stroke-linejoin="bevel"/><ellipse id="shape02" transform="matrix(1.00000000598919 0 0 1.00000000598919 499.731537994932 154.61662499158)" rx="12.9375" ry="13.21875" cx="12.9375" cy="13.21875" fill="#1a1a1a" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel"/><ellipse id="shape03" transform="matrix(0.999999994842404 0 0 0.999999994842404 40.0148922644385 153.467598931852)" rx="12.9375" ry="13.21875" cx="12.9375" cy="13.21875" fill="#000000" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel"/><rect id="shape04" transform="matrix(0.999999952689268 0 -0.237435165027863 0.70644500094877 273.731072654746 376.120035184942)" fill="#1a1a1a" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" width="166.617747611143" height="65.2157932591779" rx="5.48895263713711" ry="4.91857668130095"/><rect id="shape05" transform="matrix(0.999999972389896 0 0.300985895909382 0.706445014866187 141.535786210791 376.791443362207)" fill="#000000" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" width="146.806680658159" height="64.125" rx="4.83630902770682" ry="4.83630902770682"/><rect id="shape06" transform="matrix(0.999999935493884 0 -0.237435160945074 0.706444988801177 255.296709357178 431.35000854622)" fill="#1a1a1a" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" width="166.617747611143" height="64.125" rx="5.48895263713711" ry="4.83630902770682"/><rect id="shape07" transform="matrix(0.999999972389896 0 0.300985895909382 0.706445014866187 165.59972280603 431.323357493897)" fill="#000000" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" width="146.806680658159" height="64.125" rx="4.83630902770682" ry="4.83630902770682"/>
+    <defs />
+    <rect id="shape0"
+        transform="matrix(0.999999953878781 0 -0.279354846524113 0.823306846216706 258.198332828794 314.250425390696)"
+        fill="#1a1a1a" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" strokeWidth="0"
+        strokeLinecap="square" strokeLinejoin="bevel" width="203.797296207655" height="64.125"
+        rx="5.80205825502221" ry="4.5" />
+    <path id="shape0" transform="matrix(1 0 0 0.823306884188622 51.1105641116052 81.2452744430188)"
+        fill="#000000" fill-rule="evenodd" stroke="none" strokeWidth="5.625"
+        strokeLinecap="square" strokeLinejoin="bevel"
+        d="M80.0964 325.054L0 102.663L174.006 178.594L237.287 0L237.287 325.125L80.1958 324.905"
+        sodipodi:nodetypes="cccccc" />
+    <path id="shape1" transform="matrix(1 0 0 0.823306884188622 225.678998946371 81.0137173645523)"
+        fill="#1a1a1a" fill-rule="evenodd" stroke="none" strokeWidth="5.625"
+        strokeLinecap="square" strokeLinejoin="bevel"
+        d="M54.7031 335.496L0 178.594L62.7187 0L135.281 178.594L287.438 104.625L221.063 336.094L62.7187 342.041"
+        sodipodi:nodetypes="ccccccc" />
+    <rect id="shape01"
+        transform="matrix(0.999999979004807 0 0.352397876862073 0.823306866903135 115.901215785421 314.192543489356)"
+        fill="#000000" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" strokeWidth="0"
+        strokeLinecap="square" strokeLinejoin="bevel" width="146.28174276448" height="64.125"
+        rx="4.16460477621294" ry="4.5" />
+    <rect id="shape2"
+        transform="matrix(1 0 0.300985904219634 0.706445034371208 141.535781520542 376.045677026989)"
+        fill="#000000" fill-rule="evenodd" stroke="none" strokeWidth="5.625"
+        strokeLinecap="square" strokeLinejoin="bevel" width="146.806680658159" height="64.125"
+        rx="4.83630902770682" ry="4.83630902770682" />
+    <ellipse id="shape3" transform="translate(276.156305769192, 68.7410800216274)" rx="12.9375"
+        ry="13.21875" cx="12.9375" cy="13.21875" fill="#1a1a1a" fill-rule="evenodd" stroke="none"
+        strokeWidth="5.625" strokeLinecap="square" strokeLinejoin="bevel" />
+    <ellipse id="shape02"
+        transform="matrix(1.00000000598919 0 0 1.00000000598919 499.731537994932 154.61662499158)"
+        rx="12.9375" ry="13.21875" cx="12.9375" cy="13.21875" fill="#1a1a1a" fill-rule="evenodd"
+        stroke-opacity="0" stroke="#000000" strokeWidth="0" strokeLinecap="square"
+        strokeLinejoin="bevel" />
+    <ellipse id="shape03"
+        transform="matrix(0.999999994842404 0 0 0.999999994842404 40.0148922644385 153.467598931852)"
+        rx="12.9375" ry="13.21875" cx="12.9375" cy="13.21875" fill="#000000" fill-rule="evenodd"
+        stroke-opacity="0" stroke="#000000" strokeWidth="0" strokeLinecap="square"
+        strokeLinejoin="bevel" />
+    <rect id="shape04"
+        transform="matrix(0.999999952689268 0 -0.237435165027863 0.70644500094877 273.731072654746 376.120035184942)"
+        fill="#1a1a1a" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" strokeWidth="0"
+        strokeLinecap="square" strokeLinejoin="bevel" width="166.617747611143"
+        height="65.2157932591779" rx="5.48895263713711" ry="4.91857668130095" />
+    <rect id="shape05"
+        transform="matrix(0.999999972389896 0 0.300985895909382 0.706445014866187 141.535786210791 376.791443362207)"
+        fill="#000000" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" strokeWidth="0"
+        strokeLinecap="square" strokeLinejoin="bevel" width="146.806680658159" height="64.125"
+        rx="4.83630902770682" ry="4.83630902770682" />
+    <rect id="shape06"
+        transform="matrix(0.999999935493884 0 -0.237435160945074 0.706444988801177 255.296709357178 431.35000854622)"
+        fill="#1a1a1a" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" strokeWidth="0"
+        strokeLinecap="square" strokeLinejoin="bevel" width="166.617747611143" height="64.125"
+        rx="5.48895263713711" ry="4.83630902770682" />
+    <rect id="shape07"
+        transform="matrix(0.999999972389896 0 0.300985895909382 0.706445014866187 165.59972280603 431.323357493897)"
+        fill="#000000" fill-rule="evenodd" stroke-opacity="0" stroke="#000000" strokeWidth="0"
+        strokeLinecap="square" strokeLinejoin="bevel" width="146.806680658159" height="64.125"
+        rx="4.83630902770682" ry="4.83630902770682" />
 </svg>

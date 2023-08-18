@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import { Dock } from "Game/Dock";
 import { Deck } from "Game/Deck";
-import { Card } from "Game/Types";
+import { Card, cardBack } from "Game/Types";
 import { API_URL } from "Constants";
 import { EventType, Message } from "Game/Events";
 import { Lobby } from "Game/Lobby";
@@ -30,6 +30,7 @@ import {
   setHand,
   setGameId,
   setTurnPhase,
+  TurnPhase,
 } from "store/gameSlice";
 import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
@@ -46,6 +47,7 @@ import {
 } from "store/cardManagementSlice";
 import { Alert } from "components/Alert";
 import { TurnFlowchart } from "./TurnFlowchart";
+import { PlayingCard } from "./PlayingCard";
 
 const handleMessage = (
   message: Message,
@@ -72,25 +74,25 @@ const handleMessage = (
       if (message.playerId !== state.self.id) {
         dispatch(setDeckSize(state.game.deckSize - 1));
       }
-      dispatch(setTurnPhase("discarding"));
+      dispatch(setTurnPhase(TurnPhase.Discarding));
       break;
     case EventType.DrawFromPile:
       if (message.playerId !== state.self.id) {
         dispatch(removeTopFromPile());
       }
-      dispatch(setTurnPhase("discarding"));
+      dispatch(setTurnPhase(TurnPhase.Discarding));
       break;
     case EventType.Discard:
       if (message.playerId !== state.self.id) {
         const card = message.card;
         dispatch(addToPile(card));
       }
-      dispatch(setTurnPhase("ending"));
+      dispatch(setTurnPhase(TurnPhase.Ending));
       break;
     case EventType.AdvanceRound:
       dispatch(setRound(message.round));
       dispatch(setState(GameState.TurnSummary));
-      dispatch(setTurnPhase("drawing"));
+      dispatch(setTurnPhase(TurnPhase.Drawing));
       break;
     case EventType.AdvanceTurn:
       dispatch(setTurn(message.turn));
@@ -101,7 +103,7 @@ const handleMessage = (
           id: generateId("toast", 12),
         });
       }
-      dispatch(setTurnPhase("drawing"));
+      dispatch(setTurnPhase(TurnPhase.Drawing));
       break;
     case EventType.PlayerWentOut:
       if (message.playerId !== state.self.id) {
@@ -178,7 +180,6 @@ export const Board = (props: BoardProps) => {
   );
   const [recentMessage, setRecentMessage] =
     React.useState<MessageEvent<any> | null>(null);
-  const [scorecardShown, setScorecardShown] = React.useState<boolean>(false);
   const [websocket, setWebsocket] = React.useState<
     WebSocket | null | undefined
   >(undefined);
@@ -195,8 +196,12 @@ export const Board = (props: BoardProps) => {
   const heldCards = useSelector((state: RootState) => state.game.hand);
   const self = useSelector((state: RootState) => state.self);
   const rootState = useSelector((state: RootState) => state);
+  const cardManagement = useSelector(
+    (state: RootState) => state.cardManagement
+  );
   const dispatch: AppDispatch = useDispatch();
   const gameId = useParams().gameId || "";
+  const isOwnTurn = players[game.turn]?.id === self.id;
 
   const handleError = React.useCallback(
     async (response: Response) => {
@@ -259,6 +264,7 @@ export const Board = (props: BoardProps) => {
         dispatch(setDeckSize(state.deckSize));
         dispatch(setState(state.state));
         dispatch(setHand(state.hand));
+        dispatch(setTurnPhase(state.turnPhase));
 
         // TODO: Score
         dispatch(
@@ -390,8 +396,9 @@ export const Board = (props: BoardProps) => {
   }, [gameId, handleError, heldCards, heldIndex, self.token]);
 
   const handleDrop = React.useCallback(
-    async (dropIndex: number) => {
-      if (dropIndex === null || heldIndex === null) {
+    async (dropIndex?: number) => {
+      dropIndex = dropIndex ?? cardManagement.dropSlotIndex ?? undefined;
+      if (dropIndex === undefined || heldIndex === NULL_HELD_INDEX) {
         return;
       }
 
@@ -401,17 +408,14 @@ export const Board = (props: BoardProps) => {
 
       const updatedHand = [...heldCards];
       if (heldIndex === PILE_HELD_INDEX && dropIndex >= 0) {
-        console.log("draw from pile");
         const response = await drawFromPile();
 
         if (response.ok) {
           const dropCard = game.pile[game.pile.length - 1];
-          console.log("drop card", dropCard);
           updatedHand.splice(dropIndex, 0, dropCard);
           dispatch(removeTopFromPile());
         }
       } else if (dropIndex === PILE_HELD_INDEX && heldIndex >= 0) {
-        console.log("discard");
         const response = await discard();
 
         if (response.ok) {
@@ -424,7 +428,6 @@ export const Board = (props: BoardProps) => {
 
         if (response.ok) {
           const dropCard = (await response.json()) as Card;
-          console.log(dropCard);
           updatedHand.splice(dropIndex, 0, dropCard);
         }
       } else {
@@ -438,6 +441,7 @@ export const Board = (props: BoardProps) => {
       setDropSlotIndex(null);
     },
     [
+      cardManagement.dropSlotIndex,
       discard,
       dispatch,
       drawFromDeck,
@@ -486,7 +490,7 @@ export const Board = (props: BoardProps) => {
   const buttons = React.useMemo(() => {
     return (
       <div className="flex justify-center w-full">
-        <div className="flex justify-end space-x-2 p-2 w-full max-w-[1200px]">
+        <div className="flex justify-end space-x-2 p-2 w-full">
           <Button
             key="goOut"
             onClick={goOut}
@@ -506,6 +510,17 @@ export const Board = (props: BoardProps) => {
     );
   }, [endTurn, endTurnPending, goOut, goOutPending]);
 
+  let heldCard;
+  if (heldIndex !== NULL_HELD_INDEX) {
+    if (heldIndex === DECK_HELD_INDEX) {
+      heldCard = cardBack;
+    } else if (heldIndex === PILE_HELD_INDEX) {
+      heldCard = game.pile[game.pile.length - 1];
+    } else {
+      heldCard = heldCards[heldIndex];
+    }
+  }
+
   return (
     <div
       className="min-w-screen min-h-screen flex flex-col items-center"
@@ -518,15 +533,24 @@ export const Board = (props: BoardProps) => {
         }
       }}
     >
+      {heldIndex !== NULL_HELD_INDEX && heldCard && (
+        <PlayingCard
+          isHeld
+          card={heldCard}
+          index={PILE_HELD_INDEX}
+          key={heldCard.type + "-" + heldCard.deck}
+        />
+      )}
+
       <Toasts toasts={toasts} key="toasts" />
 
-      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1200px] h-screen border-l-2 border-r-2 border-dashed border-gray-100 dark:border-slate-700">
+      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1200px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700">
         <PlayerList key="playerList" />
 
         <div className="absolute top-0 right-0">
           <div className="relative flex flex-col items-end p-2 space-y-2">
             <ScorecardButton />
-            <TurnFlowchart />
+            {isOwnTurn && <TurnFlowchart />}
           </div>
         </div>
 
@@ -560,7 +584,7 @@ export const Board = (props: BoardProps) => {
             </div>
           </div>
 
-          <div className="flex grow-[1]">
+          <div className="flex grow-[1] justify-center">
             <Dock
               key="dock"
               onDrop={handleDrop}

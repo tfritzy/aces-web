@@ -5,7 +5,7 @@
     <g id="row">
         <path id="unit" d="M-20,-34.64H20L40,0L20,34.64H-20L-40,0Z" fill="none"
             stroke="#040b29"
-            stroke-width="2" />
+            strokeWidth="2" />
         <use xlink:href="#unit" x="-240" />
         <use xlink:href="#unit" x="-120" />
         <use xlink:href="#unit" x="120" />

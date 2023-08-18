@@ -1,13 +1,14 @@
-type DropSlotProps = {
-  drop?: (e: React.MouseEvent) => void;
-};
+import { cardHeight } from "Constants";
 
-export const DropSlot = (props: DropSlotProps) => {
+export const DropSlot = () => {
   return (
-    <div
-      key={"spacer"}
-      className={`border-dashed border w-32 h-44 p-2 mx-1 rounded-md border-gray-700 dark:border-white select-none`}
-      onMouseUp={props.drop}
-    />
+    <div className="absolute" style={{ height: cardHeight }}>
+      <div
+        key={"spacer"}
+        className={`absolute px-[1px] bg-slate-300 h-[100%] -translate-x-[8px] rounded text-slate-500`}
+      >
+        ↓
+      </div>
+    </div>
   );
 };

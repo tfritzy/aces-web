@@ -1,5 +1,6 @@
 import { Tooltip } from "components/Tooltip";
 import { useSelector } from "react-redux";
+import { TurnPhase } from "store/gameSlice";
 import { RootState } from "store/store";
 
 const highlighted =
@@ -14,11 +15,17 @@ export const TurnFlowchart = () => {
 
   return (
     <div className="flex flex-col items-center border p-3 rounded dark:border-gray-700">
-      <div className={phase === "drawing" ? highlighted : nonHighlighted}>
+      <div
+        className={phase === TurnPhase.Drawing ? highlighted : nonHighlighted}
+      >
         Draw
       </div>
       <div className="text-lg text-gray-800 dark:text-white">↓</div>
-      <div className={phase === "discarding" ? highlighted : nonHighlighted}>
+      <div
+        className={
+          phase === TurnPhase.Discarding ? highlighted : nonHighlighted
+        }
+      >
         Discard
       </div>
       <div className="flex flex-row space-x-8">
@@ -34,7 +41,7 @@ export const TurnFlowchart = () => {
             <div
               className={
                 "transition-all " +
-                (phase === "ending" ? highlighted : nonHighlighted) +
+                (phase === TurnPhase.Ending ? highlighted : nonHighlighted) +
                 (!canGoOut ? disabledStyling : "")
               }
             >
@@ -44,7 +51,9 @@ export const TurnFlowchart = () => {
           text="You can't go out until all your cards are grouped."
         />
 
-        <div className={phase === "ending" ? highlighted : nonHighlighted}>
+        <div
+          className={phase === TurnPhase.Ending ? highlighted : nonHighlighted}
+        >
           End turn
         </div>
       </div>

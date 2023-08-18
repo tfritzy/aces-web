@@ -4,7 +4,11 @@ import { Suit, Card, CardValue } from "Game/Types";
 import { NULL_HELD_INDEX } from "Game/Board";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
-import { setDropSlotIndex, setHeldIndex } from "store/cardManagementSlice";
+import {
+  setDropSlotIndex,
+  setHeldIndex,
+  setMousePos,
+} from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
 import { gameSlice } from "store/gameSlice";
 
@@ -177,7 +181,8 @@ type PlayingCardProps = {
   card: Card;
   index: number;
   isHeld: boolean;
-  onDrop?: (index: number) => void;
+  onDrop?: (index?: number) => void;
+  hasPadding?: boolean;
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
@@ -188,7 +193,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
   const mousePos = useSelector(
     (state: RootState) => state.cardManagement.mousePos
   );
-  const handSize = useSelector((state: RootState) => state.game.hand.length);
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
   const handleDragStart = React.useCallback(
@@ -200,10 +204,12 @@ export const PlayingCard = (props: PlayingCardProps) => {
   );
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    dispatch(setMousePos({ x: e.clientX, y: e.clientY }));
     if (!selfRef.current) {
       return;
     }
 
+    e.stopPropagation();
     if (props.index >= 0) {
       const targetBounds = selfRef.current?.getBoundingClientRect();
       const targetCenter = targetBounds.left + targetBounds.width / 2;
@@ -217,22 +223,28 @@ export const PlayingCard = (props: PlayingCardProps) => {
 
   const handleMouseUp = React.useCallback(
     (e: React.MouseEvent) => {
-      e.stopPropagation();
+      if (props.isHeld) {
+        return;
+      }
+
       if (cardManagement.heldIndex !== NULL_HELD_INDEX) {
         if (props.index === cardManagement.heldIndex) {
+          e.stopPropagation();
           dispatch(setHeldIndex(NULL_HELD_INDEX));
-        } else {
+        } else if (props.onDrop) {
+          e.stopPropagation();
           props.onDrop?.(props.index);
         }
       } else if (card.type !== CardType.SPACER) {
+        e.stopPropagation();
         handleDragStart(e);
       }
     },
-    [card.type, cardManagement.heldIndex, dispatch, handleDragStart, props]
+    [card.type, cardManagement.heldIndex, handleDragStart, props.isHeld]
   );
 
   const heldClasses = props.isHeld
-    ? `fixed pointer-events-none z-40 drop-shadow-xl`
+    ? `fixed pointer-events-none z-40 drop-shadow-xl opacity-50`
     : "";
 
   let cardElement: JSX.Element;
@@ -241,11 +253,9 @@ export const PlayingCard = (props: PlayingCardProps) => {
     return null;
   }
 
-  if (card.type === CardType.SPACER) {
-    cardElement = <DropSlot />;
-  } else if (card.type === CardType.CARD_BACK) {
+  if (card.type === CardType.CARD_BACK) {
     cardElement = (
-      <div id={props.index.toString()} onMouseMove={handleMouseMove}>
+      <div id={props.index.toString()}>
         <div
           className={`bg-gradient-to-r from-cyan-200 dark:from-cyan-600 to-emerald-200 dark:to-emerald-600 border-gray-400 dark:border-gray-700 border-solid border w-32 h-44 p-2 rounded-md select-none`}
         />
@@ -254,7 +264,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
   } else {
     const color = getCardColor(card);
     cardElement = (
-      <div id={props.index.toString()} onMouseMove={handleMouseMove}>
+      <div id={props.index.toString()}>
         <div
           className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border flex w-32 h-44 p-2 rounded-md overflow-hidden select-none`}
         >
@@ -266,17 +276,20 @@ export const PlayingCard = (props: PlayingCardProps) => {
     );
   }
 
-  const maxClass =
-    props.index === handSize - 1 || card.type === CardType.SPACER
-      ? "min-w-32"
-      : "";
-
   return (
-    <div className={`max-w-32 overflow-clip ${maxClass} px-1`}>
+    <div
+      className={`max-w-32 overflow-clip ${props.hasPadding ? "px-1" : ""}`}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+      ref={selfRef}
+    >
+      {cardManagement.dropSlotIndex === props.index &&
+        cardManagement.heldIndex !== NULL_HELD_INDEX &&
+        !props.isHeld &&
+        props.index >= 0 && <DropSlot key="drop-slot" />}
       <div
         id={card.type + "-" + card.deck}
         className={`${heldClasses}`}
-        onMouseUp={handleMouseUp}
         style={
           props.isHeld
             ? {
@@ -285,7 +298,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
               }
             : undefined
         }
-        ref={selfRef}
       >
         {cardElement}
       </div>

@@ -1,13 +1,26 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 <!-- Created using Krita: https://krita.org -->
-<svg xmlns="http://www.w3.org/2000/svg" 
+<svg xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:krita="http://krita.org/namespaces/svg/krita"
     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
     width="576pt"
     height="576pt"
     viewBox="0 0 576 576">
-<defs/>
-<circle id="shape0" transform="matrix(1.00000002383371 0 0 1.00000002383371 73.903916721857 87.6593323584594)" r="200.340662866679" cx="200.340662866679" cy="200.340662866679" fill="#000000" fill-rule="evenodd" stroke="none" stroke-width="22.5" stroke-linecap="square" stroke-linejoin="bevel"/><circle id="shape0" transform="translate(105.954045502705, 93.1537135773005)" r="181.929115603637" cx="181.929115603637" cy="181.929115603637" fill="#1a1a1a" fill-rule="evenodd" stroke="none" stroke-width="22.5" stroke-linecap="square" stroke-linejoin="bevel"/><ellipse id="shape1" transform="matrix(0.760410651759018 -0.649442561502892 0.649442561502892 0.760410651759018 316.714920921724 160.388272450625)" rx="35.5909607828224" ry="67.185500489822" cx="35.5909607828224" cy="67.185500489822" fill="#262626" fill-rule="evenodd" stroke="none" stroke-width="22.5" stroke-linecap="square" stroke-linejoin="bevel"/>
+    <defs />
+    <circle id="shape0"
+        transform="matrix(1.00000002383371 0 0 1.00000002383371 73.903916721857 87.6593323584594)"
+        r="200.340662866679" cx="200.340662866679" cy="200.340662866679" fill="#000000"
+        fill-rule="evenodd" stroke="none" strokeWidth="22.5" strokeLinecap="square"
+        strokeLinejoin="bevel" />
+    <circle id="shape0" transform="translate(105.954045502705, 93.1537135773005)"
+        r="181.929115603637" cx="181.929115603637" cy="181.929115603637" fill="#1a1a1a"
+        fill-rule="evenodd" stroke="none" strokeWidth="22.5" strokeLinecap="square"
+        strokeLinejoin="bevel" />
+    <ellipse id="shape1"
+        transform="matrix(0.760410651759018 -0.649442561502892 0.649442561502892 0.760410651759018 316.714920921724 160.388272450625)"
+        rx="35.5909607828224" ry="67.185500489822" cx="35.5909607828224" cy="67.185500489822"
+        fill="#262626" fill-rule="evenodd" stroke="none" strokeWidth="22.5" strokeLinecap="square"
+        strokeLinejoin="bevel" />
 </svg>

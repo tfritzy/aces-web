@@ -27,7 +27,7 @@ export const Alert = (props: AlertProps) => {
         width="24px"
         height="24px"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         color="white"
@@ -35,23 +35,23 @@ export const Alert = (props: AlertProps) => {
         <path
           d="M12 6v6h6"
           stroke="white"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></path>
         <path
           d="M21.888 10.5C21.164 5.689 17.013 2 12 2 6.477 2 2 6.477 2 12s4.477 10 10 10c4.1 0 7.625-2.468 9.168-6"
           stroke="white"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></path>
         <path
           d="M17 16h4.4a.6.6 0 01.6.6V21"
           stroke="white"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></path>
       </svg>
       <div>{props.message}</div>
