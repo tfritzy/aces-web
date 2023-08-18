@@ -11,7 +11,7 @@ export type ToastProps = {
 const getColorClasses = (type: ToastType) => {
   switch (type) {
     case "error":
-      return "text-rose-400 stroke-rose-400";
+      return "bg-rose-400 text-white stroke-white dark:bg-gray-800 dark:text-rose-400 dark:stroke-rose-400";
     case "info":
       return "text-black dark:text-white stroke-black dark:stroke-white";
     default:
@@ -76,19 +76,15 @@ export const Toast = (props: ToastProps) => {
   return (
     <div
       id="toast-simple"
-      className="flex flex-row items-center h-min p-2 px-3 rounded-md shadow-md text-black dark:text-gray-400 divide-gray-700 space-x bg-white dark:bg-gray-800  border border-gray-300 dark:border-gray-700 w-min pointer-events-auto"
+      className={`${getColorClasses(
+        props.type
+      )} flex flex-row items-center h-min p-2 px-3 rounded-md shadow-md text-black dark:text-gray-400 divide-gray-700 space-x bg-white dark:bg-gray-800  border border-gray-300 dark:border-gray-700 w-min pointer-events-auto`}
       role="alert"
       key={props.id}
     >
       {getIcon(props.type)}
 
-      <div
-        className={`pl-2 text-sm font-normal min-w-max ${getColorClasses(
-          props.type
-        )}`}
-      >
-        {props.message}
-      </div>
+      <div className={`pl-2 text-md min-w-max`}>{props.message}</div>
     </div>
   );
 };

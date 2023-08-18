@@ -296,7 +296,6 @@ export const Board = (props: BoardProps) => {
   useEffect(() => {
     if (recentMessage) {
       const message = JSON.parse(recentMessage.data);
-      console.log("New message", message);
       setRecentMessage(null);
       handleMessage(
         message,
@@ -555,7 +554,7 @@ export const Board = (props: BoardProps) => {
         </div>
 
         <div className="flex flex-col h-screen">
-          <div key="cards" className="flex grow-[3] items-center">
+          <div key="cards" className="flex grow items-center">
             <div
               className="relative flex flex-row justify-center space-x-8 w-full"
               key="cards"
@@ -564,7 +563,7 @@ export const Board = (props: BoardProps) => {
                 <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
                   Deck
                 </div>
-                <div className="py-4 px-6 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
+                <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
                   <Deck
                     key="deck"
                     heldIndex={heldIndex}
@@ -577,14 +576,14 @@ export const Board = (props: BoardProps) => {
                 <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
                   Discard
                 </div>
-                <div className="py-4 px-6 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
+                <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
                   <Pile key="pile" handleDrop={handleDrop} />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex grow-[1] justify-center">
+          <div className="justify-center">
             <Dock
               key="dock"
               onDrop={handleDrop}

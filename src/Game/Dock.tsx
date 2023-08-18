@@ -66,13 +66,9 @@ export const Dock = (props: DockProps) => {
     }
 
     playingCards.push(
-      <PlayingCard
-        isHeld={false}
-        key={card.type + "-" + card.deck}
-        index={i}
-        card={card}
-        hasPadding
-      />
+      <div key={card.type + "-" + card.deck} className="shadow-sm rounded-md">
+        <PlayingCard isHeld={false} index={i} card={card} hasPadding />
+      </div>
     );
   }
 
@@ -87,7 +83,7 @@ export const Dock = (props: DockProps) => {
   return (
     <div onMouseLeave={handleMouseExit} onMouseUp={handleDrop}>
       {props.buttons}
-      <div className="p-2 bg-white border border-gray-200 rounded shadow-inner dark:bg-gray-800 dark:border-gray-700">
+      <div className="py-6 px-5 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
         <div
           className={`grid grid-cols-8 grid-rows-2 ${
             heldIndex !== NULL_HELD_INDEX ? "cursor-pointer" : ""

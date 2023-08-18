@@ -37,7 +37,7 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
       {turn === props.index && (
         <div
           key="arrow"
-          className="bg-violet-50 border border-violet-300 rounded text-md text-violet-700 px-2 py-1 flex flex-row items-center space-x-2 dark:bg-violet-700 dark:text-white dark:border-violet-500"
+          className="bg-violet-50 border border-violet-300 rounded text-md text-violet-700 px-2 py-1 flex flex-row items-center space-x-2 dark:bg-violet-500 dark:text-white dark:border-violet-400"
         >
           <div>{turnPhaseString}</div>
         </div>
