@@ -8,29 +8,6 @@ import Cookies from "universal-cookie";
 import { generateId } from "helpers/generateId";
 import { setToken, setUserId } from "store/selfSlice";
 
-const players = [
-  {
-    displayName: "Wolf",
-    score: 0,
-    total: 54,
-  },
-  {
-    displayName: "Bruce",
-    score: 84,
-    total: 86,
-  },
-  {
-    displayName: "Sue",
-    score: 23,
-    total: 42,
-  },
-  {
-    displayName: "Tyler",
-    score: 42,
-    total: 124,
-  },
-];
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -64,7 +41,7 @@ export const App = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="dark">
+    <div className="">
       <div className="w-full h-screen bg-white dark:bg-gray-900">
         <base href="/" />
         <RouterProvider router={router} />

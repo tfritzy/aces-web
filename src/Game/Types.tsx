@@ -6,6 +6,7 @@ export type Card = {
   suit: Suit;
   value: CardValue;
   deck: number;
+  isGrouped: boolean;
   createdTimeMs?: number;
 };
 
@@ -102,18 +103,20 @@ export enum CardValue {
   JOKER,
 }
 
-export const spacerCard = {
+export const spacerCard: Card = {
   type: CardType.SPACER,
   suit: Suit.SUITLESS,
   value: CardValue.JOKER,
   deck: 0,
+  isGrouped: false,
 };
 
-export const cardBack = {
+export const cardBack: Card = {
   type: CardType.CARD_BACK,
   suit: Suit.SUITLESS,
   value: CardValue.JOKER,
   deck: 0,
+  isGrouped: false,
 };
 
 export type GameStateForPlayer = {

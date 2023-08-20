@@ -5,6 +5,7 @@ import { cardBack } from "./Types";
 import { useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { DECK_HELD_INDEX } from "store/cardManagementSlice";
+import { cardHeight, cardWidth } from "Constants";
 
 type DeckProps = {
   heldIndex: number;
@@ -17,11 +18,11 @@ export const Deck = (props: DeckProps) => {
   const cards = Array.from({ length: deckSize / 2 }, (_, i) => {
     let shadow = "";
     if (i < 1) {
-      shadow = "shadow-lg rounded-md";
+      shadow = "shadow-lg rounded-xl";
     } else if (i < 3) {
-      shadow = "shadow-md rounded-md";
+      shadow = "shadow-md rounded-xl";
     } else if (i < 5) {
-      shadow = "shadow-sm rounded-md";
+      shadow = "shadow-sm rounded-xl";
     }
 
     return (
@@ -36,5 +37,12 @@ export const Deck = (props: DeckProps) => {
     );
   });
 
-  return <div className={`w-32 h-44 rounded-md`}>{cards}</div>;
+  return (
+    <div
+      className={`rounded-md`}
+      style={{ width: cardWidth, height: cardHeight }}
+    >
+      {cards}
+    </div>
+  );
 };

@@ -1,5 +1,4 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { Spinner } from "components/Spinner";
 import { getDefaultAvatar } from "helpers/getDefaultAvatar";
 import { useSelector } from "react-redux";
 import { TurnPhase } from "store/gameSlice";

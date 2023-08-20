@@ -8,10 +8,11 @@ const highlighted =
 const nonHighlighted =
   "px-2 py-1 rounded bg-gray-50 text-gray-500 font-semibold border dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200";
 const disabledStyling = " opacity-50";
-const canGoOut = false;
 
 export const TurnFlowchart = () => {
   const phase = useSelector((state: RootState) => state.game.turnPhase);
+  const game = useSelector((state: RootState) => state.game);
+  const canGoOut = game.hand.length > 0 && game.hand.every((c) => c.isGrouped);
 
   return (
     <div className="flex flex-col items-center border p-3 rounded dark:border-gray-700">

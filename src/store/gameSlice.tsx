@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Card } from "Game/Types";
+import { getGroups } from "helpers/getGroupedCards";
 
 export enum GameState {
   Invalid,
@@ -70,6 +71,11 @@ export const gameSlice = createSlice({
       state.id = action.payload;
     },
     setHand: (state, action: { payload: Card[] }) => {
+      const groups = getGroups(action.payload, state.round);
+      for (let i = 0; i < groups.length; i++) {
+        action.payload[i] = { ...action.payload[i], isGrouped: groups[i] };
+      }
+
       state.hand = action.payload;
     },
     setTurnPhase: (state, action: { payload: TurnPhase }) => {

@@ -10,6 +10,7 @@ import {
   setMousePos,
 } from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
+import { cardWidth } from "Constants";
 
 type DockProps = {
   cards: Card[];
@@ -59,15 +60,15 @@ export const Dock = (props: DockProps) => {
     if (i === heldIndex) {
       playingCards.push(
         <div className="opacity-50" key={card.type + "-" + card.deck}>
-          <PlayingCard isHeld={false} index={i} card={card} hasPadding />
+          <PlayingCard isHeld={false} index={i} card={card} hasShadow />
         </div>
       );
       continue;
     }
 
     playingCards.push(
-      <div key={card.type + "-" + card.deck} className="shadow-sm rounded-md">
-        <PlayingCard isHeld={false} index={i} card={card} hasPadding />
+      <div key={card.type + "-" + card.deck}>
+        <PlayingCard isHeld={false} index={i} card={card} hasShadow />
       </div>
     );
   }
@@ -83,7 +84,7 @@ export const Dock = (props: DockProps) => {
   return (
     <div onMouseLeave={handleMouseExit} onMouseUp={handleDrop}>
       {props.buttons}
-      <div className="py-6 px-5 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
+      <div className="py-6 px-5 bg-white border border-gray-200 rounded-xl dark:bg-gray-800 dark:border-gray-700">
         <div
           className={`grid grid-cols-8 grid-rows-2 ${
             heldIndex !== NULL_HELD_INDEX ? "cursor-pointer" : ""

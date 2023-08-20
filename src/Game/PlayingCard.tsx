@@ -10,7 +10,8 @@ import {
   setMousePos,
 } from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
-import { gameSlice } from "store/gameSlice";
+import { cardHeight, cardWidth } from "Constants";
+import { isWild } from "helpers/getGroupedCards";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -19,7 +20,7 @@ const cardSuitColPlacements = {
   [CardValue.FOUR]: [2, 0, 2],
   [CardValue.FIVE]: [2, 1, 2],
   [CardValue.SIX]: [3, 0, 3],
-  [CardValue.SEVEN]: [3, 1, 3],
+  [CardValue.SEVEN]: [2, 3, 2],
   [CardValue.EIGHT]: [4, 0, 4],
   [CardValue.NINE]: [4, 1, 4],
   [CardValue.TEN]: [4, 2, 4],
@@ -140,8 +141,8 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
       cardSuitColPlacements[card.value as keyof typeof cardSuitColPlacements];
 
     face = (
-      <div className="flex flex-row w-full px-1">
-        <div className="flex flex-col grow items-center justify-evenly text-2xl">
+      <div className="flex grow flex-row w-full px-1">
+        <div className="flex grow flex-col items-center justify-evenly text-4xl">
           {Array.from({ length: counts[0] }).map((_, i) => (
             <div className={i >= counts[0] / 2 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card)}
@@ -149,7 +150,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
           ))}
         </div>
 
-        <div className="flex flex-col grow items-center justify-evenly text-2xl">
+        <div className="flex grow flex-col items-center justify-evenly text-4xl">
           {Array.from({ length: counts[1] }).map((_, i) => (
             <div className={i >= counts[1] / 2 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card)}
@@ -157,7 +158,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
           ))}
         </div>
 
-        <div className="flex flex-col grow items-center justify-evenly text-2xl">
+        <div className="flex grow flex-col items-center justify-evenly text-4xl">
           {Array.from({ length: counts[2] }).map((_, i) => (
             <div className={i >= counts[2] / 2 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card)}
@@ -174,7 +175,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
     );
   }
 
-  return face;
+  return <div className="py-1 flex grow">{face}</div>;
 };
 
 type PlayingCardProps = {
@@ -182,11 +183,12 @@ type PlayingCardProps = {
   index: number;
   isHeld: boolean;
   onDrop?: (index?: number) => void;
-  hasPadding?: boolean;
+  hasShadow?: boolean;
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
   const dispatch = useDispatch();
+  const game = useSelector((state: RootState) => state.game);
   const cardManagement = useSelector(
     (state: RootState) => state.cardManagement
   );
@@ -202,6 +204,8 @@ export const PlayingCard = (props: PlayingCardProps) => {
     },
     [dispatch, props]
   );
+  const isGrouped = props.index >= 0 && game.hand[props.index].isGrouped;
+  const wild = isWild(card, game.round);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     dispatch(setMousePos({ x: e.clientX, y: e.clientY }));
@@ -240,7 +244,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
         handleDragStart(e);
       }
     },
-    [card.type, cardManagement.heldIndex, handleDragStart, props.isHeld]
+    [card.type, cardManagement.heldIndex, dispatch, handleDragStart, props]
   );
 
   const heldClasses = props.isHeld
@@ -257,8 +261,13 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()}>
         <div
-          className={`bg-gradient-to-r from-cyan-200 dark:from-cyan-600 to-emerald-200 dark:to-emerald-600 border-gray-400 dark:border-gray-700 border-solid border w-32 h-44 p-2 rounded-md select-none`}
-        />
+          className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] ${
+            props.hasShadow ? "shadow-md" : ""
+          }`}
+          style={{ width: cardWidth, height: cardHeight }}
+        >
+          <img src="Icons/CardElements/cardback.svg" alt="card-back" />
+        </div>
       </div>
     );
   } else {
@@ -266,8 +275,17 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()}>
         <div
-          className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border flex w-32 h-44 p-2 rounded-md overflow-hidden select-none`}
+          className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border flex p-2 rounded-xl overflow-hidden select-none relative ${
+            isGrouped ? "ring-2 ring-emerald-200" : ""
+          } ${props.hasShadow ? "shadow-md" : ""}`}
+          style={{ height: cardHeight, width: cardWidth }}
         >
+          {wild && (
+            <div className="absolute top-1 right-2 uppercase text-xs font-mono text-gray-500">
+              wild
+            </div>
+          )}
+
           <CardCol card={card} />
           <CardFace card={card} />
           <CardCol card={card} reverse />
@@ -277,12 +295,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
   }
 
   return (
-    <div
-      className={`max-w-32 overflow-clip ${props.hasPadding ? "px-1" : ""}`}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-      ref={selfRef}
-    >
+    <div onMouseUp={handleMouseUp} onMouseMove={handleMouseMove} ref={selfRef}>
       {cardManagement.dropSlotIndex === props.index &&
         cardManagement.heldIndex !== NULL_HELD_INDEX &&
         !props.isHeld &&

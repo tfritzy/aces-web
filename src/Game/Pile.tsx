@@ -4,6 +4,7 @@ import { RootState } from "store/store";
 import { PlayingCard } from "./PlayingCard";
 import { PILE_HELD_INDEX } from "store/cardManagementSlice";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { cardHeight, cardWidth } from "Constants";
 
 type PileProps = {
   handleDrop: (index?: number) => void;
@@ -24,16 +25,17 @@ export const Pile = (props: PileProps) => {
   if (game.pile.length === 0) {
     return (
       <div
-        className="w-32 h-44 border border-dashed border-gray-300 dark:border-gray-500"
+        className="border border-dashed border-gray-300 dark:border-gray-500"
         onMouseUp={() => handleDrop(PILE_HELD_INDEX)}
         key="slot"
+        style={{ width: cardWidth, height: cardHeight }}
       />
     );
   }
 
   return (
     <>
-      <div className={`w-32 h-44`} ref={parent}>
+      <div style={{ height: cardHeight, width: cardWidth }} ref={parent}>
         {game.pile.map((card, index) => {
           if (index === game.pile.length - 1 && heldIndex === PILE_HELD_INDEX) {
             return null;
@@ -56,7 +58,7 @@ export const Pile = (props: PileProps) => {
             <div className="relative" key={index}>
               <div
                 style={{ position: "absolute", top: -1 * index + "px" }}
-                className={shadowSizes[shadow] + " rounded-md"}
+                className={shadowSizes[shadow] + " rounded-xl"}
               >
                 <PlayingCard
                   isHeld={false}

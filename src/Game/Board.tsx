@@ -12,12 +12,7 @@ import { RoundSummary } from "Game/RoundSummary";
 import { Button } from "components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "store/store";
-import {
-  addPlayer,
-  playersSlice,
-  setPlayers,
-  updatePlayer,
-} from "store/playerSlice";
+import { addPlayer, setPlayers, updatePlayer } from "store/playerSlice";
 import {
   GameState,
   addToPile,
@@ -48,6 +43,7 @@ import {
 import { Alert } from "components/Alert";
 import { TurnFlowchart } from "./TurnFlowchart";
 import { PlayingCard } from "./PlayingCard";
+import { getGroups } from "helpers/getGroupedCards";
 
 const handleMessage = (
   message: Message,
@@ -486,6 +482,7 @@ export const Board = (props: BoardProps) => {
     }
   }, [gameId, handleError, heldCards, self.token]);
 
+  const canGoOut = game.hand.length > 0 && game.hand.every((c) => c.isGrouped);
   const buttons = React.useMemo(() => {
     return (
       <div className="flex justify-center w-full">
@@ -494,20 +491,20 @@ export const Board = (props: BoardProps) => {
             key="goOut"
             onClick={goOut}
             text="Go out"
-            type="secondary"
+            type={canGoOut ? "primary" : "secondary"}
             pending={goOutPending}
           />
           <Button
             key="endTurn"
             onClick={endTurn}
             text="End turn"
-            type="primary"
+            type={!canGoOut ? "primary" : "secondary"}
             pending={endTurnPending}
           />
         </div>
       </div>
     );
-  }, [endTurn, endTurnPending, goOut, goOutPending]);
+  }, [endTurn, endTurnPending, goOut, goOutPending, canGoOut]);
 
   let heldCard;
   if (heldIndex !== NULL_HELD_INDEX) {
