@@ -69,6 +69,8 @@ export type PlayerDoneForRoundEvent = {
   playerId: string;
   roundScore: number;
   totalScore: number;
+  groupedCards: Card[][];
+  ungroupedCards: Card[];
 };
 
 export type Message =

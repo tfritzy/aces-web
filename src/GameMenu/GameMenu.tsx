@@ -192,7 +192,18 @@ const CreateGameMenu = (props: CreateGameMenuProps) => {
         resetAll(dispatch);
         dispatch(setGameId(body.id));
         dispatch(setState(GameState.Setup));
-        dispatch(setPlayers([{ displayName: self.displayName }]));
+        dispatch(
+          setPlayers([
+            {
+              displayName: self.displayName,
+              id: self.id,
+              mostRecentGroupedCards: [],
+              mostRecentUngroupedCards: [],
+              scorePerRound: [],
+              totalScore: 0,
+            },
+          ])
+        );
 
         return navigate(`/game/${body.id}`);
       } else {

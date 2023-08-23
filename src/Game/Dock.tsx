@@ -10,7 +10,6 @@ import {
   setMousePos,
 } from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
-import { cardWidth } from "Constants";
 
 type DockProps = {
   cards: Card[];
@@ -48,38 +47,45 @@ export const Dock = (props: DockProps) => {
     [dispatch]
   );
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    dispatch(setMousePos({ x: e.clientX, y: e.clientY }));
-    dispatch(setDropSlotIndex(handSize));
-    e.stopPropagation();
-  };
+  const handleMouseMove = React.useCallback(
+    (e: React.MouseEvent) => {
+      dispatch(setMousePos({ x: e.clientX, y: e.clientY }));
+      dispatch(setDropSlotIndex(handSize));
+      e.stopPropagation();
+    },
+    [dispatch, handSize]
+  );
 
-  const playingCards = [];
-  for (let i = 0; i < props.cards.length; i++) {
-    const card = props.cards[i];
-    if (i === heldIndex) {
-      playingCards.push(
-        <div className="opacity-50" key={card.type + "-" + card.deck}>
+  const playingCards = React.useMemo(() => {
+    const cards = [];
+    for (let i = 0; i < props.cards.length; i++) {
+      const card = props.cards[i];
+      if (i === heldIndex) {
+        cards.push(
+          <div className="opacity-50" key={card.type + "-" + card.deck}>
+            <PlayingCard isHeld={false} index={i} card={card} hasShadow />
+          </div>
+        );
+        continue;
+      }
+
+      cards.push(
+        <div key={card.type + "-" + card.deck}>
           <PlayingCard isHeld={false} index={i} card={card} hasShadow />
         </div>
       );
-      continue;
     }
 
-    playingCards.push(
-      <div key={card.type + "-" + card.deck}>
-        <PlayingCard isHeld={false} index={i} card={card} hasShadow />
-      </div>
-    );
-  }
+    if (dropSlotIndex === handSize && heldIndex !== NULL_HELD_INDEX) {
+      cards.push(
+        <div key={"drop-slot"}>
+          <DropSlot />
+        </div>
+      );
+    }
 
-  if (dropSlotIndex === handSize && heldIndex !== NULL_HELD_INDEX) {
-    playingCards.push(
-      <div key={"drop-slot"}>
-        <DropSlot />
-      </div>
-    );
-  }
+    return cards;
+  }, [dropSlotIndex, handSize, heldIndex, props.cards]);
 
   return (
     <div onMouseLeave={handleMouseExit} onMouseUp={handleDrop}>

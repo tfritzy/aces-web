@@ -12,6 +12,7 @@ import {
 import { DropSlot } from "components/DropSlot";
 import { cardHeight, cardWidth } from "Constants";
 import { isWild } from "helpers/getGroupedCards";
+import { Spinner } from "components/Spinner";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -142,7 +143,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
 
     face = (
       <div className="flex grow flex-row w-full px-1">
-        <div className="flex grow flex-col items-center justify-evenly text-4xl">
+        <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
           {Array.from({ length: counts[0] }).map((_, i) => (
             <div className={i >= counts[0] / 2 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card)}
@@ -150,7 +151,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
           ))}
         </div>
 
-        <div className="flex grow flex-col items-center justify-evenly text-4xl">
+        <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
           {Array.from({ length: counts[1] }).map((_, i) => (
             <div className={i >= counts[1] / 2 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card)}
@@ -158,7 +159,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
           ))}
         </div>
 
-        <div className="flex grow flex-col items-center justify-evenly text-4xl">
+        <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
           {Array.from({ length: counts[2] }).map((_, i) => (
             <div className={i >= counts[2] / 2 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card)}
@@ -175,7 +176,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
     );
   }
 
-  return <div className="py-1 flex grow">{face}</div>;
+  return <div className="flex grow">{face}</div>;
 };
 
 type PlayingCardProps = {
@@ -239,7 +240,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
           e.stopPropagation();
           props.onDrop?.(props.index);
         }
-      } else if (card.type !== CardType.SPACER) {
+      } else if (card.type !== CardType.SPINNER) {
         e.stopPropagation();
         handleDragStart(e);
       }
@@ -261,7 +262,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()}>
         <div
-          className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] ${
+          className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] cursor-pointer ${
             props.hasShadow ? "shadow-md" : ""
           }`}
           style={{ width: cardWidth, height: cardHeight }}
@@ -270,12 +271,23 @@ export const PlayingCard = (props: PlayingCardProps) => {
         </div>
       </div>
     );
+  } else if (card.type === CardType.SPINNER) {
+    cardElement = (
+      <div id={props.index.toString()}>
+        <div
+          className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] flex justify-center animate-pulse items-center cursor-pointer ${
+            props.hasShadow ? "shadow-md" : ""
+          }`}
+          style={{ width: cardWidth, height: cardHeight }}
+        ></div>
+      </div>
+    );
   } else {
     const color = getCardColor(card);
     cardElement = (
       <div id={props.index.toString()}>
         <div
-          className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border flex p-2 rounded-xl overflow-hidden select-none relative ${
+          className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-xl overflow-hidden select-none relative ${
             isGrouped ? "ring-2 ring-emerald-200" : ""
           } ${props.hasShadow ? "shadow-md" : ""}`}
           style={{ height: cardHeight, width: cardWidth }}
@@ -286,9 +298,11 @@ export const PlayingCard = (props: PlayingCardProps) => {
             </div>
           )}
 
-          <CardCol card={card} />
-          <CardFace card={card} />
-          <CardCol card={card} reverse />
+          <div className=" flex flex-row p-2 h-[100%]">
+            <CardCol card={card} />
+            <CardFace card={card} />
+            <CardCol card={card} reverse />
+          </div>
         </div>
       </div>
     );

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import { Dock } from "Game/Dock";
 import { Deck } from "Game/Deck";
-import { Card, cardBack } from "Game/Types";
+import { SchemaCard, cardBack, parseCard, spinnerCard } from "Game/Types";
 import { API_URL } from "Constants";
 import { EventType, Message } from "Game/Events";
 import { Lobby } from "Game/Lobby";
@@ -43,14 +43,14 @@ import {
 import { Alert } from "components/Alert";
 import { TurnFlowchart } from "./TurnFlowchart";
 import { PlayingCard } from "./PlayingCard";
-import { getGroups } from "helpers/getGroupedCards";
 
 const handleMessage = (
   message: Message,
   dispatch: AppDispatch,
   addToast: (props: ToastProps) => void,
   setAlertMessage: (message: string) => void,
-  state: RootState
+  state: RootState,
+  handleError: (response: Response) => void
 ) => {
   switch (message.type) {
     case EventType.JoinGame:
@@ -60,11 +60,13 @@ const handleMessage = (
           displayName: message.displayName,
           scorePerRound: [],
           totalScore: 0,
+          mostRecentGroupedCards: [],
+          mostRecentUngroupedCards: [],
         })
       );
       break;
     case EventType.StartGame:
-      dispatch(setState(GameState.Playing));
+      reconnect(state.self.token, dispatch, state.game.id, handleError);
       break;
     case EventType.DrawFromDeck:
       if (message.playerId !== state.self.id) {
@@ -80,7 +82,7 @@ const handleMessage = (
       break;
     case EventType.Discard:
       if (message.playerId !== state.self.id) {
-        const card = message.card;
+        const card = parseCard(message.card);
         dispatch(addToPile(card));
       }
       dispatch(setTurnPhase(TurnPhase.Ending));
@@ -110,21 +112,59 @@ const handleMessage = (
       }
       break;
     case EventType.PlayerDoneForRound:
-      addToast({
-        message: `${message.playerId} ended round with ${message.roundScore}`,
-        type: "info",
-        id: generateId("toast", 12),
-      });
       dispatch(
         updatePlayer({
           playerId: message.playerId,
           roundScore: message.roundScore,
           totalScore: message.totalScore,
+          groupedCards: message.groupedCards.map((g) => g.map(parseCard)),
+          ungroupedCards: message.ungroupedCards.map(parseCard),
         })
       );
       break;
     default:
       console.error("unhandled message", message);
+  }
+};
+
+const reconnect = async (
+  token: string,
+  dispatch: ReturnType<typeof useDispatch>,
+  gameId: string,
+  handleError: (r: Response) => void
+) => {
+  let gameState = await fetch(`${API_URL}/api/get_game_state`, {
+    headers: {
+      token: token,
+      "game-id": gameId,
+    },
+  });
+
+  if (!gameState.ok) {
+    await handleError(gameState);
+  } else {
+    const state = await gameState.json();
+    dispatch(setGameId(gameId));
+    dispatch(setState(state.state));
+    dispatch(setRound(state.round));
+    dispatch(setTurn(state.turn));
+    dispatch(setPile(state.pile.map((c: SchemaCard) => parseCard(c))));
+    dispatch(setDeckSize(state.deckSize));
+    dispatch(setState(state.state));
+    dispatch(setHand(state.hand.map((c: SchemaCard) => parseCard(c))));
+    dispatch(setTurnPhase(state.turnPhase));
+
+    // TODO: Score
+    dispatch(
+      setPlayers(
+        state.players.map((p: any) => ({
+          id: p.id,
+          displayName: p.displayName,
+          scorePerRound: p.scorePerRound,
+          totalScore: p.score,
+        }))
+      )
+    );
   }
 };
 
@@ -240,44 +280,8 @@ export const Board = (props: BoardProps) => {
   }, []);
 
   useEffect(() => {
-    const reconnect = async (token: string) => {
-      let gameState = await fetch(`${API_URL}/api/get_game_state`, {
-        headers: {
-          token: token,
-          "game-id": gameId,
-        },
-      });
-
-      if (!gameState.ok) {
-        await handleError(gameState);
-      } else {
-        const state = await gameState.json();
-        dispatch(setGameId(gameId));
-        dispatch(setState(state.state));
-        dispatch(setRound(state.round));
-        dispatch(setTurn(state.turn));
-        dispatch(setPile(state.pile));
-        dispatch(setDeckSize(state.deckSize));
-        dispatch(setState(state.state));
-        dispatch(setHand(state.hand));
-        dispatch(setTurnPhase(state.turnPhase));
-
-        // TODO: Score
-        dispatch(
-          setPlayers(
-            state.players.map((p: any) => ({
-              id: p.id,
-              displayName: p.displayName,
-              scorePerRound: p.scorePerRound,
-              totalScore: p.score,
-            }))
-          )
-        );
-      }
-    };
-
     if (game.state === GameState.Invalid && self.token) {
-      reconnect(self.token);
+      reconnect(self.token, dispatch, gameId, handleError);
     }
 
     // Going for a mount effect, but token starts null.
@@ -298,7 +302,8 @@ export const Board = (props: BoardProps) => {
         dispatch,
         addToast,
         setAlertMessageAndShow,
-        rootState
+        rootState,
+        handleError
       );
     }
 
@@ -313,27 +318,6 @@ export const Board = (props: BoardProps) => {
       );
     }
   }, [gameId, handleError, self.id, websocket]);
-
-  useEffect(() => {
-    const getState = async () => {
-      let joinResp = await fetch(`${API_URL}/api/get_game_state`, {
-        headers: {
-          token: self.token,
-          "game-id": gameId || "",
-        },
-      });
-
-      return await joinResp.json();
-    };
-
-    if (game.state === GameState.Playing) {
-      getState().then((state) => {
-        dispatch(setHand(state.hand));
-        dispatch(setPile(state.pile));
-        dispatch(setDeckSize(state.deckSize));
-      });
-    }
-  }, [dispatch, game.state, gameId, self.token]);
 
   const drawFromPile = React.useCallback(async () => {
     var res = await fetch(`${API_URL}/api/draw_from_pile`, {
@@ -401,38 +385,69 @@ export const Board = (props: BoardProps) => {
         return;
       }
 
-      const updatedHand = [...heldCards];
+      const originalHand = [...heldCards];
       if (heldIndex === PILE_HELD_INDEX && dropIndex >= 0) {
-        const response = await drawFromPile();
+        const finalHand = [...heldCards];
+        const originalPile = [...game.pile];
+        const drawnCard = game.pile[game.pile.length - 1];
+        finalHand.splice(dropIndex, 0, drawnCard);
+        dispatch(removeTopFromPile());
+        dispatch(setHand(finalHand));
 
-        if (response.ok) {
-          const dropCard = game.pile[game.pile.length - 1];
-          updatedHand.splice(dropIndex, 0, dropCard);
-          dispatch(removeTopFromPile());
-        }
+        drawFromPile().then((res) => {
+          if (res.ok) {
+            // Nothing to do.
+          } else {
+            dispatch(setHand(originalHand));
+            dispatch(setPile(originalPile));
+          }
+        });
       } else if (dropIndex === PILE_HELD_INDEX && heldIndex >= 0) {
-        const response = await discard();
+        const originalPile = [...game.pile];
+        const finalHand = [...heldCards];
+        const finalPile = [...game.pile];
+        const dropCard = finalHand[heldIndex];
+        finalPile.push(dropCard);
+        finalHand.splice(heldIndex, 1);
+        dispatch(setHand(finalHand));
+        dispatch(setPile(finalPile));
 
-        if (response.ok) {
-          const dropCard = updatedHand[heldIndex];
-          dispatch(addToPile(dropCard));
-          updatedHand.splice(heldIndex, 1);
-        }
+        discard().then((res) => {
+          if (res.ok) {
+            // Nothing to do.
+          } else {
+            dispatch(setHand(originalHand));
+            dispatch(setPile(originalPile));
+          }
+        });
       } else if (dropIndex >= 0 && heldIndex === DECK_HELD_INDEX) {
-        const response = await drawFromDeck();
+        const originalDeckSize = game.deckSize;
+        const pendingHand = [...heldCards];
+        pendingHand.splice(dropIndex, 0, spinnerCard);
+        dispatch(setHand(pendingHand));
 
-        if (response.ok) {
-          const dropCard = (await response.json()) as Card;
-          updatedHand.splice(dropIndex, 0, dropCard);
-        }
+        const pendingSlot = dropIndex;
+        drawFromDeck().then(async (res) => {
+          if (res.ok) {
+            const finalHand = [...heldCards];
+            const drawnCard = parseCard(await res.json());
+            finalHand.splice(pendingSlot, 0, drawnCard);
+            dispatch(setHand(finalHand));
+            dispatch(setDeckSize(game.deckSize - 1));
+          } else {
+            dispatch(setHand(originalHand));
+            dispatch(setDeckSize(originalDeckSize));
+          }
+        });
       } else {
-        const dropCard = updatedHand[heldIndex];
+        const finalHand = [...heldCards];
+        const dropCard = finalHand[heldIndex];
         const indexMod = dropIndex > heldIndex ? 1 : 0;
-        updatedHand.splice(heldIndex, 1);
-        updatedHand.splice(dropIndex - indexMod, 0, dropCard);
+        finalHand.splice(heldIndex, 1);
+        finalHand.splice(dropIndex - indexMod, 0, dropCard);
+        dispatch(setHand(finalHand));
       }
       dispatch(setHeldIndex(NULL_HELD_INDEX));
-      dispatch(setHand(updatedHand));
       setDropSlotIndex(null);
     },
     [
@@ -441,6 +456,7 @@ export const Board = (props: BoardProps) => {
       dispatch,
       drawFromDeck,
       drawFromPile,
+      game.hand,
       game.pile,
       heldCards,
       heldIndex,
@@ -455,13 +471,16 @@ export const Board = (props: BoardProps) => {
         token: self.token,
         "game-id": gameId,
       },
+      body: JSON.stringify({
+        hand: heldCards,
+      }),
     });
     setEndTurnPending(false);
 
     if (!res.ok) {
       await handleError(res);
     }
-  }, [gameId, handleError, self.token]);
+  }, [gameId, handleError, heldCards, self.token]);
 
   const goOut = React.useCallback(async () => {
     setGoOutPending(true);
@@ -540,7 +559,7 @@ export const Board = (props: BoardProps) => {
 
       <Toasts toasts={toasts} key="toasts" />
 
-      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1200px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700">
+      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1100px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700">
         <PlayerList key="playerList" />
 
         <div className="absolute top-0 right-0">

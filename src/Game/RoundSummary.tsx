@@ -6,6 +6,7 @@ import { Button } from "components/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { Player } from "store/playerSlice";
+import { getUnicodeForCard } from "helpers/getUnicodeForCard";
 
 type SummaryPlayer = Player & {
   placement: number;
@@ -107,6 +108,31 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                   </div>
 
                   <div className="text-left grow truncate">{p.displayName}</div>
+
+                  <div className="text-center px-3">
+                    <div className="text-xs leading-none">Grouped</div>
+                    <div className="font-bold">
+                      {p.mostRecentGroupedCards.map((g) => (
+                        <div>
+                          {g.map((c) => getUnicodeForCard(c.type)).join("")}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="text-center px-3">
+                    <div className="text-xs leading-none">Ungrouped</div>
+                    <div className="font-bold">
+                      {p.mostRecentUngroupedCards
+                        .map((c) => getUnicodeForCard(c.type))
+                        .join("")}
+                    </div>
+                  </div>
+
+                  <div className="text-center px-3">
+                    <div className="text-xs leading-none">Round</div>
+                    <div className="font-bold">{p.roundScore}</div>
+                  </div>
 
                   <div className="text-center px-3">
                     <div className="text-xs leading-none">Round</div>

@@ -8,6 +8,7 @@ export type Card = {
   deck: number;
   isGrouped: boolean;
   createdTimeMs?: number;
+  score?: number;
 };
 
 export enum CardType {
@@ -72,7 +73,7 @@ export enum CardType {
   JOKER_A,
   JOKER_B,
 
-  SPACER,
+  SPINNER,
   CARD_BACK,
 }
 
@@ -103,8 +104,8 @@ export enum CardValue {
   JOKER,
 }
 
-export const spacerCard: Card = {
-  type: CardType.SPACER,
+export const spinnerCard: Card = {
+  type: CardType.SPINNER,
   suit: Suit.SUITLESS,
   value: CardValue.JOKER,
   deck: 0,
@@ -127,4 +128,63 @@ export type GameStateForPlayer = {
   turn: number;
   round: number;
   state: GameState;
+};
+
+const getSuit = (card: CardType): Suit => {
+  if (card > 0) {
+    return Math.floor((card - 1) / 13 + 1);
+  } else {
+    return Suit.INVALID;
+  }
+};
+
+const getValue = (card: CardType): CardValue => {
+  if (card > 0 && card < 53) {
+    return ((card - 1) % 13) + 1;
+  } else if (card >= 53) {
+    return CardValue.JOKER;
+  } else {
+    return CardValue.INVALID;
+  }
+};
+
+const getScore = (value: CardValue) => {
+  switch (value) {
+    case CardValue.TWO:
+    case CardValue.THREE:
+    case CardValue.FOUR:
+    case CardValue.FIVE:
+    case CardValue.SIX:
+    case CardValue.SEVEN:
+    case CardValue.EIGHT:
+    case CardValue.NINE:
+      return value + 1;
+    case CardValue.TEN:
+    case CardValue.JACK:
+    case CardValue.QUEEN:
+    case CardValue.KING:
+      return 10;
+    case CardValue.ACE:
+      return 20;
+    case CardValue.JOKER:
+      return 50;
+    default:
+      return 0;
+  }
+};
+
+export type SchemaCard = {
+  type: CardType;
+  deck: number;
+};
+
+export const parseCard = (card: SchemaCard): Card => {
+  return {
+    type: card.type,
+    deck: card.deck,
+    suit: getSuit(card.type),
+    value: getValue(card.type),
+    score: getScore(getValue(card.type)),
+    isGrouped: false,
+  };
 };

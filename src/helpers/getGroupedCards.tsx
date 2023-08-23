@@ -106,9 +106,17 @@ function IsWild(card: Card, wild: CardValue): boolean {
 function GetGroupSizeAtIndex(cards: Card[], wild: CardValue): number[] {
   const groupSizeAtIndex: number[] = new Array(cards.length);
 
+  if (!cards?.length) {
+    return groupSizeAtIndex;
+  }
+
   for (let i = 0; i < cards.length - 1; i++) {
     let size = 1;
-    let streak = StreakType.None;
+    const possibleStreaks = [
+      StreakType.StraightAsc,
+      StreakType.StraightDesc,
+      StreakType.Same,
+    ];
     let firstRealIndex = -1;
 
     while (i + size < cards.length) {
@@ -118,21 +126,27 @@ function GetGroupSizeAtIndex(cards: Card[], wild: CardValue): number[] {
         firstRealIndex = j - 1;
       }
 
-      if (streak === StreakType.None && firstRealIndex !== -1) {
-        streak = GetStreakType(cards[firstRealIndex], cards[j], wild);
+      for (let s = 0; s < possibleStreaks.length; s++) {
+        const streak = possibleStreaks[s];
+        if (
+          !ContinuesStreak(cards[j - 1], cards[j], streak, 1, wild) ||
+          !(
+            firstRealIndex === -1 ||
+            ContinuesStreak(
+              cards[firstRealIndex],
+              cards[j],
+              streak,
+              j - firstRealIndex,
+              wild
+            )
+          )
+        ) {
+          possibleStreaks.splice(s, 1);
+          s -= 1;
+        }
       }
 
-      if (
-        ContinuesStreak(cards[j - 1], cards[j], streak, 1, wild) &&
-        (firstRealIndex === -1 ||
-          ContinuesStreak(
-            cards[firstRealIndex],
-            cards[j],
-            streak,
-            j - firstRealIndex,
-            wild
-          ))
-      ) {
+      if (possibleStreaks.length > 0) {
         size += 1;
       } else {
         break;
@@ -198,6 +212,10 @@ function GetWildForRound(round: number): CardValue {
 }
 
 export function getGroups(hand: Card[], round: number): boolean[] {
+  if (!hand?.length) {
+    return [];
+  }
+
   const groupSizes = GetGroupSizeAtIndex(hand, GetWildForRound(round));
   const bestGroups = GetBestGroups(groupSizes, 0, [], new Array(hand.length));
   const grouped = new Array(hand.length).fill(false);

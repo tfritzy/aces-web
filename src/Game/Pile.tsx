@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-import { spacerCard } from "./Types";
 import { RootState } from "store/store";
 import { PlayingCard } from "./PlayingCard";
 import { PILE_HELD_INDEX } from "store/cardManagementSlice";
