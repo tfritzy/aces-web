@@ -26,6 +26,9 @@ export const Dock = (props: DockProps) => {
   const dropSlotIndex = useSelector(
     (state: RootState) => state.cardManagement.dropSlotIndex
   );
+  const dropsDisabled = useSelector(
+    (state: RootState) => state.cardManagement.disabled
+  );
   const handSize = useSelector((state: RootState) => state.game.hand.length);
 
   const handleDrop = React.useCallback(
@@ -92,9 +95,9 @@ export const Dock = (props: DockProps) => {
       {props.buttons}
       <div className="py-6 px-5 bg-white border border-gray-200 rounded-xl dark:bg-gray-800 dark:border-gray-700">
         <div
-          className={`grid grid-cols-8 grid-rows-2 ${
+          className={`grid grid-cols-8 grid-rows-2 gap-2 ${
             heldIndex !== NULL_HELD_INDEX ? "cursor-pointer" : ""
-          }`}
+          } ${dropsDisabled ? "pointer-events-none" : ""}}`}
           ref={parent}
           onMouseMove={handleMouseMove}
         >

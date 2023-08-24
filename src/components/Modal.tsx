@@ -1,6 +1,6 @@
 type ModalProps = {
   shown: boolean;
-  width?: "w-96" | "w-80" | "w-64" | "min-w-max";
+  width?: string;
   children: React.ReactNode;
   onClose?: () => void;
 };
@@ -13,7 +13,6 @@ export const Modal = (props: ModalProps) => {
           ? "bg-opacity-20 opacity-100"
           : "bg-opacity-0 opacity-0 pointer-events-none"
       }`}
-      onClick={props.onClose}
     >
       {props.shown && (
         <div className="text-gray-800 dark:text-white pointer-events-auto">

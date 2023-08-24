@@ -1,16 +1,23 @@
 import * as React from "react";
 import { CardType } from "./Types";
 import { Suit, Card, CardValue } from "Game/Types";
-import { NULL_HELD_INDEX } from "Game/Board";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import {
+  NULL_HELD_INDEX,
   setDropSlotIndex,
   setHeldIndex,
   setMousePos,
 } from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
-import { cardHeight, cardWidth } from "Constants";
+import {
+  cardHeight,
+  cardWidth,
+  darkModeBlack,
+  darkModeRed,
+  lightModeBlack,
+  lightModeRed,
+} from "Constants";
 import { isWild } from "helpers/getGroupedCards";
 import { Spinner } from "components/Spinner";
 
@@ -27,7 +34,7 @@ const cardSuitColPlacements = {
   [CardValue.TEN]: [4, 2, 4],
 } as const;
 
-const getSuitIcon = (card: Card) => {
+export const getSuitIcon = (card: Card) => {
   switch (card.suit) {
     case Suit.CLUBS:
       return "♣";
@@ -42,7 +49,7 @@ const getSuitIcon = (card: Card) => {
   }
 };
 
-const getValueIcon = (card: Card): string[] => {
+export const getValueIcon = (card: Card): string[] => {
   switch (card.value) {
     case CardValue.TWO:
       return ["2"];
@@ -77,8 +84,8 @@ const getValueIcon = (card: Card): string[] => {
   }
 };
 
-const themedBlack = "text-black dark:text-emerald-300";
-const themedRed = "text-red-600 dark:text-amber-300";
+const themedBlack = `text-${lightModeBlack} dark:text-${darkModeBlack}`;
+const themedRed = `text-${lightModeRed} dark:text-${darkModeRed}`;
 const cardBackground = "bg-gray-50 dark:bg-slate-950";
 
 const getCardColor = (card: Card) => {

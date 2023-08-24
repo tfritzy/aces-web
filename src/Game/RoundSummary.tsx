@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { Player } from "store/playerSlice";
 import { getUnicodeForCard } from "helpers/getUnicodeForCard";
+import { Minicard } from "components/Minicard";
 
 type SummaryPlayer = Player & {
   placement: number;
@@ -42,14 +43,6 @@ export const RoundSummary = (props: RoundSummaryProps) => {
     }));
 
     players.sort((a, b) => {
-      return a.totalScore - b.totalScore;
-    });
-
-    players.forEach((p, i) => {
-      p.placement = i + 1;
-    });
-
-    players.sort((a, b) => {
       const prevA = a.totalScore - a.roundScore;
       const prevB = b.totalScore - b.roundScore;
       return prevA - prevB;
@@ -59,13 +52,15 @@ export const RoundSummary = (props: RoundSummaryProps) => {
       p.prevPlacement = i + 1;
     });
 
-    setSortedPlayers(players);
+    players.sort((a, b) => {
+      return a.totalScore - b.totalScore;
+    });
 
-    setTimeout(() => {
-      const newPlayers = [...players];
-      newPlayers.sort((a, b) => a.placement - b.placement);
-      setSortedPlayers(newPlayers);
-    }, 1000);
+    players.forEach((p, i) => {
+      p.placement = i + 1;
+    });
+
+    setSortedPlayers(players);
   }, [game.round, gamePlayers, props.shown]);
 
   const getChevron = (p: SummaryPlayer) => {
@@ -81,72 +76,99 @@ export const RoundSummary = (props: RoundSummaryProps) => {
   };
 
   return (
-    <Modal width="w-96" shown={props.shown} onClose={props.onContinue}>
+    <Modal width="w-[700px]" shown={props.shown} onClose={props.onContinue}>
       <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-600">
         <div className="font-semibold text-2xl text-center p-2">{`Round ${game.round} results`}</div>
 
-        <div className="flex flex-col space-y-3 p-4 items-center" ref={parent}>
-          {sortedPlayers.map((p, i) => {
-            const icon = "Icons/characters/" + (i % 5) + ".png";
-            return (
-              <div className="flex flex-row items-center space-x-4" key={p.id}>
-                <div>
-                  <div className="font-bold text-xl leading-none">
-                    {p.placement}
-                  </div>
-                  {getChevron(p)}
-                </div>
-                <div className="rounded-full flex flex-row items-center  bg-slate-50 w-80 shadow-sm p-1 dark:bg-gray-700">
-                  <div className="shadow-sm w-12 h-12 rounded-full mr-2">
-                    <div className="overflow-hidden w-12 h-12 rounded-full bg-white dark:bg-gray-600">
-                      <img
-                        src={icon}
-                        className="rounded-full w-10 h-12 mx-auto translate-y-2 -translate-x-1"
-                        alt="avatar"
-                      />
-                    </div>
-                  </div>
+        <div className="px-1 py-4">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b dark:border-neutral-500">
+                <th key="rank" className="px-3 py-2 text-left"></th>
+                <th key="player" className="px-3 py-2 text-left">
+                  Player
+                </th>
+                <th key="grouped" className="px-3 py-2 text-left">
+                  Grouped
+                </th>
+                <th key="ungrouped" className="px-3 py-2 text-left">
+                  Ungrouped
+                </th>
+                <th key="round" className="px-3 py-2 text-left">
+                  Round
+                </th>
+                <th key="total" className="px-3 py-2 text-left">
+                  Total
+                </th>
+              </tr>
+            </thead>
 
-                  <div className="text-left grow truncate">{p.displayName}</div>
+            <tbody>
+              {sortedPlayers.map((p, i) => {
+                const icon = "Icons/characters/" + (i % 5) + ".png";
 
-                  <div className="text-center px-3">
-                    <div className="text-xs leading-none">Grouped</div>
-                    <div className="font-bold">
-                      {p.mostRecentGroupedCards.map((g) => (
-                        <div>
-                          {g.map((c) => getUnicodeForCard(c.type)).join("")}
+                return (
+                  <tr className="border-b dark:border-neutral-500" key={p.id}>
+                    <td key="placement" className="px-3 py-2">
+                      <div className="font-bold text-xl leading-none text-center px-2 pr-4">
+                        {p.placement}
+                        {getChevron(p)}
+                      </div>
+                    </td>
+
+                    <td key="player" className="px-3 py-2">
+                      <div>
+                        <div className="flex flex-row items-center border rounded px-2 max-w-max">
+                          <div className="overflow-hidden w-12 h-12 bg-white dark:bg-gray-600">
+                            <img
+                              src={icon}
+                              className="rounded-full w-10 h-12 mx-auto translate-y-2 -translate-x-1"
+                              alt="avatar"
+                            />
+                          </div>
+                          <div className="text-left truncate">
+                            {p.displayName}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                      </div>
+                    </td>
 
-                  <div className="text-center px-3">
-                    <div className="text-xs leading-none">Ungrouped</div>
-                    <div className="font-bold">
-                      {p.mostRecentUngroupedCards
-                        .map((c) => getUnicodeForCard(c.type))
-                        .join("")}
-                    </div>
-                  </div>
+                    <td key="grouped" className="px-3 py-2">
+                      <div className="flex flex-row flex-wrap">
+                        {p.mostRecentGroupedCards.map((g) => (
+                          <div className="flex flex-row">
+                            {g.map((c) => (
+                              <div className="m-[1px]">
+                                <Minicard card={c} />
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    </td>
 
-                  <div className="text-center px-3">
-                    <div className="text-xs leading-none">Round</div>
-                    <div className="font-bold">{p.roundScore}</div>
-                  </div>
+                    <td key="ungrouped" className="px-3 py-2">
+                      <div className="flex flex-row flex-wrap">
+                        {p.mostRecentUngroupedCards.map((c) => (
+                          <div className="m-[1px]">
+                            <Minicard card={c} />
+                          </div>
+                        ))}
+                      </div>
+                    </td>
 
-                  <div className="text-center px-3">
-                    <div className="text-xs leading-none">Round</div>
-                    <div className="font-bold">{p.roundScore}</div>
-                  </div>
+                    <td key="round" className="px-3 py-2">
+                      <div>{p.roundScore}</div>
+                    </td>
 
-                  <div className="text-center px-3 mr-3">
-                    <div className="text-xs leading-none">Total</div>
-                    <div className="font-bold">{p.totalScore}</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                    <td key="total" className="px-3 py-2">
+                      <div>{p.totalScore}</div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
         <div className="flex justify-end p-2">

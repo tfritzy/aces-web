@@ -36,6 +36,7 @@ import {
   DECK_HELD_INDEX,
   NULL_HELD_INDEX,
   PILE_HELD_INDEX,
+  setDisabled,
   setDropSlotIndex,
   setHeldIndex,
   setMousePos,
@@ -43,6 +44,9 @@ import {
 import { Alert } from "components/Alert";
 import { TurnFlowchart } from "./TurnFlowchart";
 import { PlayingCard } from "./PlayingCard";
+import { Modal } from "components/Modal";
+import { Spinner } from "components/Spinner";
+import { OpenWebsocketModal } from "./OpenWebsocketModal";
 
 const handleMessage = (
   message: Message,
@@ -52,6 +56,7 @@ const handleMessage = (
   state: RootState,
   handleError: (response: Response) => void
 ) => {
+  console.log("Handling message", message);
   switch (message.type) {
     case EventType.JoinGame:
       dispatch(
@@ -66,6 +71,7 @@ const handleMessage = (
       );
       break;
     case EventType.StartGame:
+      console.log("Reconnect by start game");
       reconnect(state.self.token, dispatch, state.game.id, handleError);
       break;
     case EventType.DrawFromDeck:
@@ -162,50 +168,14 @@ const reconnect = async (
           displayName: p.displayName,
           scorePerRound: p.scorePerRound,
           totalScore: p.score,
+          mostRecentGroupedCards: p.mostRecentGroupedCards.map((g: any) =>
+            g.map(parseCard)
+          ),
+          mostRecentUngroupedCards: p.mostRecentUngroupedCards.map(parseCard),
         }))
       )
     );
   }
-};
-
-const openWebsocket = async (
-  playerId: string,
-  gameId: string,
-  onMessage: (message: MessageEvent<any>) => void,
-  handleError: (response: Response) => void
-) => {
-  let res = await fetch(`${API_URL}/api/negotiate`, {
-    headers: {
-      "user-id": playerId,
-      "game-id": gameId,
-    },
-  });
-  if (!res.ok) {
-    await handleError(res);
-  }
-
-  let url = await res.json();
-  let ws = new WebSocket(url.url);
-  ws.onmessage = (message) => {
-    onMessage(message);
-  };
-
-  // Sleep for a bit so that the connection resolves and the player is known to pub sub.
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  let joinResp = await fetch(`${API_URL}/api/join_game_group`, {
-    method: "POST",
-    headers: {
-      "user-id": playerId,
-      "game-id": gameId,
-    },
-  });
-
-  if (!joinResp.ok) {
-    await handleError(joinResp);
-  }
-
-  return ws;
 };
 
 type BoardProps = {};
@@ -281,6 +251,7 @@ export const Board = (props: BoardProps) => {
 
   useEffect(() => {
     if (game.state === GameState.Invalid && self.token) {
+      console.log("Reconnect 1");
       reconnect(self.token, dispatch, gameId, handleError);
     }
 
@@ -309,15 +280,6 @@ export const Board = (props: BoardProps) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recentMessage]);
-
-  useEffect(() => {
-    if (websocket === undefined) {
-      setWebsocket(null);
-      openWebsocket(self.id, gameId || "", setRecentMessage, handleError).then(
-        (websocket) => setWebsocket(websocket)
-      );
-    }
-  }, [gameId, handleError, self.id, websocket]);
 
   const drawFromPile = React.useCallback(async () => {
     var res = await fetch(`${API_URL}/api/draw_from_pile`, {
@@ -381,6 +343,10 @@ export const Board = (props: BoardProps) => {
         return;
       }
 
+      if (cardManagement.disabled) {
+        return;
+      }
+
       if (dropIndex === PILE_HELD_INDEX && heldIndex === DECK_HELD_INDEX) {
         return;
       }
@@ -393,8 +359,10 @@ export const Board = (props: BoardProps) => {
         finalHand.splice(dropIndex, 0, drawnCard);
         dispatch(removeTopFromPile());
         dispatch(setHand(finalHand));
+        dispatch(setDisabled(true));
 
         drawFromPile().then((res) => {
+          dispatch(setDisabled(false));
           if (res.ok) {
             // Nothing to do.
           } else {
@@ -411,8 +379,10 @@ export const Board = (props: BoardProps) => {
         finalHand.splice(heldIndex, 1);
         dispatch(setHand(finalHand));
         dispatch(setPile(finalPile));
+        dispatch(setDisabled(true));
 
         discard().then((res) => {
+          dispatch(setDisabled(false));
           if (res.ok) {
             // Nothing to do.
           } else {
@@ -425,9 +395,11 @@ export const Board = (props: BoardProps) => {
         const pendingHand = [...heldCards];
         pendingHand.splice(dropIndex, 0, spinnerCard);
         dispatch(setHand(pendingHand));
+        dispatch(setDisabled(true));
 
         const pendingSlot = dropIndex;
         drawFromDeck().then(async (res) => {
+          dispatch(setDisabled(false));
           if (res.ok) {
             const finalHand = [...heldCards];
             const drawnCard = parseCard(await res.json());
@@ -447,16 +419,18 @@ export const Board = (props: BoardProps) => {
         finalHand.splice(dropIndex - indexMod, 0, dropCard);
         dispatch(setHand(finalHand));
       }
+
       dispatch(setHeldIndex(NULL_HELD_INDEX));
       setDropSlotIndex(null);
     },
     [
+      cardManagement.disabled,
       cardManagement.dropSlotIndex,
       discard,
       dispatch,
       drawFromDeck,
       drawFromPile,
-      game.hand,
+      game.deckSize,
       game.pile,
       heldCards,
       heldIndex,
@@ -557,6 +531,14 @@ export const Board = (props: BoardProps) => {
         />
       )}
 
+      <OpenWebsocketModal
+        playerToken={self.token}
+        gameId={game.id}
+        onMessage={setRecentMessage}
+        websocket={websocket}
+        onSuccess={(ws) => setWebsocket(ws)}
+      />
+
       <Toasts toasts={toasts} key="toasts" />
 
       <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1100px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700">
@@ -630,7 +612,7 @@ export const Board = (props: BoardProps) => {
         shown={game.state === GameState.TurnSummary}
         key="roundSummary"
         onContinue={() => {
-          dispatch(setState(GameState.Playing));
+          reconnect(self.token, dispatch, gameId, handleError);
         }}
       />
 
@@ -642,4 +624,3 @@ export const Board = (props: BoardProps) => {
     </div>
   );
 };
-export { NULL_HELD_INDEX };
