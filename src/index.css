@@ -15,3 +15,29 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@keyframes animate {
+  0%{
+      transform: translateY(0) translateX(0px);
+  }
+  100%{
+      transform: translateY(-225px) translateX(225px);
+  }
+}
+
+.background {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+}
+.background li {
+  position: absolute;
+  list-style: none;
+  animation: animate linear infinite;
+}
+
+

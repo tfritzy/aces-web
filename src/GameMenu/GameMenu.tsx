@@ -17,6 +17,8 @@ import { ToastProps } from "components/Toast";
 import { TabRow } from "components/TabRow";
 import { resetCards } from "store/cardManagementSlice";
 import { Dispatch } from "@reduxjs/toolkit";
+import { FlyingCard } from "components/FlyingCard";
+import { Background } from "components/Background";
 
 const adjectives = [
   "Stealthy",
@@ -255,7 +257,8 @@ export const GameMenu = (props: GameMenuProps) => {
   };
 
   return (
-    <>
+    <div>
+      <Background />
       <Toasts toasts={toasts} />
       <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center text-black dark:text-white">
         <div className="flex flex-col border border-gray-200 dark:border-gray-600 shadow-xl rounded-md bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-500">
@@ -300,6 +303,6 @@ export const GameMenu = (props: GameMenuProps) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };

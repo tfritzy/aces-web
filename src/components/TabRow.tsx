@@ -17,6 +17,7 @@ export const TabRow = (prosp: TabRowProps) => {
               : "text-gray-600 dark:text-gray-400"
           }`}
           onClick={tab.onClick}
+          key={tab.label}
         >
           {tab.label}
         </button>

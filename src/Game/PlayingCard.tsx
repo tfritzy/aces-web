@@ -19,7 +19,6 @@ import {
   lightModeRed,
 } from "Constants";
 import { isWild } from "helpers/getGroupedCards";
-import { Spinner } from "components/Spinner";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -34,8 +33,8 @@ const cardSuitColPlacements = {
   [CardValue.TEN]: [4, 2, 4],
 } as const;
 
-export const getSuitIcon = (card: Card) => {
-  switch (card.suit) {
+export const getSuitIcon = (suit: Suit) => {
+  switch (suit) {
     case Suit.CLUBS:
       return "♣";
     case Suit.DIAMONDS:
@@ -78,7 +77,7 @@ export const getValueIcon = (card: Card): string[] => {
     case CardValue.ACE:
       return ["A"];
     case CardValue.JOKER:
-      return ["J", "o", "k", "e", "r"];
+      return [""];
     default:
       return [""];
   }
@@ -116,7 +115,7 @@ const CardCol = (props: CardColProps) => {
   const flex = props.reverse ? "flex-col -rotate-180" : "flex-col";
   const className = `flex h-full text-lg leading-5 select-none items-center ${flex} w-4`;
   const suitIndicator = (
-    <div className="text-md">{getSuitIcon(props.card)}</div>
+    <div className="text-md">{getSuitIcon(props.card.suit)}</div>
   );
   const valueIcon = getValueIcon(props.card);
 
@@ -153,7 +152,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
         <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
           {Array.from({ length: counts[0] }).map((_, i) => (
             <div className={i >= counts[0] / 2 ? "rotate-180" : ""} key={i}>
-              {getSuitIcon(card)}
+              {getSuitIcon(card.suit)}
             </div>
           ))}
         </div>
@@ -161,7 +160,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
         <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
           {Array.from({ length: counts[1] }).map((_, i) => (
             <div className={i >= counts[1] / 2 ? "rotate-180" : ""} key={i}>
-              {getSuitIcon(card)}
+              {getSuitIcon(card.suit)}
             </div>
           ))}
         </div>
@@ -169,7 +168,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
         <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
           {Array.from({ length: counts[2] }).map((_, i) => (
             <div className={i >= counts[2] / 2 ? "rotate-180" : ""} key={i}>
-              {getSuitIcon(card)}
+              {getSuitIcon(card.suit)}
             </div>
           ))}
         </div>
@@ -178,7 +177,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
   } else {
     face = (
       <div className="w-full h-full flex justify-center items-center text-5xl">
-        {getSuitIcon(card)}
+        {getSuitIcon(card.suit)}
       </div>
     );
   }
@@ -294,7 +293,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
     cardElement = (
       <div id={props.index.toString()}>
         <div
-          className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-xl overflow-hidden select-none relative ${
+          className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-xl overflow-hidden select-none relative font-serif ${
             isGrouped ? "ring-2 ring-emerald-200" : ""
           } ${props.hasShadow ? "shadow-md" : ""}`}
           style={{ height: cardHeight, width: cardWidth }}

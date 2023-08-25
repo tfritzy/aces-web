@@ -38,7 +38,7 @@ export const Minicard = (props: MinicardProps) => {
         {getValueIcon(props.card).slice(0, 2)}
       </div>
       <div className="text-xs absolute bottom-0 right-[2px]">
-        {getSuitIcon(props.card)}
+        {getSuitIcon(props.card.suit)}
       </div>
     </div>
   );
