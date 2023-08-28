@@ -63,6 +63,7 @@ const nouns = [
 
 type JoinGameMenuProps = {
   addToast: (props: ToastProps) => void;
+  setCreatingGame: () => void;
 };
 
 const resetAll = (dispatch: Dispatch) => {
@@ -164,13 +165,24 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
     <div>
       <label className="block mb-4 text-sm font-medium">Enter game code</label>
 
-      <div className="flex justify-between">{digits}</div>
+      <div className="flex justify-between mb-6">{digits}</div>
+
+      <div>
+        Or,{" "}
+        <button
+          onClick={props.setCreatingGame}
+          className="text-violet-500 dark:text-violet-400"
+        >
+          create new game
+        </button>
+      </div>
     </div>
   );
 };
 
 type CreateGameMenuProps = {
   addToast: (props: ToastProps) => void;
+  setJoiningGame: () => void;
 };
 
 const CreateGameMenu = (props: CreateGameMenuProps) => {
@@ -216,25 +228,25 @@ const CreateGameMenu = (props: CreateGameMenuProps) => {
   };
 
   return (
-    <div>
-      Or,{" "}
-      <button
+    <>
+      <Button
         onClick={handleCreateGame}
-        className="text-violet-500 dark:text-violet-400"
-      >
-        create new game
-      </button>
-    </div>
-  );
+        text="Create Game"
+        pending={createPending}
+        type="primary"
+        size="jumbo"
+      />
 
-  return (
-    <Button
-      onClick={handleCreateGame}
-      text="Create Game"
-      pending={createPending}
-      type="primary"
-      size="jumbo"
-    />
+      <div className="mt-6">
+        Or,{" "}
+        <button
+          onClick={props.setJoiningGame}
+          className="text-violet-500 dark:text-violet-400"
+        >
+          join an exsiting game
+        </button>
+      </div>
+    </>
   );
 };
 
@@ -244,7 +256,6 @@ type GameMenuProps = {
 
 export const GameMenu = (props: GameMenuProps) => {
   const [showJoinGame, setShowJoinGame] = useState(true);
-
   const self = useSelector((state: RootState) => state.self);
   const dispatch = useDispatch();
   const { toasts, addToast } = useToasts();
@@ -274,8 +285,10 @@ export const GameMenu = (props: GameMenuProps) => {
       <Background />
       <Toasts toasts={toasts} />
       <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center text-black dark:text-white">
-        <div className="flex flex-col space-y-6 border border-gray-300 dark:border-gray-500 shadow-lg dark:shadow-2xl dark:shadow-[#111111] rounded-md bg-white dark:bg-gray-800 px-12 pb-12 pt-8 w-[355px]">
-          <div className="text-xl font-bold">Join game</div>
+        <div className="flex flex-col space-y-6 border border-gray-300 dark:border-gray-500 shadow-lg dark:shadow-2xl dark:shadow-[#111111] rounded-md bg-white dark:bg-gray-800 px-12 p-12 pb-10 pt-8 w-[355px]">
+          <div className="text-xl font-bold">
+            {showJoinGame ? "Join game" : "Create game"}
+          </div>
           <div className="">
             <label className="block mb-4 text-sm font-medium">
               Display name
@@ -289,9 +302,17 @@ export const GameMenu = (props: GameMenuProps) => {
             />
           </div>
 
-          <JoinGameMenu addToast={addToast} />
-
-          <CreateGameMenu addToast={addToast} />
+          {showJoinGame ? (
+            <JoinGameMenu
+              addToast={addToast}
+              setCreatingGame={() => setShowJoinGame(false)}
+            />
+          ) : (
+            <CreateGameMenu
+              addToast={addToast}
+              setJoiningGame={() => setShowJoinGame(true)}
+            />
+          )}
         </div>
       </div>
     </div>
