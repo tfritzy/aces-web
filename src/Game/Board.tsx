@@ -39,12 +39,12 @@ import {
   setDisabled,
   setDropSlotIndex,
   setHeldIndex,
-  setMousePos,
 } from "store/cardManagementSlice";
 import { Alert } from "components/Alert";
 import { TurnFlowchart } from "./TurnFlowchart";
 import { PlayingCard } from "./PlayingCard";
 import { OpenWebsocketModal } from "./OpenWebsocketModal";
+import { MouseProvider } from "Game/MouseContext";
 
 const handleMessage = (
   message: Message,
@@ -228,21 +228,15 @@ export const Board = (props: BoardProps) => {
   );
 
   React.useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      dispatch(setMousePos({ x: event.clientX, y: event.clientY }));
-    };
-
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         dispatch(setHeldIndex(NULL_HELD_INDEX));
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("keydown", handleEscape);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("keydown", handleEscape);
     };
   }, []);
@@ -509,116 +503,118 @@ export const Board = (props: BoardProps) => {
   }
 
   return (
-    <div
-      className="min-w-screen min-h-screen flex flex-col items-center"
-      onMouseUp={() => {
-        dispatch(setHeldIndex(NULL_HELD_INDEX));
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") {
+    <MouseProvider>
+      <div
+        className="min-w-screen min-h-screen flex flex-col items-center"
+        onMouseUp={() => {
           dispatch(setHeldIndex(NULL_HELD_INDEX));
-        }
-      }}
-    >
-      {heldIndex !== NULL_HELD_INDEX && heldCard && (
-        <PlayingCard
-          isHeld
-          card={heldCard}
-          index={PILE_HELD_INDEX}
-          key={heldCard.type + "-" + heldCard.deck}
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            dispatch(setHeldIndex(NULL_HELD_INDEX));
+          }
+        }}
+      >
+        {heldIndex !== NULL_HELD_INDEX && heldCard && (
+          <PlayingCard
+            isHeld
+            card={heldCard}
+            index={PILE_HELD_INDEX}
+            key={heldCard.type + "-" + heldCard.deck}
+          />
+        )}
+
+        <OpenWebsocketModal
+          playerToken={self.token}
+          gameId={game.id}
+          onMessage={setRecentMessage}
+          websocket={websocket}
+          onSuccess={(ws) => setWebsocket(ws)}
         />
-      )}
 
-      <OpenWebsocketModal
-        playerToken={self.token}
-        gameId={game.id}
-        onMessage={setRecentMessage}
-        websocket={websocket}
-        onSuccess={(ws) => setWebsocket(ws)}
-      />
+        <Toasts toasts={toasts} key="toasts" />
 
-      <Toasts toasts={toasts} key="toasts" />
+        <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1100px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700">
+          <PlayerList key="playerList" />
 
-      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1100px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700">
-        <PlayerList key="playerList" />
-
-        <div className="absolute top-0 right-0">
-          <div className="relative flex flex-col items-end p-2 space-y-2">
-            <ScorecardButton />
-            {isOwnTurn && <TurnFlowchart />}
-          </div>
-        </div>
-
-        <div className="flex flex-col h-screen">
-          <div key="cards" className="flex grow items-center">
-            <div
-              className="relative flex flex-row justify-center space-x-8 w-full"
-              key="cards"
-            >
-              <div>
-                <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
-                  Deck
-                </div>
-                <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
-                  <Deck
-                    key="deck"
-                    heldIndex={heldIndex}
-                    setHeldIndex={setHeldIndex}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
-                  Discard
-                </div>
-                <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
-                  <Pile key="pile" handleDrop={handleDrop} />
-                </div>
-              </div>
+          <div className="absolute top-0 right-0">
+            <div className="relative flex flex-col items-end p-2 space-y-2">
+              <ScorecardButton />
+              {isOwnTurn && <TurnFlowchart />}
             </div>
           </div>
 
-          <div className="justify-center">
-            <Dock
-              key="dock"
-              onDrop={handleDrop}
-              cards={heldCards}
-              buttons={buttons}
-            />
+          <div className="flex flex-col h-screen">
+            <div key="cards" className="flex grow items-center">
+              <div
+                className="relative flex flex-row justify-center space-x-8 w-full"
+                key="cards"
+              >
+                <div>
+                  <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
+                    Deck
+                  </div>
+                  <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
+                    <Deck
+                      key="deck"
+                      heldIndex={heldIndex}
+                      setHeldIndex={setHeldIndex}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
+                    Discard
+                  </div>
+                  <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
+                    <Pile key="pile" handleDrop={handleDrop} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="justify-center">
+              <Dock
+                key="dock"
+                onDrop={handleDrop}
+                cards={heldCards}
+                buttons={buttons}
+              />
+            </div>
           </div>
         </div>
+
+        <Lobby
+          shown={game.state === GameState.Setup}
+          key="lobby"
+          token={self.token}
+          gameId={gameId}
+          players={players}
+          onError={(message) => {
+            addToast({
+              message: message,
+              id: generateId("toast", 5),
+              type: "error",
+            });
+          }}
+          onClose={() => {}}
+        />
+
+        <RoundSummary
+          shown={game.state === GameState.TurnSummary}
+          key="roundSummary"
+          onContinue={() => {
+            reconnect(self.token, dispatch, gameId, handleError);
+          }}
+        />
+
+        <Alert
+          close={() => setAlertMessageShown(false)}
+          shown={alertMessageShown}
+          message={alertMessage || ""}
+        />
       </div>
-
-      <Lobby
-        shown={game.state === GameState.Setup}
-        key="lobby"
-        token={self.token}
-        gameId={gameId}
-        players={players}
-        onError={(message) => {
-          addToast({
-            message: message,
-            id: generateId("toast", 5),
-            type: "error",
-          });
-        }}
-        onClose={() => {}}
-      />
-
-      <RoundSummary
-        shown={game.state === GameState.TurnSummary}
-        key="roundSummary"
-        onContinue={() => {
-          reconnect(self.token, dispatch, gameId, handleError);
-        }}
-      />
-
-      <Alert
-        close={() => setAlertMessageShown(false)}
-        shown={alertMessageShown}
-        message={alertMessage || ""}
-      />
-    </div>
+    </MouseProvider>
   );
 };

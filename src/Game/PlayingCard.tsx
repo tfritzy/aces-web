@@ -7,7 +7,6 @@ import {
   NULL_HELD_INDEX,
   setDropSlotIndex,
   setHeldIndex,
-  setMousePos,
 } from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
 import {
@@ -19,6 +18,7 @@ import {
   lightModeRed,
 } from "Constants";
 import { isWild } from "helpers/getGroupedCards";
+import { MouseContext } from "./MouseContext";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -194,16 +194,14 @@ type PlayingCardProps = {
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
+  console.log("rendering card");
   const dispatch = useDispatch();
   const hand = useSelector((state: RootState) => state.game.hand);
   const round = useSelector((state: RootState) => state.game.round);
   const cardManagement = useSelector(
     (state: RootState) => state.cardManagement
   );
-  const mousePos = useSelector(
-    (state: RootState) => state.cardManagement.mousePos,
-    (a, b) => a.x === b.x && a.y === b.y
-  );
+  const mousePos = React.useContext(MouseContext);
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
   const handleDragStart = React.useCallback(
@@ -218,7 +216,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
 
   const handleMouseMove = React.useCallback(
     (e: React.MouseEvent) => {
-      dispatch(setMousePos({ x: e.clientX, y: e.clientY }));
       if (!selfRef.current) {
         return;
       }

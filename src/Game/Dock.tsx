@@ -4,11 +4,7 @@ import { PlayingCard } from "Game/PlayingCard";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
-import {
-  NULL_HELD_INDEX,
-  setDropSlotIndex,
-  setMousePos,
-} from "store/cardManagementSlice";
+import { NULL_HELD_INDEX, setDropSlotIndex } from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
 
 type DockProps = {
@@ -52,7 +48,6 @@ export const Dock = (props: DockProps) => {
 
   const handleMouseMove = React.useCallback(
     (e: React.MouseEvent) => {
-      dispatch(setMousePos({ x: e.clientX, y: e.clientY }));
       dispatch(setDropSlotIndex(handSize));
       e.stopPropagation();
     },
