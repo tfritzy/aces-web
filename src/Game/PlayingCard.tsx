@@ -195,12 +195,14 @@ type PlayingCardProps = {
 
 export const PlayingCard = (props: PlayingCardProps) => {
   const dispatch = useDispatch();
-  const game = useSelector((state: RootState) => state.game);
+  const hand = useSelector((state: RootState) => state.game.hand);
+  const round = useSelector((state: RootState) => state.game.round);
   const cardManagement = useSelector(
     (state: RootState) => state.cardManagement
   );
   const mousePos = useSelector(
-    (state: RootState) => state.cardManagement.mousePos
+    (state: RootState) => state.cardManagement.mousePos,
+    (a, b) => a.x === b.x && a.y === b.y
   );
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
@@ -211,26 +213,29 @@ export const PlayingCard = (props: PlayingCardProps) => {
     },
     [dispatch, props]
   );
-  const isGrouped = props.index >= 0 && game.hand[props.index].isGrouped;
-  const wild = isWild(card, game.round);
+  const isGrouped = props.index >= 0 && hand[props.index].isGrouped;
+  const wild = isWild(card, round);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    dispatch(setMousePos({ x: e.clientX, y: e.clientY }));
-    if (!selfRef.current) {
-      return;
-    }
+  const handleMouseMove = React.useCallback(
+    (e: React.MouseEvent) => {
+      dispatch(setMousePos({ x: e.clientX, y: e.clientY }));
+      if (!selfRef.current) {
+        return;
+      }
 
-    e.stopPropagation();
-    if (props.index >= 0) {
-      const targetBounds = selfRef.current?.getBoundingClientRect();
-      const targetCenter = targetBounds.left + targetBounds.width / 2;
-      const side = e.clientX < targetCenter ? 0 : 1;
+      e.stopPropagation();
+      if (props.index >= 0) {
+        const targetBounds = selfRef.current?.getBoundingClientRect();
+        const targetCenter = targetBounds.left + targetBounds.width / 2;
+        const side = e.clientX < targetCenter ? 0 : 1;
 
-      dispatch(setDropSlotIndex(props.index + side));
-    } else {
-      dispatch(setDropSlotIndex(props.index));
-    }
-  };
+        dispatch(setDropSlotIndex(props.index + side));
+      } else {
+        dispatch(setDropSlotIndex(props.index));
+      }
+    },
+    [dispatch, props.index]
+  );
 
   const handleMouseUp = React.useCallback(
     (e: React.MouseEvent) => {
@@ -258,60 +263,61 @@ export const PlayingCard = (props: PlayingCardProps) => {
     ? `fixed pointer-events-none z-40 drop-shadow-xl opacity-50`
     : "";
 
-  let cardElement: JSX.Element;
+  let cardElement = React.useMemo(() => {
+    if (card.type === CardType.CARD_BACK) {
+      return (
+        <div id={props.index.toString()}>
+          <div
+            className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] cursor-pointer ${
+              props.hasShadow ? "shadow-md" : ""
+            }`}
+            style={{ width: cardWidth, height: cardHeight }}
+          >
+            <img src="Icons/CardElements/cardback.svg" alt="card-back" />
+          </div>
+        </div>
+      );
+    } else if (card.type === CardType.SPINNER) {
+      return (
+        <div id={props.index.toString()}>
+          <div
+            className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] flex justify-center animate-pulse items-center cursor-pointer ${
+              props.hasShadow ? "shadow-md" : ""
+            }`}
+            style={{ width: cardWidth, height: cardHeight }}
+          ></div>
+        </div>
+      );
+    } else {
+      const color = getCardColor(card);
+      return (
+        <div id={props.index.toString()}>
+          <div
+            className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-xl overflow-hidden select-none relative font-serif ${
+              isGrouped ? "ring-2 ring-emerald-200" : ""
+            } ${props.hasShadow ? "shadow-md" : ""}`}
+            style={{ height: cardHeight, width: cardWidth }}
+          >
+            {wild && (
+              <div className="absolute top-1 right-2 uppercase text-xs font-mono text-gray-500">
+                wild
+              </div>
+            )}
+
+            <div className=" flex flex-row p-2 h-[100%]">
+              <CardCol card={card} />
+              <CardFace card={card} />
+              <CardCol card={card} reverse />
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }, [card, isGrouped, props.hasShadow, props.index, wild]);
+
   if (!card) {
     console.error("Trying to render a null card");
     return null;
-  }
-
-  if (card.type === CardType.CARD_BACK) {
-    cardElement = (
-      <div id={props.index.toString()}>
-        <div
-          className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] cursor-pointer ${
-            props.hasShadow ? "shadow-md" : ""
-          }`}
-          style={{ width: cardWidth, height: cardHeight }}
-        >
-          <img src="Icons/CardElements/cardback.svg" alt="card-back" />
-        </div>
-      </div>
-    );
-  } else if (card.type === CardType.SPINNER) {
-    cardElement = (
-      <div id={props.index.toString()}>
-        <div
-          className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] flex justify-center animate-pulse items-center cursor-pointer ${
-            props.hasShadow ? "shadow-md" : ""
-          }`}
-          style={{ width: cardWidth, height: cardHeight }}
-        ></div>
-      </div>
-    );
-  } else {
-    const color = getCardColor(card);
-    cardElement = (
-      <div id={props.index.toString()}>
-        <div
-          className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-xl overflow-hidden select-none relative font-serif ${
-            isGrouped ? "ring-2 ring-emerald-200" : ""
-          } ${props.hasShadow ? "shadow-md" : ""}`}
-          style={{ height: cardHeight, width: cardWidth }}
-        >
-          {wild && (
-            <div className="absolute top-1 right-2 uppercase text-xs font-mono text-gray-500">
-              wild
-            </div>
-          )}
-
-          <div className=" flex flex-row p-2 h-[100%]">
-            <CardCol card={card} />
-            <CardFace card={card} />
-            <CardCol card={card} reverse />
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (

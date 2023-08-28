@@ -15,27 +15,49 @@ type DeckProps = {
 export const Deck = (props: DeckProps) => {
   const deckSize = useSelector((state: RootState) => state.game.deckSize);
 
-  const cards = Array.from({ length: deckSize / 2 }, (_, i) => {
-    let shadow = "";
-    if (i < 1) {
-      shadow = "shadow-lg rounded-xl";
-    } else if (i < 3) {
-      shadow = "shadow-md rounded-xl";
-    } else if (i < 5) {
-      shadow = "shadow-sm rounded-xl";
-    }
+  const cards = React.useMemo(
+    () =>
+      Array.from({ length: deckSize / 2 }, (_, i) => {
+        let card;
+        if (i < deckSize / 2 - 3) {
+          card = (
+            <div
+              className="border rounded-xl border-gray-400"
+              style={{ width: cardWidth, height: cardHeight }}
+            />
+          );
+        } else {
+          card = (
+            <PlayingCard
+              isHeld={false}
+              card={cardBack}
+              index={DECK_HELD_INDEX}
+            />
+          );
+        }
 
-    return (
-      <div className="relative" key={i}>
-        <div
-          style={{ position: "absolute", top: -1 * i + "px" }}
-          className={shadow}
-        >
-          <PlayingCard isHeld={false} card={cardBack} index={DECK_HELD_INDEX} />
-        </div>
-      </div>
-    );
-  });
+        let shadow = "";
+        if (i < 1) {
+          shadow = "shadow-lg rounded-xl";
+        } else if (i < 3) {
+          shadow = "shadow-md rounded-xl";
+        } else if (i < 5) {
+          shadow = "shadow-sm rounded-xl";
+        }
+
+        return (
+          <div className="relative" key={i}>
+            <div
+              style={{ position: "absolute", top: -1 * i + "px" }}
+              className={shadow}
+            >
+              {card}
+            </div>
+          </div>
+        );
+      }),
+    [deckSize]
+  );
 
   return (
     <div

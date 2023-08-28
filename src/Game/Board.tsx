@@ -44,8 +44,6 @@ import {
 import { Alert } from "components/Alert";
 import { TurnFlowchart } from "./TurnFlowchart";
 import { PlayingCard } from "./PlayingCard";
-import { Modal } from "components/Modal";
-import { Spinner } from "components/Spinner";
 import { OpenWebsocketModal } from "./OpenWebsocketModal";
 
 const handleMessage = (
