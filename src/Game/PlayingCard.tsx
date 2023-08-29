@@ -194,7 +194,6 @@ type PlayingCardProps = {
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
-  console.log("rendering card");
   const dispatch = useDispatch();
   const hand = useSelector((state: RootState) => state.game.hand);
   const round = useSelector((state: RootState) => state.game.round);

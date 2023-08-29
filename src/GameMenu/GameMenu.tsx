@@ -119,13 +119,7 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
     if (joinPending) {
       return;
     }
-
-    let newCode = code;
-    while (code.length < i) {
-      newCode += " ";
-    }
-
-    newCode = newCode.slice(0, i) + value + newCode.slice(i + 1);
+    const newCode = code + value;
     setCode(newCode);
     if (newCode.length < 6) {
       digitRefs[newCode.length]?.focus();
@@ -148,14 +142,24 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
           digitRefs[i] = el;
           setDigitRefs(digitRefs);
         }}
+        tabIndex={i === code.length ? 0 : -1}
         key={i}
         onKeyDown={(e) => {
           if (e.key === "Backspace") {
             if (code.length > 0) {
-              setCode(code.slice(0, -1));
-              digitRefs[i - 1]?.focus();
+              const newCode = code.slice(0, -1);
+              setCode(newCode);
+              digitRefs[newCode.length]?.focus();
             }
           }
+        }}
+        onMouseDown={(e) => {
+          // Should only ever focus last.
+          digitRefs[code.length]?.focus();
+        }}
+        onClick={(e) => {
+          // Should only ever focus last.
+          digitRefs[code.length]?.focus();
         }}
       />
     );
