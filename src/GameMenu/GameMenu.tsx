@@ -135,7 +135,7 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
         type="text"
         onChange={(e) => handleCodeChange(e.target.value, i)}
         value={code[i] || ""}
-        className={`w-9 h-9 shadow-sm shadow-[#00000011] rounded-md text-center border border-gray-300 text-black bg-white dark:bg-gray-600 dark:border-gray-400 dark:text-white ${
+        className={`w-9 h-9 shadow-sm shadow-[#00000011] focus:ring focus:ring-blue-200 rounded-md text-center border border-gray-300 text-black bg-white dark:bg-gray-600 dark:border-gray-400 dark:text-white ${
           joinPending ? "opacity-50" : ""
         }`}
         ref={(el) => {
@@ -300,7 +300,7 @@ export const GameMenu = (props: GameMenuProps) => {
             <input
               type="text"
               id="display_name"
-              className="border shadow-sm text-sm rounded-md focus:ring-emerald block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-600 dark:border-gray-400 dark:placeholder-gray-400"
+              className="border shadow-sm text-sm rounded-md block w-full p-3 bg-white border-gray-300 placeholder-gray-400 dark:bg-gray-600 dark:border-gray-400 dark:placeholder-gray-400 focus:ring focus:ring-blue-200"
               value={self.displayName}
               onChange={handleDisplayNameChange}
             />
