@@ -14,12 +14,8 @@ import { Toasts, useToasts } from "components/Toasts";
 import { useNavigate } from "react-router-dom";
 import { GameStateForPlayer } from "Game/Types";
 import { ToastProps } from "components/Toast";
-import { TabRow } from "components/TabRow";
 import { resetCards } from "store/cardManagementSlice";
 import { Dispatch } from "@reduxjs/toolkit";
-import { FlyingCard } from "components/FlyingCard";
-import { Background } from "components/Background";
-import { Spinner } from "components/Spinner";
 
 const adjectives = [
   "Stealthy",
@@ -106,7 +102,7 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
         dispatch(setGameId(gameId));
         dispatch(setState(GameState.Setup));
 
-        return navigate(`/game/${gameId}`);
+        return navigate(`/${gameId}`);
       } else {
         digitRefs[0]?.focus();
         handleError(res, props.addToast);
@@ -175,7 +171,7 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
         Or,{" "}
         <button
           onClick={props.setCreatingGame}
-          className="text-violet-500 dark:text-violet-400"
+          className="text-violet-500 dark:text-violet-400 font-semibold"
         >
           create new game
         </button>
@@ -224,7 +220,7 @@ const CreateGameMenu = (props: CreateGameMenuProps) => {
           ])
         );
 
-        return navigate(`/game/${body.id}`);
+        return navigate(`/${body.id}`);
       } else {
         handleError(res, props.addToast);
       }
@@ -245,7 +241,7 @@ const CreateGameMenu = (props: CreateGameMenuProps) => {
         Or,{" "}
         <button
           onClick={props.setJoiningGame}
-          className="text-violet-500 dark:text-violet-400"
+          className="text-violet-500 dark:text-violet-400 font-semibold"
         >
           join an exsiting game
         </button>
@@ -261,6 +257,8 @@ type GameMenuProps = {
 export const GameMenu = (props: GameMenuProps) => {
   const [showJoinGame, setShowJoinGame] = useState(true);
   const self = useSelector((state: RootState) => state.self);
+  const game = useSelector((state: RootState) => state.game);
+  const players = useSelector((state: RootState) => state.players.players);
   const dispatch = useDispatch();
   const { toasts, addToast } = useToasts();
 
@@ -285,8 +283,7 @@ export const GameMenu = (props: GameMenuProps) => {
   };
 
   return (
-    <div>
-      <Background />
+    <div className="flex flex-col items-center">
       <Toasts toasts={toasts} />
       <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center text-black dark:text-white">
         <div className="flex flex-col space-y-6 border border-gray-300 dark:border-gray-500 shadow-lg dark:shadow-2xl dark:shadow-[#111111] rounded-md bg-white dark:bg-gray-800 px-12 p-12 pb-10 pt-8 w-[355px]">

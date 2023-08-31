@@ -1,31 +1,20 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { Dock } from "Game/Dock";
 import { Deck } from "Game/Deck";
-import { SchemaCard, cardBack, parseCard, spinnerCard } from "Game/Types";
+import { cardBack, parseCard, spinnerCard } from "Game/Types";
 import { API_URL } from "Constants";
-import { EventType, Message } from "Game/Events";
-import { Lobby } from "Game/Lobby";
 import { Toasts, useToasts } from "components/Toasts";
-import { ToastProps } from "components/Toast";
 import { RoundSummary } from "Game/RoundSummary";
 import { Button } from "components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "store/store";
-import { addPlayer, setPlayers, updatePlayer } from "store/playerSlice";
 import {
   GameState,
-  addToPile,
-  setRound,
   removeTopFromPile,
   setDeckSize,
   setPile,
-  setState,
-  setTurn,
   setHand,
-  setGameId,
-  setTurnPhase,
-  TurnPhase,
 } from "store/gameSlice";
 import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
@@ -40,166 +29,31 @@ import {
   setDropSlotIndex,
   setHeldIndex,
 } from "store/cardManagementSlice";
-import { Alert } from "components/Alert";
 import { TurnFlowchart } from "./TurnFlowchart";
 import { PlayingCard } from "./PlayingCard";
-import { OpenWebsocketModal } from "./OpenWebsocketModal";
 import { MouseProvider } from "Game/MouseContext";
 
-const handleMessage = (
-  message: Message,
-  dispatch: AppDispatch,
-  addToast: (props: ToastProps) => void,
-  setAlertMessage: (message: string) => void,
-  state: RootState,
-  handleError: (response: Response) => void
-) => {
-  console.log("Handling message", message);
-  switch (message.type) {
-    case EventType.JoinGame:
-      dispatch(
-        addPlayer({
-          id: message.playerId,
-          displayName: message.displayName,
-          scorePerRound: [],
-          totalScore: 0,
-          mostRecentGroupedCards: [],
-          mostRecentUngroupedCards: [],
-        })
-      );
-      break;
-    case EventType.StartGame:
-      console.log("Reconnect by start game");
-      reconnect(state.self.token, dispatch, state.game.id, handleError);
-      break;
-    case EventType.DrawFromDeck:
-      if (message.playerId !== state.self.id) {
-        dispatch(setDeckSize(state.game.deckSize - 1));
-      }
-      dispatch(setTurnPhase(TurnPhase.Discarding));
-      break;
-    case EventType.DrawFromPile:
-      if (message.playerId !== state.self.id) {
-        dispatch(removeTopFromPile());
-      }
-      dispatch(setTurnPhase(TurnPhase.Discarding));
-      break;
-    case EventType.Discard:
-      if (message.playerId !== state.self.id) {
-        const card = parseCard(message.card);
-        dispatch(addToPile(card));
-      }
-      dispatch(setTurnPhase(TurnPhase.Ending));
-      break;
-    case EventType.AdvanceRound:
-      dispatch(setRound(message.round));
-      dispatch(setState(GameState.TurnSummary));
-      dispatch(setTurnPhase(TurnPhase.Drawing));
-      break;
-    case EventType.AdvanceTurn:
-      dispatch(setTurn(message.turn));
-      if (state.self.id === state.players.players[message.turn].id) {
-        addToast({
-          message: "It's your turn",
-          type: "info",
-          id: generateId("toast", 12),
-        });
-      }
-      dispatch(setTurnPhase(TurnPhase.Drawing));
-      break;
-    case EventType.PlayerWentOut:
-      if (message.playerId !== state.self.id) {
-        const displayName =
-          state.players.players.find((p) => p.id === message.playerId)
-            ?.displayName || "A player";
-        setAlertMessage(`${displayName} went out! You have one more turn.`);
-      }
-      break;
-    case EventType.PlayerDoneForRound:
-      dispatch(
-        updatePlayer({
-          playerId: message.playerId,
-          roundScore: message.roundScore,
-          totalScore: message.totalScore,
-          groupedCards: message.groupedCards.map((g) => g.map(parseCard)),
-          ungroupedCards: message.ungroupedCards.map(parseCard),
-        })
-      );
-      break;
-    default:
-      console.error("unhandled message", message);
-  }
+type BoardProps = {
+  reconnect: (
+    token: string,
+    dispatch: ReturnType<typeof useDispatch>,
+    gameId: string,
+    handleError: (r: Response) => void
+  ) => void;
 };
-
-const reconnect = async (
-  token: string,
-  dispatch: ReturnType<typeof useDispatch>,
-  gameId: string,
-  handleError: (r: Response) => void
-) => {
-  let gameState = await fetch(`${API_URL}/api/get_game_state`, {
-    headers: {
-      token: token,
-      "game-id": gameId,
-    },
-  });
-
-  if (!gameState.ok) {
-    await handleError(gameState);
-  } else {
-    const state = await gameState.json();
-    dispatch(setGameId(gameId));
-    dispatch(setState(state.state));
-    dispatch(setRound(state.round));
-    dispatch(setTurn(state.turn));
-    dispatch(setPile(state.pile.map((c: SchemaCard) => parseCard(c))));
-    dispatch(setDeckSize(state.deckSize));
-    dispatch(setState(state.state));
-    dispatch(setHand(state.hand.map((c: SchemaCard) => parseCard(c))));
-    dispatch(setTurnPhase(state.turnPhase));
-
-    // TODO: Score
-    dispatch(
-      setPlayers(
-        state.players.map((p: any) => ({
-          id: p.id,
-          displayName: p.displayName,
-          scorePerRound: p.scorePerRound,
-          totalScore: p.score,
-          mostRecentGroupedCards: p.mostRecentGroupedCards.map((g: any) =>
-            g.map(parseCard)
-          ),
-          mostRecentUngroupedCards: p.mostRecentUngroupedCards.map(parseCard),
-        }))
-      )
-    );
-  }
-};
-
-type BoardProps = {};
 
 export const Board = (props: BoardProps) => {
   const heldIndex = useSelector(
     (state: RootState) => state.cardManagement.heldIndex
   );
-  const [recentMessage, setRecentMessage] =
-    React.useState<MessageEvent<any> | null>(null);
-  const [websocket, setWebsocket] = React.useState<
-    WebSocket | null | undefined
-  >(undefined);
+
   const [endTurnPending, setEndTurnPending] = React.useState<boolean>(false);
   const [goOutPending, setGoOutPending] = React.useState<boolean>(false);
-  const [alertMessage, setAlertMessage] = React.useState<string | undefined>(
-    undefined
-  );
-  const [alertMessageShown, setAlertMessageShown] =
-    React.useState<boolean>(false);
   const { toasts, addToast } = useToasts();
   const players = useSelector((state: RootState) => state.players.players);
   const game = useSelector((state: RootState) => state.game);
   const heldCards = useSelector((state: RootState) => state.game.hand);
   const self = useSelector((state: RootState) => state.self);
-  const rootState = useSelector((state: RootState) => state);
   const cardManagement = useSelector(
     (state: RootState) => state.cardManagement
   );
@@ -240,38 +94,6 @@ export const Board = (props: BoardProps) => {
       window.removeEventListener("keydown", handleEscape);
     };
   }, []);
-
-  useEffect(() => {
-    if (game.state === GameState.Invalid && self.token) {
-      console.log("Reconnect 1");
-      reconnect(self.token, dispatch, gameId, handleError);
-    }
-
-    // Going for a mount effect, but token starts null.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [self.token]);
-
-  const setAlertMessageAndShow = React.useCallback((message: string) => {
-    setAlertMessage(message);
-    setAlertMessageShown(true);
-  }, []);
-
-  useEffect(() => {
-    if (recentMessage) {
-      const message = JSON.parse(recentMessage.data);
-      setRecentMessage(null);
-      handleMessage(
-        message,
-        dispatch,
-        addToast,
-        setAlertMessageAndShow,
-        rootState,
-        handleError
-      );
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recentMessage]);
 
   const drawFromPile = React.useCallback(async () => {
     var res = await fetch(`${API_URL}/api/draw_from_pile`, {
@@ -524,17 +346,9 @@ export const Board = (props: BoardProps) => {
           />
         )}
 
-        <OpenWebsocketModal
-          playerToken={self.token}
-          gameId={game.id}
-          onMessage={setRecentMessage}
-          websocket={websocket}
-          onSuccess={(ws) => setWebsocket(ws)}
-        />
-
         <Toasts toasts={toasts} key="toasts" />
 
-        <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1100px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700">
+        <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-gray-900">
           <PlayerList key="playerList" />
 
           <div className="absolute top-0 right-0">
@@ -585,34 +399,12 @@ export const Board = (props: BoardProps) => {
           </div>
         </div>
 
-        <Lobby
-          shown={game.state === GameState.Setup}
-          key="lobby"
-          token={self.token}
-          gameId={gameId}
-          players={players}
-          onError={(message) => {
-            addToast({
-              message: message,
-              id: generateId("toast", 5),
-              type: "error",
-            });
-          }}
-          onClose={() => {}}
-        />
-
         <RoundSummary
-          shown={game.state === GameState.TurnSummary}
+          shown={game.state === GameState.TurnSummary || true}
           key="roundSummary"
           onContinue={() => {
-            reconnect(self.token, dispatch, gameId, handleError);
+            props.reconnect(self.token, dispatch, gameId, handleError);
           }}
-        />
-
-        <Alert
-          close={() => setAlertMessageShown(false)}
-          shown={alertMessageShown}
-          message={alertMessage || ""}
         />
       </div>
     </MouseProvider>

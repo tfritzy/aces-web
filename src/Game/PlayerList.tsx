@@ -36,8 +36,14 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
       {turn === props.index && (
         <div
           key="arrow"
-          className="bg-violet-50 border border-violet-300 rounded text-md text-violet-700 px-2 py-1 flex flex-row items-center space-x-2 dark:bg-violet-500 dark:text-white dark:border-violet-400"
+          className="relative bg-violet-50 border border-violet-300 rounded text-md text-violet-700 px-2 py-1 flex flex-row items-center space-x-2 dark:bg-violet-500 dark:text-white dark:border-violet-400"
         >
+          {isSelf && (
+            <div className="absolute top-0 right-[7px]">
+              <div className="absolute w-2 h-2 rounded-full bg-amber-300" />
+              <div className="absolute w-2 h-2 rounded-full bg-amber-300 animate-ping" />
+            </div>
+          )}
           <div>{turnPhaseString}</div>
         </div>
       )}

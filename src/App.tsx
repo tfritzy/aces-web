@@ -1,12 +1,13 @@
 import React from "react";
 import "./index.css";
-import { Board } from "Game/Board";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { GameMenu } from "GameMenu/GameMenu";
 import { useDispatch } from "react-redux";
 import Cookies from "universal-cookie";
 import { generateId } from "helpers/generateId";
 import { setToken, setUserId } from "store/selfSlice";
+import { Background } from "components/Background";
+import { Game } from "Game/Game";
 
 const router = createBrowserRouter([
   {
@@ -14,8 +15,8 @@ const router = createBrowserRouter([
     element: <GameMenu shown />,
   },
   {
-    path: "game/:gameId",
-    element: <Board />,
+    path: "/:gameId",
+    element: <Game />,
   },
 ]);
 
@@ -42,8 +43,9 @@ export const App = (): JSX.Element => {
 
   return (
     <div className="">
-      <div className="w-full h-screen bg-white dark:bg-gray-900">
+      <div className="w-full h-screen bg-white dark:bg-gray-950">
         <base href="/" />
+        <Background />
         <RouterProvider router={router} />
       </div>
     </div>

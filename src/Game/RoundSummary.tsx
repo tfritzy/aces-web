@@ -118,8 +118,8 @@ export const RoundSummary = (props: RoundSummaryProps) => {
 
                     <td key="player" className="px-3 py-2">
                       <div>
-                        <div className="flex flex-row items-center border rounded px-2 max-w-max">
-                          <div className="overflow-hidden w-12 h-12 bg-white dark:bg-gray-600">
+                        <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 rounded px-2 max-w-max">
+                          <div className="overflow-hidden w-12 h-12 ">
                             <img
                               src={icon}
                               className="rounded-full w-10 h-12 mx-auto translate-y-2 -translate-x-1"

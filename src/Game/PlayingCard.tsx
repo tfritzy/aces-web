@@ -85,7 +85,7 @@ export const getValueIcon = (card: Card): string[] => {
 
 const themedBlack = `text-${lightModeBlack} dark:text-${darkModeBlack}`;
 const themedRed = `text-${lightModeRed} dark:text-${darkModeRed}`;
-const cardBackground = "bg-gray-50 dark:bg-slate-950";
+const cardBackground = "bg-gray-50 dark:bg-gray-950";
 
 const getCardColor = (card: Card) => {
   switch (card.suit) {
@@ -285,11 +285,12 @@ export const PlayingCard = (props: PlayingCardProps) => {
         </div>
       );
     } else {
-      const color = getCardColor(card);
       return (
         <div id={props.index.toString()}>
           <div
-            className={`${color} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-xl overflow-hidden select-none relative font-serif ${
+            className={`${getCardColor(
+              card
+            )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-xl overflow-hidden select-none relative font-serif ${
               isGrouped ? "ring-2 ring-emerald-200" : ""
             } ${props.hasShadow ? "shadow-md" : ""}`}
             style={{ height: cardHeight, width: cardWidth }}

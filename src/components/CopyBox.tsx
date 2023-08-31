@@ -16,14 +16,12 @@ const copyIcon = (
   >
     <path
       d="M19.4 20H9.6a.6.6 0 01-.6-.6V9.6a.6.6 0 01.6-.6h9.8a.6.6 0 01.6.6v9.8a.6.6 0 01-.6.6z"
-      className="stroke-gray-800 dark:stroke-white"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     ></path>
     <path
       d="M15 9V4.6a.6.6 0 00-.6-.6H4.6a.6.6 0 00-.6.6v9.8a.6.6 0 00.6.6H9"
-      className="stroke-gray-800 dark:stroke-white"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -62,24 +60,22 @@ export const CopyBox = (props: CopyBoxProps) => {
   };
 
   return (
-    <div className="relative border py-1 px-2 rounded-md drop-shadow-sm bg-white text-gray-700 border-gray-300 dark:border-gray-500 dark:bg-gray-600 dark:text-white">
+    <div className="relative border py-1 px-2 rounded-md drop-shadow-sm bg-white border-gray-300 dark:border-gray-500 dark:bg-gray-600">
       <div
-        className="max-w-sm font-mono text-lg cursor-pointer"
+        className="max-w-sm text-md cursor-pointer text-gray-600 dark:text-white stroke-gray-600 dark:stroke-white"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={copy}
       >
         <div className="flex flex-row items-center">
-          <div className="grow">
+          <div className="grow truncate">
             <span>{props.text}</span>
           </div>
-          <span className="text-gray-500 w-5 h-5 hover:text-gray-400 duration-200">
-            {copyIcon}
-          </span>
+          <span className="w-5 h-5 duration-200">{copyIcon}</span>
         </div>
       </div>
       {hovered && (
-        <div className="flex flex-row items-center space-x-1 absolute -top-9 right-0 bg-gray-800 rounded-md text-sm px-2 py-1 text-white">
+        <div className="flex flex-row items-center space-x-1 absolute -top-9 right-0 bg-gray-600 rounded-md text-sm px-2 py-1 text-white stroke-white">
           {copied ? checkIcon : copyIcon}
 
           <span>{copied ? "Copied" : "Click to copy"}</span>

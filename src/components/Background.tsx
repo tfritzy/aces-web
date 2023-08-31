@@ -1,8 +1,16 @@
 import { Suit } from "Game/Types";
 import { FlyingCard } from "./FlyingCard";
 import React from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "store/store";
+import { GameState } from "store/gameSlice";
 
 export const Background = () => {
+  const gameState = useSelector((state: RootState) => state.game.state);
+
+  const showGraphic =
+    gameState === GameState.Invalid || gameState === GameState.Setup;
+
   const elements = React.useMemo(
     () => (
       <ul
@@ -174,5 +182,9 @@ export const Background = () => {
     []
   );
 
-  return elements;
+  if (showGraphic) {
+    return elements;
+  } else {
+    return null;
+  }
 };

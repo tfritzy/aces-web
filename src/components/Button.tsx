@@ -17,13 +17,13 @@ export const Button = (props: ButtonProps) => {
   const sizeClasses =
     !props.size || props.size === "small"
       ? "px-2 py-1 text-sm"
-      : "py-2 text-md font-semibold w-full text-center";
+      : "py-2 text-md w-full text-center";
 
   return (
     <div className="h-min">
       <button
         onClick={props.onClick}
-        className={`flex justify-center items-center rounded-md hover:drop-shadow border ${typeClasses} ${sizeClasses} space-x-1 disabled:opacity-50 px-2 py-1 shadow-sm transition-all`}
+        className={`flex font-semibold justify-center items-center rounded-md hover:drop-shadow border ${typeClasses} ${sizeClasses} space-x-1 disabled:opacity-50 px-2 py-1 shadow-sm transition-all`}
         disabled={props.pending}
       >
         {props.pending && <Spinner />}

@@ -1,5 +1,6 @@
 import { API_URL } from "Constants";
 import { Button } from "components/Button";
+import { LoadingState } from "components/LoadingState";
 import { Modal } from "components/Modal";
 import { Spinner } from "components/Spinner";
 import { Warning } from "components/Warning";
@@ -91,12 +92,7 @@ export const OpenWebsocketModal = (props: OpenWebsocketModalProps) => {
       </div>
     );
   } else {
-    content = (
-      <>
-        <Spinner />
-        <div className="text-center">Establishing connection...</div>
-      </>
-    );
+    content = <LoadingState text="Establishing connection..." />;
   }
 
   return (
