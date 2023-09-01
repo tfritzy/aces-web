@@ -86,17 +86,24 @@ export const Dock = (props: DockProps) => {
   }, [dropSlotIndex, handSize, heldIndex, props.cards]);
 
   return (
-    <div onMouseLeave={handleMouseExit} onMouseUp={handleDrop}>
-      {props.buttons}
-      <div className="py-6 px-5 bg-white border border-gray-200 rounded-xl dark:bg-gray-800 dark:border-gray-700 drop-shadow-lg">
-        <div
-          className={`grid grid-cols-8 grid-rows-2 gap-2 ${
-            heldIndex !== NULL_HELD_INDEX ? "cursor-pointer" : ""
-          } ${dropsDisabled ? "pointer-events-none" : ""}}`}
-          ref={parent}
-          onMouseMove={handleMouseMove}
-        >
-          {playingCards}
+    <div
+      onMouseLeave={handleMouseExit}
+      onMouseUp={handleDrop}
+      className=" flex flex-col items-center justify-center"
+    >
+      <div className="w-[1100px]">
+        {props.buttons}
+
+        <div className="py-6 px-5 bg-white border border-gray-200 rounded-xl dark:bg-gray-800 dark:border-gray-700 drop-shadow-lg">
+          <div
+            className={`grid grid-cols-8 grid-rows-2 gap-2 ${
+              heldIndex !== NULL_HELD_INDEX ? "cursor-pointer" : ""
+            } ${dropsDisabled ? "pointer-events-none" : ""}}`}
+            ref={parent}
+            onMouseMove={handleMouseMove}
+          >
+            {playingCards}
+          </div>
         </div>
       </div>
     </div>

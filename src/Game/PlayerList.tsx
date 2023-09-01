@@ -56,7 +56,7 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
         <div className="w-12 h-12 rounded-lg">
           <div className="overflow-hidden w-12 h-12 rounded-lg">
             <img
-              src={getDefaultAvatar(props.index)}
+              src={getDefaultAvatar(props.player.id)}
               className="rounded-lg w-10 h-12 mx-auto translate-y-2 -translate-x-1"
               alt="avatar"
             />

@@ -22,7 +22,7 @@ export const Deck = (props: DeckProps) => {
         if (i < deckSize / 2 - 3) {
           card = (
             <div
-              className="border rounded-xl border-gray-400"
+              className="border rounded-xl border-gray-400 dark:border-gray-700"
               style={{ width: cardWidth, height: cardHeight }}
             />
           );

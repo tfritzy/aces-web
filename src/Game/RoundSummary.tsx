@@ -6,8 +6,8 @@ import { Button } from "components/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { Player } from "store/playerSlice";
-import { getUnicodeForCard } from "helpers/getUnicodeForCard";
 import { Minicard } from "components/Minicard";
+import { getDefaultAvatar } from "helpers/getDefaultAvatar";
 
 type SummaryPlayer = Player & {
   placement: number;
@@ -105,7 +105,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
 
             <tbody>
               {sortedPlayers.map((p, i) => {
-                const icon = "Icons/characters/" + (i % 5) + ".png";
+                const icon = getDefaultAvatar(p.id);
 
                 return (
                   <tr

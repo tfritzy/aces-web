@@ -107,7 +107,7 @@ export enum CardValue {
 export const spinnerCard: Card = {
   type: CardType.SPINNER,
   suit: Suit.SUITLESS,
-  value: CardValue.JOKER,
+  value: CardValue.INVALID,
   deck: 0,
   isGrouped: false,
 };
@@ -115,7 +115,7 @@ export const spinnerCard: Card = {
 export const cardBack: Card = {
   type: CardType.CARD_BACK,
   suit: Suit.SUITLESS,
-  value: CardValue.JOKER,
+  value: CardValue.INVALID,
   deck: 0,
   isGrouped: false,
 };
@@ -141,7 +141,7 @@ const getSuit = (card: CardType): Suit => {
 const getValue = (card: CardType): CardValue => {
   if (card > 0 && card < 53) {
     return ((card - 1) % 13) + 1;
-  } else if (card >= 53) {
+  } else if (card === 53 || card === 54) {
     return CardValue.JOKER;
   } else {
     return CardValue.INVALID;

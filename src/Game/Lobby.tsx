@@ -6,11 +6,13 @@ import { Modal } from "components/Modal";
 import { Button } from "components/Button";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { resetAll, setState } from "store/gameSlice";
+import { resetAll } from "store/gameSlice";
+import { getDefaultAvatar } from "helpers/getDefaultAvatar";
+import { Player } from "store/playerSlice";
 
 type LobbyProps = {
   gameId: string;
-  players: { displayName: string }[];
+  players: Player[];
   token: string;
   onError: (error: string) => void;
   shown: boolean;
@@ -66,7 +68,7 @@ export const Lobby = (props: LobbyProps) => {
             <div className="flex flex-col space-y-2">
               <span>Players</span>
               {props.players.map((player, i) => {
-                const icon = "Icons/characters/" + (i % 5) + ".png";
+                const icon = getDefaultAvatar(player.id);
 
                 return (
                   <div className="flex flex-row items-center border border-gray-200 dark:border-gray-600 rounded px-2 w-full">

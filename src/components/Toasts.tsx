@@ -39,7 +39,7 @@ export const Toasts = (props: ToastsProps) => {
 
   return (
     <div
-      className="absolute flex flex-col items-center min-h-screen w-9/12 min-w-screen space-y-2 z-50 pointer-events-none pt-2"
+      className="absolute flex flex-col items-center min-h-screen w-9/12 min-w-screen space-y-2 z-80 pointer-events-none pt-2"
       ref={animationParent}
     >
       {props.toasts.map((item) => (

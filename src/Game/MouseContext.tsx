@@ -12,7 +12,7 @@ export const MouseProvider = ({ children }: { children: JSX.Element }) => {
       setMouseY(event.clientY);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, true);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);

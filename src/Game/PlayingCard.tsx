@@ -45,7 +45,7 @@ export const getSuitIcon = (suit: Suit) => {
     case Suit.SPADES:
       return "♠";
     case Suit.SUITLESS:
-      return "";
+      return "◌";
   }
 };
 
@@ -78,14 +78,14 @@ export const getValueIcon = (card: Card): string[] => {
     case CardValue.ACE:
       return ["A"];
     case CardValue.JOKER:
-      return [""];
+      return ["J", "o", "k", "e", "r"];
     default:
       return [""];
   }
 };
 
-const themedBlack = `text-${lightModeBlack} dark:text-${darkModeBlack}`;
-const themedRed = `text-${lightModeRed} dark:text-${darkModeRed}`;
+const themedBlack = `text-${lightModeBlack} dark:text-${darkModeBlack} stroke-${lightModeBlack} dark:stroke-${darkModeBlack} fill-${lightModeBlack} dark:fill-${darkModeBlack}`;
+const themedRed = `text-${lightModeRed} dark:text-${darkModeRed} stroke-${lightModeRed} dark:stroke-${darkModeRed} fill-${lightModeRed} dark:fill-${darkModeRed}`;
 const cardBackground = "bg-gray-50 dark:bg-gray-950";
 
 const getCardColor = (card: Card) => {
@@ -124,7 +124,9 @@ const CardCol = (props: CardColProps) => {
     <div className={className}>
       <div className={`${cardBackground}`}>
         {valueIcon.map((c) => (
-          <div key={c}>{c}</div>
+          <div className="text-center leading-none uppercase" key={c}>
+            {c}
+          </div>
         ))}
       </div>
 
@@ -177,7 +179,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
     );
   } else {
     face = (
-      <div className="w-full h-full flex justify-center items-center text-5xl">
+      <div className="w-full h-full flex justify-center items-center text-center align-middle text-6xl">
         {getSuitIcon(card.suit)}
       </div>
     );
@@ -220,6 +222,10 @@ export const PlayingCard = (props: PlayingCardProps) => {
         return;
       }
 
+      if (cardManagement.heldIndex === NULL_HELD_INDEX && e.buttons === 1) {
+        handleDragStart(e);
+      }
+
       e.stopPropagation();
       if (props.index >= 0) {
         const targetBounds = selfRef.current?.getBoundingClientRect();
@@ -231,7 +237,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
         dispatch(setDropSlotIndex(props.index));
       }
     },
-    [dispatch, props.index]
+    [cardManagement.heldIndex, dispatch, handleDragStart, props.index]
   );
 
   const handleMouseUp = React.useCallback(
@@ -302,7 +308,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
               </div>
             )}
 
-            <div className=" flex flex-row p-2 h-[100%]">
+            <div className="flex flex-row p-2 h-[100%]">
               <CardCol card={card} />
               <CardFace card={card} />
               <CardCol card={card} reverse />

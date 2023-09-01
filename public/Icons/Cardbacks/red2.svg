@@ -37,7 +37,7 @@
   <defs
      id="defs1">
     <style
-       id="style1">.cls-1{fill:#39b000;}.cls-2{fill:#030712;}.cls-3{fill:#8b5cf6;}.cls-4{fill:#8b5cf6;}.cls-5{fill:#4f4f4f;}.cls-6{fill:#424242;}</style>
+       id="style1">.cls-1{fill:#39b000;}.cls-2{fill:#030712;}.cls-3{fill:#ffffff;}.cls-4{fill:#ffffff;}.cls-5{fill:#4f4f4f;}.cls-6{fill:#424242;}</style>
   </defs>
   <title
      id="title1">Free Playing Card Back Vector</title>
@@ -45,7 +45,7 @@
      id="g4207"
      style="display:inline">
     <rect
-       style="display:inline;fill:none;stroke:#8b5cf6;stroke-width:4.624;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:none;stroke:#ffffff;stroke-width:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect1"
        width="239.18823"
        height="367.86548"
@@ -53,58 +53,10 @@
        y="11.732333"
        rx="17.534121"
        ry="19.51827" />
-    <circle
-       class="cls-3"
-       cx="136.59088"
-       cy="146.65021"
-       r="0.88"
-       id="circle2561" />
-    <circle
-       class="cls-3"
-       cx="136.59088"
-       cy="140.14021"
-       r="0.88"
-       id="circle2562" />
-    <circle
-       class="cls-3"
-       cx="136.59088"
-       cy="153.14021"
-       r="0.88"
-       id="circle2568" />
-    <circle
-       class="cls-3"
-       cx="108.92089"
-       cy="218.1402"
-       id="ellipse2655"
-       r="1.63" />
     <path
        class="cls-3"
        d="m 123.2409,220.24023 a 1.23,1.23 0 0 0 -0.48,-0.1 v 0 a 1.25,1.25 0 0 0 0,2.5 v 0 a 1.23,1.23 0 0 0 0.48,-0.1 1.25,1.25 0 0 0 0,-2.3 z"
        id="path2655" />
-    <circle
-       class="cls-3"
-       cx="108.92089"
-       cy="205.1402"
-       r="1.63"
-       id="circle2657" />
-    <circle
-       class="cls-3"
-       cx="108.92089"
-       cy="192.15021"
-       r="1.63"
-       id="circle2660" />
-    <circle
-       class="cls-3"
-       cx="108.92089"
-       cy="211.6402"
-       id="ellipse2661"
-       r="1.63" />
-    <circle
-       class="cls-3"
-       cx="108.92089"
-       cy="185.64021"
-       id="ellipse2662"
-       r="1.63" />
     <ellipse
        class="cls-3"
        cx="108.92089"
@@ -112,84 +64,6 @@
        rx="1.63"
        ry="1.62"
        id="ellipse2663" />
-    <circle
-       class="cls-3"
-       cx="113.53088"
-       cy="195.3902"
-       r="1.5"
-       id="circle2663" />
-    <circle
-       class="cls-3"
-       cx="113.53088"
-       cy="188.89023"
-       r="1.5"
-       id="circle2664" />
-    <circle
-       class="cls-3"
-       cx="113.53088"
-       cy="182.39021"
-       r="1.5"
-       id="circle2665" />
-    <circle
-       class="cls-3"
-       cx="113.53088"
-       cy="214.8902"
-       r="1.5"
-       id="circle2666" />
-    <circle
-       class="cls-3"
-       cx="113.53088"
-       cy="201.8902"
-       r="1.5"
-       id="circle2668" />
-    <circle
-       class="cls-3"
-       cx="113.53088"
-       cy="208.3902"
-       r="1.5"
-       id="circle2671" />
-    <circle
-       class="cls-3"
-       cx="113.53088"
-       cy="221.3902"
-       r="1.5"
-       id="circle2672" />
-    <circle
-       class="cls-3"
-       cx="118.14093"
-       cy="198.65021"
-       r="1.38"
-       id="circle2674" />
-    <circle
-       class="cls-3"
-       cx="118.14093"
-       cy="205.15021"
-       r="1.38"
-       id="circle2675" />
-    <circle
-       class="cls-3"
-       cx="118.14093"
-       cy="192.14023"
-       r="1.38"
-       id="circle2677" />
-    <circle
-       class="cls-3"
-       cx="118.14093"
-       cy="185.64021"
-       r="1.38"
-       id="circle2679" />
-    <circle
-       class="cls-3"
-       cx="118.14093"
-       cy="211.65021"
-       r="1.38"
-       id="circle2680" />
-    <circle
-       class="cls-3"
-       cx="118.14093"
-       cy="218.1402"
-       id="ellipse2681"
-       r="1.38" />
     <path
        class="cls-3"
        d="m 122.7609,207.15023 a 1.25,1.25 0 1 0 1.25,1.25 1.26,1.26 0 0 0 -1.25,-1.25 z"
@@ -214,36 +88,6 @@
        class="cls-3"
        d="m 122.7609,213.64023 a 1.25,1.25 0 1 0 1.25,1.25 1.26,1.26 0 0 0 -1.25,-1.25 z"
        id="path2689" />
-    <circle
-       class="cls-3"
-       cx="127.37091"
-       cy="185.64021"
-       id="ellipse2689"
-       r="1.13" />
-    <circle
-       class="cls-3"
-       cx="127.37091"
-       cy="192.15021"
-       r="1.13"
-       id="circle2691" />
-    <circle
-       class="cls-3"
-       cx="127.37091"
-       cy="211.65021"
-       r="1.13"
-       id="circle2692" />
-    <circle
-       class="cls-3"
-       cx="127.37091"
-       cy="198.65021"
-       r="1.13"
-       id="circle2693" />
-    <circle
-       class="cls-3"
-       cx="127.37091"
-       cy="205.15021"
-       r="1.13"
-       id="circle2694" />
     <path
        class="cls-3"
        d="m 127.3709,217.02023 a 1.13,1.13 0 1 0 1.12,1.12 1.12,1.12 0 0 0 -1.12,-1.12 z"
@@ -276,24 +120,6 @@
        class="cls-3"
        d="m 131.9809,220.39023 a 1,1 0 1 0 1,1 1,1 0 0 0 -1,-1 z"
        id="path2705" />
-    <circle
-       class="cls-3"
-       cx="136.59088"
-       cy="166.14021"
-       r="0.88"
-       id="circle2705" />
-    <circle
-       class="cls-3"
-       cx="136.59088"
-       cy="172.64021"
-       r="0.88"
-       id="circle2706" />
-    <circle
-       class="cls-3"
-       cx="136.59088"
-       cy="159.64021"
-       r="0.88"
-       id="circle2707" />
     <ellipse
        class="cls-3"
        cx="136.59088"
@@ -340,66 +166,6 @@
        class="cls-3"
        d="m 136.5909,217.27023 a 0.88,0.88 0 1 0 0.87,0.87 0.87,0.87 0 0 0 -0.87,-0.87 z"
        id="path2712" />
-    <circle
-       class="cls-3"
-       cx="104.31092"
-       cy="201.8902"
-       r="1.75"
-       id="circle2793" />
-    <circle
-       class="cls-3"
-       cx="104.31092"
-       cy="182.39021"
-       r="1.75"
-       id="circle2794" />
-    <circle
-       class="cls-3"
-       cx="104.31092"
-       cy="208.3902"
-       r="1.75"
-       id="circle2798" />
-    <circle
-       class="cls-3"
-       cx="104.31092"
-       cy="214.8902"
-       r="1.75"
-       id="circle2799" />
-    <circle
-       class="cls-3"
-       cx="104.31092"
-       cy="188.89023"
-       r="1.75"
-       id="circle2800" />
-    <circle
-       class="cls-3"
-       cx="104.31092"
-       cy="195.3902"
-       r="1.75"
-       id="circle2801" />
-    <circle
-       class="cls-3"
-       cx="104.31092"
-       cy="221.3902"
-       r="1.75"
-       id="circle2802" />
-    <circle
-       class="cls-3"
-       cx="108.92089"
-       cy="224.65021"
-       r="1.63"
-       id="circle2811" />
-    <circle
-       class="cls-3"
-       cx="113.53088"
-       cy="227.8902"
-       r="1.5"
-       id="circle2819" />
-    <circle
-       class="cls-3"
-       cx="118.14093"
-       cy="224.65021"
-       r="1.38"
-       id="circle2824" />
     <path
        class="cls-3"
        d="m 122.7509,226.64023 a 1.25,1.25 0 1 0 1.26,1.25 1.24,1.24 0 0 0 -1.26,-1.25 z"
@@ -416,42 +182,6 @@
        class="cls-3"
        d="m 136.5909,223.76023 a 0.88,0.88 0 0 0 -0.88,0.88 0.88,0.88 0 1 0 0.88,-0.88 z"
        id="path2861" />
-    <circle
-       class="cls-3"
-       cx="104.31092"
-       cy="227.8902"
-       r="1.75"
-       id="circle2945" />
-    <circle
-       class="cls-3"
-       cx="99.70092"
-       cy="218.1402"
-       id="ellipse3517"
-       r="1.63" />
-    <circle
-       class="cls-3"
-       cx="99.70092"
-       cy="211.6402"
-       id="ellipse3587"
-       r="1.63" />
-    <circle
-       class="cls-3"
-       cx="99.70092"
-       cy="185.64021"
-       id="ellipse3588"
-       r="1.63" />
-    <circle
-       class="cls-3"
-       cx="99.70092"
-       cy="205.1402"
-       r="1.63"
-       id="circle3588" />
-    <circle
-       class="cls-3"
-       cx="99.70092"
-       cy="192.15021"
-       r="1.63"
-       id="circle3589" />
     <ellipse
        class="cls-3"
        cx="99.70092"
@@ -459,12 +189,6 @@
        rx="1.63"
        ry="1.62"
        id="ellipse3591" />
-    <circle
-       class="cls-3"
-       cx="99.70092"
-       cy="224.65021"
-       r="1.63"
-       id="circle3737" />
     <polygon
        class="cls-2"
        points="860.91,354.51 879.74,293.78 911.55,310.54 894.79,278.73 955.52,259.9 894.79,241.07 911.55,209.26 879.74,226.02 860.91,165.29 842.09,226.02 810.27,209.26 827.03,241.07 766.3,259.9 827.03,278.73 810.27,310.54 842.09,293.78 "

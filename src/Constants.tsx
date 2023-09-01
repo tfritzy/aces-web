@@ -4,5 +4,5 @@ export const cardHeight = 183;
 
 export const lightModeRed = "red-600";
 export const lightModeBlack = "black";
-export const darkModeRed = "yellow-300";
-export const darkModeBlack = "teal-400";
+export const darkModeRed = "gray-300";
+export const darkModeBlack = "red-500";

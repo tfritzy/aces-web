@@ -12,26 +12,6 @@ enum StepDir {
   Desc,
 }
 
-function GetStreakType(cardA: Card, cardB: Card, wild: CardValue): StreakType {
-  if (IsWild(cardA, wild) || IsWild(cardB, wild)) {
-    return StreakType.None;
-  }
-
-  if (cardA.value === cardB.value) {
-    return StreakType.Same;
-  }
-
-  if (IsInDirection(cardA, cardB, StepDir.Asc)) {
-    return StreakType.StraightAsc;
-  }
-
-  if (IsInDirection(cardA, cardB, StepDir.Desc)) {
-    return StreakType.StraightDesc;
-  }
-
-  return StreakType.None;
-}
-
 function AreNStepApart(
   card1: Card,
   card2: Card,
@@ -51,21 +31,6 @@ function AreNStepApart(
     card2.value === CardValue.ACE && dir === StepDir.Desc ? 0 : card2.value;
 
   return endValue - startValue === neededDelta;
-}
-
-function IsInDirection(card1: Card, card2: Card, dir: StepDir): boolean {
-  if (card1.suit !== card2.suit) {
-    return false;
-  }
-
-  const startValue =
-    card1.value === CardValue.ACE && dir === StepDir.Asc ? 0 : card1.value;
-
-  const endValue =
-    card2.value === CardValue.ACE && dir === StepDir.Desc ? 0 : card2.value;
-
-  const neededVal = dir === StepDir.Asc ? 1 : -1;
-  return Math.sign(endValue - startValue) === neededVal;
 }
 
 function ContinuesStreak(
@@ -100,11 +65,20 @@ export function isWild(card: Card, round: number) {
 }
 
 function IsWild(card: Card, wild: CardValue): boolean {
+  if (card.value === wild) {
+    console.log("Card", card, "Is wild because it matches", wild);
+  }
+
+  if (card.value === CardValue.JOKER) {
+    console.log("Card", card, "Is wild because it is a joker");
+  }
   return card.value === wild || card.value === CardValue.JOKER;
 }
 
 function GetGroupSizeAtIndex(cards: Card[], wild: CardValue): number[] {
   const groupSizeAtIndex: number[] = new Array(cards.length);
+
+  console.log(cards);
 
   if (!cards?.length) {
     return groupSizeAtIndex;
