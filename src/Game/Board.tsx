@@ -32,6 +32,7 @@ import {
 import { TurnFlowchart } from "./TurnFlowchart";
 import { PlayingCard } from "./PlayingCard";
 import { MouseProvider } from "Game/MouseContext";
+import { DarkmodeButton } from "components/DarkmodeButton";
 
 type BoardProps = {
   reconnect: (
@@ -354,6 +355,7 @@ export const Board = (props: BoardProps) => {
           <div className="absolute top-0 right-0">
             <div className="relative flex flex-col items-end p-2 space-y-2">
               <ScorecardButton />
+
               {isOwnTurn && <TurnFlowchart />}
             </div>
           </div>
@@ -400,7 +402,7 @@ export const Board = (props: BoardProps) => {
         </div>
 
         <RoundSummary
-          shown={game.state === GameState.TurnSummary || true}
+          shown={game.state === GameState.TurnSummary}
           key="roundSummary"
           onContinue={() => {
             props.reconnect(self.token, dispatch, gameId, handleError);

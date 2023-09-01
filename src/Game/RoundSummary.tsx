@@ -77,13 +77,13 @@ export const RoundSummary = (props: RoundSummaryProps) => {
 
   return (
     <Modal width="w-[700px]" shown={props.shown} onClose={props.onContinue}>
-      <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-600">
-        <div className="font-semibold text-2xl text-center p-2">{`Round ${game.round} results`}</div>
+      <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-500">
+        <div className="font-semibold text-lg p-2 px-6">{`Round ${game.round} results`}</div>
 
-        <div className="px-1 py-4">
+        <div className="px-6 py-4">
           <table className="w-full">
             <thead>
-              <tr className="border-b dark:border-neutral-500">
+              <tr className="border-b">
                 <th key="rank" className="px-3 py-2 text-left"></th>
                 <th key="player" className="px-3 py-2 text-left">
                   Player
@@ -108,7 +108,10 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                 const icon = "Icons/characters/" + (i % 5) + ".png";
 
                 return (
-                  <tr className="border-b dark:border-neutral-500" key={p.id}>
+                  <tr
+                    className="border-collapse border-gray-200 dark:border-gray-500"
+                    key={p.id}
+                  >
                     <td key="placement" className="px-3 py-2">
                       <div className="font-bold text-xl leading-none text-center px-2 pr-4">
                         {p.placement}

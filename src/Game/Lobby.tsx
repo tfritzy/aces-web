@@ -36,8 +36,8 @@ export const Lobby = (props: LobbyProps) => {
         "game-id": props.gameId,
       },
     }).then(async (res) => {
-      setStartGamePending(false);
       if (!res.ok) {
+        setStartGamePending(false);
         const body = await res.text();
         props.onError(body);
       }

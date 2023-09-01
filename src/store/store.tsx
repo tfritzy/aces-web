@@ -3,6 +3,7 @@ import { playersSlice } from "store/playerSlice";
 import { gameSlice } from "store/gameSlice";
 import { selfSlice } from "store/selfSlice";
 import { cardManagementSlice } from "store/cardManagementSlice";
+import { settingsSlice } from "./settingsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     game: gameSlice.reducer,
     self: selfSlice.reducer,
     cardManagement: cardManagementSlice.reducer,
+    settings: settingsSlice.reducer,
   },
 });
 

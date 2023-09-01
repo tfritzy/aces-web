@@ -19,6 +19,7 @@ import {
 } from "Constants";
 import { isWild } from "helpers/getGroupedCards";
 import { MouseContext } from "./MouseContext";
+import { Cardback } from "components/Cardback";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -264,12 +265,12 @@ export const PlayingCard = (props: PlayingCardProps) => {
       return (
         <div id={props.index.toString()}>
           <div
-            className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] cursor-pointer ${
+            className={`bg-white dark:bg-gray-950 border-gray-400 dark:border-gray-700 stroke-gray-500 fill-gray-500 dark:stroke-gray-100 dark:fill-gray-100 border-solid border rounded-lg select-none cursor-pointer p-2 ${
               props.hasShadow ? "shadow-md" : ""
             }`}
             style={{ width: cardWidth, height: cardHeight }}
           >
-            <img src="Icons/CardElements/cardback.svg" alt="card-back" />
+            <Cardback />
           </div>
         </div>
       );
@@ -277,7 +278,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
       return (
         <div id={props.index.toString()}>
           <div
-            className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-xl select-none p-[7px] flex justify-center animate-pulse items-center cursor-pointer ${
+            className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-lg select-none p-[7px] flex justify-center animate-pulse items-center cursor-pointer ${
               props.hasShadow ? "shadow-md" : ""
             }`}
             style={{ width: cardWidth, height: cardHeight }}
@@ -290,7 +291,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
           <div
             className={`${getCardColor(
               card
-            )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-xl overflow-hidden select-none relative font-serif ${
+            )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden select-none relative font-serif ${
               isGrouped ? "ring-2 ring-emerald-200" : ""
             } ${props.hasShadow ? "shadow-md" : ""}`}
             style={{ height: cardHeight, width: cardWidth }}

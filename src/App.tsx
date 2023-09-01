@@ -2,12 +2,13 @@ import React from "react";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { GameMenu } from "GameMenu/GameMenu";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Cookies from "universal-cookie";
 import { generateId } from "helpers/generateId";
 import { setToken, setUserId } from "store/selfSlice";
 import { Background } from "components/Background";
 import { Game } from "Game/Game";
+import { RootState } from "store/store";
 
 const router = createBrowserRouter([
   {
@@ -42,8 +43,8 @@ export const App = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="">
-      <div className="w-full h-screen bg-white dark:bg-gray-950">
+    <div className="dark">
+      <div className="w-full h-screen bg-white dark:bg-slate-900">
         <base href="/" />
         <Background />
         <RouterProvider router={router} />
