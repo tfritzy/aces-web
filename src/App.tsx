@@ -2,13 +2,12 @@ import React from "react";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { GameMenu } from "GameMenu/GameMenu";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Cookies from "universal-cookie";
 import { generateId } from "helpers/generateId";
 import { setToken, setUserId } from "store/selfSlice";
 import { Background } from "components/Background";
 import { Game } from "Game/Game";
-import { RootState } from "store/store";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: "/:gameId",
     element: <Game />,
+  },
+  {
+    path: "/:gameId/join",
+    element: <GameMenu shown isJoinSpecificMenu />,
   },
 ]);
 

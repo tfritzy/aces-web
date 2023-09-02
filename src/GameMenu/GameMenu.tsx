@@ -11,7 +11,7 @@ import { setPlayers } from "store/playerSlice";
 import { setState } from "store/gameSlice";
 import { handleError } from "helpers/handleError";
 import { Toasts, useToasts } from "components/Toasts";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import { GameStateForPlayer } from "Game/Types";
 import { ToastProps } from "components/Toast";
 import { resetCards } from "store/cardManagementSlice";
@@ -56,6 +56,90 @@ const nouns = [
   "Wasp",
   "Crab",
 ];
+
+const joinGame = (
+  gameId: string,
+  setPending: (pending: boolean) => void,
+  token: string,
+  displayName: string,
+  id: string,
+  dispatch: Dispatch,
+  navigate: NavigateFunction,
+  onFailure: () => void,
+  addToast: (props: ToastProps) => void
+) => {
+  setPending(true);
+  fetch(`${API_URL}/api/join_game`, {
+    method: "POST",
+    headers: {
+      token: token,
+      "display-name": displayName,
+      "game-id": gameId,
+      "player-id": id,
+    },
+  }).then(async (res) => {
+    setPending(false);
+    if (res.ok) {
+      const body: GameStateForPlayer = await res.json();
+      resetAll(dispatch);
+      dispatch(setPlayers(body.players));
+      dispatch(setGameId(gameId));
+      dispatch(setState(GameState.Setup));
+
+      return navigate(`/${gameId}`);
+    } else {
+      handleError(res, addToast);
+      onFailure();
+    }
+  });
+};
+
+type JoinSpecificGameMenuProps = {
+  addToast: (props: ToastProps) => void;
+};
+
+const JoinSpecificGameMenu = (props: JoinSpecificGameMenuProps) => {
+  const [joinPending, setJoinPending] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const gameId = useParams().gameId || "";
+  const self = useSelector((state: RootState) => state.self);
+
+  return (
+    <div>
+      <Button
+        text="Join"
+        type="primary"
+        size="jumbo"
+        onClick={() =>
+          joinGame(
+            gameId,
+            setJoinPending,
+            self.token,
+            self.displayName,
+            self.id,
+            dispatch,
+            navigate,
+            () => {},
+            props.addToast
+          )
+        }
+        pending={joinPending}
+      />
+      <div className="mt-6 text-sm">
+        Looking for a different game?{" "}
+        <button
+          onClick={() => {
+            navigate("/");
+          }}
+          className="text-violet-500 dark:text-violet-400 font-semibold"
+        >
+          Return home
+        </button>
+      </div>
+    </div>
+  );
+};
 
 type JoinGameMenuProps = {
   addToast: (props: ToastProps) => void;
@@ -252,13 +336,13 @@ const CreateGameMenu = (props: CreateGameMenuProps) => {
 
 type GameMenuProps = {
   shown: boolean;
+  isJoinSpecificMenu?: boolean;
 };
 
 export const GameMenu = (props: GameMenuProps) => {
   const [showJoinGame, setShowJoinGame] = useState(true);
   const self = useSelector((state: RootState) => state.self);
-  const game = useSelector((state: RootState) => state.game);
-  const players = useSelector((state: RootState) => state.players.players);
+  const gameIdFromUrl = useParams().gameId || "";
   const dispatch = useDispatch();
   const { toasts, addToast } = useToasts();
 
@@ -282,14 +366,35 @@ export const GameMenu = (props: GameMenuProps) => {
     cookies.set("display-name", e.target.value, { path: "/" });
   };
 
+  let content;
+  let title;
+  if (props.isJoinSpecificMenu) {
+    content = <JoinSpecificGameMenu addToast={addToast} />;
+    title = "Joining game " + gameIdFromUrl;
+  } else if (showJoinGame) {
+    content = (
+      <JoinGameMenu
+        addToast={addToast}
+        setCreatingGame={() => setShowJoinGame(false)}
+      />
+    );
+    title = "Join game";
+  } else {
+    content = (
+      <CreateGameMenu
+        addToast={addToast}
+        setJoiningGame={() => setShowJoinGame(true)}
+      />
+    );
+    title = "Create game";
+  }
+
   return (
     <div className="flex flex-col items-center">
       <Toasts toasts={toasts} />
       <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center text-black dark:text-white">
         <div className="flex flex-col space-y-6 border border-gray-300 dark:border-gray-500 shadow-lg dark:shadow-2xl dark:shadow-[#111111] rounded-md bg-white dark:bg-gray-800 px-12 p-12 pb-10 pt-8 w-[355px]">
-          <div className="text-xl font-bold">
-            {showJoinGame ? "Join game" : "Create game"}
-          </div>
+          <div className="text-xl font-bold">{title}</div>
           <div className="">
             <label className="block mb-4 text-sm font-medium">
               Display name
@@ -303,17 +408,7 @@ export const GameMenu = (props: GameMenuProps) => {
             />
           </div>
 
-          {showJoinGame ? (
-            <JoinGameMenu
-              addToast={addToast}
-              setCreatingGame={() => setShowJoinGame(false)}
-            />
-          ) : (
-            <CreateGameMenu
-              addToast={addToast}
-              setJoiningGame={() => setShowJoinGame(true)}
-            />
-          )}
+          {content}
         </div>
       </div>
     </div>

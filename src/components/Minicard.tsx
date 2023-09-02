@@ -32,7 +32,7 @@ const getCardColor = (card: Card) => {
 export const Minicard = (props: MinicardProps) => {
   return (
     <div
-      className={`w-6 h-8 relative border rounded ${getCardColor(props.card)}`}
+      className={`w-6 h-8 relative border rounded ${getCardColor(props.card)} `}
     >
       <div className="text-sm absolute top-0 left-1">
         {getValueIcon(props.card).slice(0, 2)}
