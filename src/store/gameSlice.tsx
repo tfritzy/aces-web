@@ -71,9 +71,7 @@ export const gameSlice = createSlice({
       state.id = action.payload;
     },
     setHand: (state, action: { payload: Card[] }) => {
-      console.log("Set hand to", action.payload);
       const groups = getGroups(action.payload, state.round);
-      console.log(groups);
       for (let i = 0; i < groups.length; i++) {
         action.payload[i] = { ...action.payload[i], isGrouped: groups[i] };
       }

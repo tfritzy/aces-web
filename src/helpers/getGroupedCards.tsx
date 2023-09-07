@@ -65,20 +65,11 @@ export function isWild(card: Card, round: number) {
 }
 
 function IsWild(card: Card, wild: CardValue): boolean {
-  if (card.value === wild) {
-    console.log("Card", card, "Is wild because it matches", wild);
-  }
-
-  if (card.value === CardValue.JOKER) {
-    console.log("Card", card, "Is wild because it is a joker");
-  }
   return card.value === wild || card.value === CardValue.JOKER;
 }
 
 function GetGroupSizeAtIndex(cards: Card[], wild: CardValue): number[] {
   const groupSizeAtIndex: number[] = new Array(cards.length);
-
-  console.log(cards);
 
   if (!cards?.length) {
     return groupSizeAtIndex;

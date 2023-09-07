@@ -65,6 +65,8 @@ export const Pile = (props: PileProps) => {
                   index={PILE_HELD_INDEX}
                   key={card.type + "-" + card.deck}
                   onDrop={handleDrop}
+                  targetX={500}
+                  targetY={500}
                 />
               </div>
             </div>

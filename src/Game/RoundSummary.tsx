@@ -3,11 +3,13 @@ import React from "react";
 import { Modal } from "components/Modal";
 import autoAnimate from "@formkit/auto-animate";
 import { Button } from "components/Button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { Player } from "store/playerSlice";
 import { Minicard } from "components/Minicard";
 import { getDefaultAvatar } from "helpers/getDefaultAvatar";
+import { GameState, resetAll } from "store/gameSlice";
+import { useNavigate } from "react-router-dom";
 
 type SummaryPlayer = Player & {
   placement: number;
@@ -23,6 +25,9 @@ type RoundSummaryProps = {
 export const RoundSummary = (props: RoundSummaryProps) => {
   const game = useSelector((state: RootState) => state.game);
   const gamePlayers = useSelector((state: RootState) => state.players.players);
+  const isGameOver = game.state === GameState.Finished;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const parent = React.useRef(null);
   React.useEffect(() => {
@@ -76,9 +81,11 @@ export const RoundSummary = (props: RoundSummaryProps) => {
   };
 
   return (
-    <Modal width="w-[700px]" shown={props.shown} onClose={props.onContinue}>
+    <Modal width="w-[900px]" shown={props.shown} onClose={props.onContinue}>
       <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-500">
-        <div className="font-semibold text-lg p-2 px-6">{`Round ${game.round} results`}</div>
+        <div className="font-semibold text-lg p-2 px-6">
+          {isGameOver ? "Final standings" : `Round ${game.round} results`}
+        </div>
 
         <div className="px-6 py-4">
           <table className="w-full">
@@ -136,10 +143,10 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                       </div>
                     </td>
 
-                    <td key="grouped" className="px-3 py-2">
+                    <td key="grouped" className="px-3 py-2 min-w-[200px]">
                       <div className="flex flex-row flex-wrap">
                         {p.mostRecentGroupedCards.map((g) => (
-                          <div className="flex flex-row">
+                          <div className="flex flex-row px-1">
                             {g.map((c) => (
                               <div className="m-[1px]">
                                 <Minicard card={c} />
@@ -150,7 +157,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                       </div>
                     </td>
 
-                    <td key="ungrouped" className="px-3 py-2">
+                    <td key="ungrouped" className="px-3 py-2 min min-w-[200px]">
                       <div className="flex flex-row flex-wrap">
                         {p.mostRecentUngroupedCards.map((c) => (
                           <div className="m-[1px]">
@@ -175,7 +182,22 @@ export const RoundSummary = (props: RoundSummaryProps) => {
         </div>
 
         <div className="flex justify-end p-2">
-          <Button onClick={props.onContinue} text="Next round" type="primary" />
+          {isGameOver ? (
+            <Button
+              onClick={() => {
+                dispatch(resetAll());
+                navigate("/");
+              }}
+              text="Return home"
+              type="primary"
+            />
+          ) : (
+            <Button
+              onClick={props.onContinue}
+              text="Next round"
+              type="primary"
+            />
+          )}
         </div>
       </div>
     </Modal>

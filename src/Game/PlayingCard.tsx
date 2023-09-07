@@ -20,6 +20,7 @@ import {
 import { isWild } from "helpers/getGroupedCards";
 import { MouseContext } from "./MouseContext";
 import { Cardback } from "components/Cardback";
+import { random } from "lodash";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -188,12 +189,61 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
   return <div className="flex grow">{face}</div>;
 };
 
+type CardBodyProps = {
+  card: Card;
+  hasShadow: boolean;
+  isGrouped: boolean;
+  isWild: boolean;
+};
+
+const CardBody = (props: CardBodyProps) => {
+  const card = props.card;
+
+  let contents;
+  if (card.type === CardType.CARD_BACK) {
+    contents = <Cardback />;
+  } else if (card.type === CardType.SPINNER) {
+    contents = "spinner";
+  } else {
+    contents = (
+      <>
+        {props.isWild && (
+          <div className="absolute top-1 right-2 uppercase text-xs font-mono text-gray-500">
+            wild
+          </div>
+        )}
+
+        <div className="flex flex-row p-2 h-[100%]">
+          <CardCol card={card} />
+          <CardFace card={card} />
+          <CardCol card={card} reverse />
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <div
+      className={`${getCardColor(
+        card
+      )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden select-none relative font-serif ${
+        props.isGrouped ? "ring-2 ring-emerald-200" : ""
+      } ${props.hasShadow ? "shadow-md" : ""}`}
+      style={{ height: cardHeight, width: cardWidth }}
+    >
+      {contents}
+    </div>
+  );
+};
+
 type PlayingCardProps = {
   card: Card;
   index: number;
   isHeld: boolean;
   onDrop?: (index?: number) => void;
   hasShadow?: boolean;
+  targetX: number;
+  targetY: number;
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
@@ -203,6 +253,11 @@ export const PlayingCard = (props: PlayingCardProps) => {
   const cardManagement = useSelector(
     (state: RootState) => state.cardManagement
   );
+  const [left, setLeft] = React.useState(props.targetX);
+  const leftRef = React.useRef(props.targetX);
+  const targetX = React.useRef(props.targetX);
+  const requestRef = React.useRef(0);
+  const top = React.useRef(0);
   const mousePos = React.useContext(MouseContext);
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
@@ -215,6 +270,10 @@ export const PlayingCard = (props: PlayingCardProps) => {
   );
   const isGrouped = props.index >= 0 && hand[props.index].isGrouped;
   const wild = isWild(card, round);
+
+  React.useEffect(() => {
+    targetX.current = props.targetX;
+  }, [props.targetX]);
 
   const handleMouseMove = React.useCallback(
     (e: React.MouseEvent) => {
@@ -262,62 +321,23 @@ export const PlayingCard = (props: PlayingCardProps) => {
     [card.type, cardManagement.heldIndex, dispatch, handleDragStart, props]
   );
 
+  const animate = () => {
+    if (leftRef.current !== undefined) {
+      const delta = targetX.current - leftRef.current;
+      leftRef.current = leftRef.current + delta * 0.1;
+      setLeft((prevCount) => prevCount + delta * 0.1);
+    }
+    requestRef.current = requestAnimationFrame(animate);
+  };
+
+  React.useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, []); // Make sure the effect runs only once
+
   const heldClasses = props.isHeld
     ? `fixed pointer-events-none z-40 drop-shadow-xl opacity-50`
     : "";
-
-  let cardElement = React.useMemo(() => {
-    if (card.type === CardType.CARD_BACK) {
-      return (
-        <div id={props.index.toString()}>
-          <div
-            className={`bg-white dark:bg-gray-950 border-gray-400 dark:border-gray-700 stroke-gray-500 fill-gray-500 dark:stroke-gray-100 dark:fill-gray-100 border-solid border rounded-lg select-none cursor-pointer p-2 ${
-              props.hasShadow ? "shadow-md" : ""
-            }`}
-            style={{ width: cardWidth, height: cardHeight }}
-          >
-            <Cardback />
-          </div>
-        </div>
-      );
-    } else if (card.type === CardType.SPINNER) {
-      return (
-        <div id={props.index.toString()}>
-          <div
-            className={`bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-700 stroke-slate-400 border-solid border rounded-lg select-none p-[7px] flex justify-center animate-pulse items-center cursor-pointer ${
-              props.hasShadow ? "shadow-md" : ""
-            }`}
-            style={{ width: cardWidth, height: cardHeight }}
-          ></div>
-        </div>
-      );
-    } else {
-      return (
-        <div id={props.index.toString()}>
-          <div
-            className={`${getCardColor(
-              card
-            )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden select-none relative font-serif ${
-              isGrouped ? "ring-2 ring-emerald-200" : ""
-            } ${props.hasShadow ? "shadow-md" : ""}`}
-            style={{ height: cardHeight, width: cardWidth }}
-          >
-            {wild && (
-              <div className="absolute top-1 right-2 uppercase text-xs font-mono text-gray-500">
-                wild
-              </div>
-            )}
-
-            <div className="flex flex-row p-2 h-[100%]">
-              <CardCol card={card} />
-              <CardFace card={card} />
-              <CardCol card={card} reverse />
-            </div>
-          </div>
-        </div>
-      );
-    }
-  }, [card, isGrouped, props.hasShadow, props.index, wild]);
 
   if (!card) {
     console.error("Trying to render a null card");
@@ -325,14 +345,18 @@ export const PlayingCard = (props: PlayingCardProps) => {
   }
 
   return (
-    <div onMouseUp={handleMouseUp} onMouseMove={handleMouseMove} ref={selfRef}>
+    <div
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+      ref={selfRef}
+      style={{ position: "absolute", left: left, top: top.current }}
+    >
       {cardManagement.dropSlotIndex === props.index &&
         cardManagement.heldIndex !== NULL_HELD_INDEX &&
         !props.isHeld &&
         props.index >= 0 && <DropSlot key="drop-slot" />}
       <div
-        id={card.type + "-" + card.deck}
-        className={`${heldClasses}`}
+        className={heldClasses}
         style={
           props.isHeld
             ? {
@@ -342,7 +366,12 @@ export const PlayingCard = (props: PlayingCardProps) => {
             : undefined
         }
       >
-        {cardElement}
+        <CardBody
+          card={card}
+          hasShadow={props.hasShadow || false}
+          isGrouped={isGrouped}
+          isWild={wild}
+        />
       </div>
     </div>
   );

@@ -32,6 +32,8 @@ export const Deck = (props: DeckProps) => {
               isHeld={false}
               card={cardBack}
               index={DECK_HELD_INDEX}
+              targetX={500}
+              targetY={500}
             />
           );
         }

@@ -62,6 +62,20 @@ export const Board = (props: BoardProps) => {
   const gameId = useParams().gameId || "";
   const isOwnTurn = players[game.turn]?.id === self.id;
 
+  // //shuffle the cards in the hand every 3000 ms
+  // React.useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const hand = [...heldCards];
+  //     const shuffledCards = hand.sort(() => Math.random() - 0.5);
+  //     dispatch(setHand(shuffledCards));
+  //     console.log(
+  //       "shuffled hand",
+  //       shuffledCards.map((c) => c.type)
+  //     );
+  //   }, 3000);
+  //   return () => clearInterval(interval);
+  // }, [dispatch, heldCards]);
+
   const handleError = React.useCallback(
     async (response: Response) => {
       if (response.status.toString().startsWith("4")) {
@@ -153,6 +167,8 @@ export const Board = (props: BoardProps) => {
 
   const handleDrop = React.useCallback(
     async (dropIndex?: number) => {
+      console.log("Drop index: " + dropIndex, heldIndex);
+
       dropIndex = dropIndex ?? cardManagement.dropSlotIndex ?? undefined;
       if (dropIndex === undefined || heldIndex === NULL_HELD_INDEX) {
         return;
@@ -344,65 +360,72 @@ export const Board = (props: BoardProps) => {
             card={heldCard}
             index={PILE_HELD_INDEX}
             key={heldCard.type + "-" + heldCard.deck}
+            targetX={500}
+            targetY={500}
           />
         )}
 
-        <Toasts toasts={toasts} key="toasts" />
+        <div className="w-screen h-screen flex flex-row justify-center">
+          <div className="max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-gray-900">
+            <PlayerList key="playerList" />
 
-        <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-gray-900">
-          <PlayerList key="playerList" />
+            <div className="absolute top-0 right-0">
+              <div className="relative flex flex-col items-end p-2 space-y-2">
+                <ScorecardButton />
 
-          <div className="absolute top-0 right-0">
-            <div className="relative flex flex-col items-end p-2 space-y-2">
-              <ScorecardButton />
-
-              {isOwnTurn && <TurnFlowchart />}
-            </div>
-          </div>
-
-          <div className="flex flex-col h-screen">
-            <div key="cards" className="flex grow items-center">
-              <div
-                className="relative flex flex-row justify-center space-x-8 w-full"
-                key="cards"
-              >
-                <div>
-                  <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
-                    Deck
-                  </div>
-                  <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
-                    <Deck
-                      key="deck"
-                      heldIndex={heldIndex}
-                      setHeldIndex={setHeldIndex}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
-                    Discard
-                  </div>
-                  <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
-                    <Pile key="pile" handleDrop={handleDrop} />
-                  </div>
-                </div>
+                {isOwnTurn && <TurnFlowchart />}
               </div>
             </div>
 
-            <div className="justify-center">
-              <Dock
-                key="dock"
-                onDrop={handleDrop}
-                cards={heldCards}
-                buttons={buttons}
-              />
+            <div className="flex flex-col h-screen">
+              <div key="cards" className="flex grow items-center">
+                <div
+                  className="relative flex flex-row justify-center space-x-8 w-full"
+                  key="cards"
+                >
+                  <div>
+                    <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
+                      Deck
+                    </div>
+                    <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
+                      <Deck
+                        key="deck"
+                        heldIndex={heldIndex}
+                        setHeldIndex={setHeldIndex}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
+                      Discard
+                    </div>
+                    <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
+                      <Pile key="pile" handleDrop={handleDrop} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="justify-center">
+                <Dock
+                  key="dock"
+                  onDrop={handleDrop}
+                  cards={heldCards}
+                  buttons={buttons}
+                />
+              </div>
             </div>
           </div>
         </div>
 
+        <Toasts toasts={toasts} key="toasts" />
+
         <RoundSummary
-          shown={game.state === GameState.TurnSummary}
+          shown={
+            game.state === GameState.TurnSummary ||
+            game.state === GameState.Finished
+          }
           key="roundSummary"
           onContinue={() => {
             props.reconnect(self.token, dispatch, gameId, handleError);

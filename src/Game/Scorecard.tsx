@@ -53,7 +53,7 @@ export const Scorecard = (props: ScorecardProps) => {
   const players = useSelector((state: RootState) => state.players.players);
 
   const cellClasses = "py-1 px-2 border border-gray-200 dark:border-gray-700 ";
-  const numRounds = 10;
+  const numRounds = 12;
   const rows = [];
   for (let i = 0; i < numRounds; i++) {
     rows.push(
@@ -71,7 +71,7 @@ export const Scorecard = (props: ScorecardProps) => {
               }`}
               key={j}
             >
-              {score === 0 && "★ "}
+              {score === 0}
               {score ?? "—"}
             </td>
           );
@@ -124,13 +124,6 @@ export const Scorecard = (props: ScorecardProps) => {
                   (acc, cur) => acc + cur,
                   0
                 );
-                const isMinScore =
-                  totalScore ===
-                  Math.min(
-                    ...players.map((p) =>
-                      p.scorePerRound?.reduce((acc, cur) => acc + cur, 0)
-                    )
-                  );
 
                 return (
                   <td
@@ -139,7 +132,6 @@ export const Scorecard = (props: ScorecardProps) => {
                     }`}
                     key={j}
                   >
-                    {isMinScore && "★ "}
                     {totalScore ?? "—"}
                   </td>
                 );

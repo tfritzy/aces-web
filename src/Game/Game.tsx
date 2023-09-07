@@ -39,7 +39,6 @@ const handleMessage = (
   state: RootState,
   handleError: (response: Response) => void
 ) => {
-  console.log("Handling message", message);
   switch (message.type) {
     case EventType.JoinGame:
       dispatch(
@@ -54,7 +53,6 @@ const handleMessage = (
       );
       break;
     case EventType.StartGame:
-      console.log("Reconnect by start game");
       reconnect(state.self.token, dispatch, state.game.id, handleError);
       break;
     case EventType.DrawFromDeck:
@@ -91,6 +89,9 @@ const handleMessage = (
         });
       }
       dispatch(setTurnPhase(TurnPhase.Drawing));
+      break;
+    case EventType.GameEndEvent:
+      dispatch(setState(GameState.Finished));
       break;
     case EventType.PlayerWentOut:
       if (message.playerId !== state.self.id) {
@@ -189,7 +190,6 @@ export const Game = () => {
 
   useEffect(() => {
     if (game.state === GameState.Invalid && self.token) {
-      console.log("Reconnect 1");
       reconnect(self.token, dispatch, gameId, handleError);
     }
 

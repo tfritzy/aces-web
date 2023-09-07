@@ -73,6 +73,11 @@ export type PlayerDoneForRoundEvent = {
   ungroupedCards: Card[];
 };
 
+export type GameEndEvent = {
+  type: EventType.GameEndEvent;
+  i: number;
+};
+
 export type Message =
   | JoinGameEvent
   | StartGameEvent
@@ -82,4 +87,5 @@ export type Message =
   | DrawFromDeckEvent
   | DrawFromPileEvent
   | PlayerWentOutEvent
-  | PlayerDoneForRoundEvent;
+  | PlayerDoneForRoundEvent
+  | GameEndEvent;
