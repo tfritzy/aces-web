@@ -1,17 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const NULL_HELD_INDEX = -3;
 export const DECK_HELD_INDEX = -2;
 export const PILE_HELD_INDEX = -1;
 
 type CardManagement = {
-  heldIndex: number;
+  heldIndex: number | null;
   dropSlotIndex: number | null;
   disabled: boolean;
 };
 
 const initialState: CardManagement = {
-  heldIndex: NULL_HELD_INDEX,
+  heldIndex: null,
   dropSlotIndex: null,
   disabled: false,
 };
@@ -23,7 +22,7 @@ export const cardManagementSlice = createSlice({
     resetCards: () => {
       return initialState;
     },
-    setHeldIndex: (state, action: { payload: number }) => {
+    setHeldIndex: (state, action: { payload: number | null }) => {
       state.heldIndex = action.payload;
     },
     setDropSlotIndex: (state, action: { payload: number | null }) => {

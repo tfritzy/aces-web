@@ -3,11 +3,7 @@ import { CardType } from "./Types";
 import { Suit, Card, CardValue } from "Game/Types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
-import {
-  NULL_HELD_INDEX,
-  setDropSlotIndex,
-  setHeldIndex,
-} from "store/cardManagementSlice";
+import { setDropSlotIndex, setHeldIndex } from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
 import {
   cardHeight,
@@ -125,7 +121,10 @@ const CardCol = (props: CardColProps) => {
     <div className={className}>
       <div className={`${cardBackground}`}>
         {valueIcon.map((c) => (
-          <div className="text-center leading-none uppercase" key={c}>
+          <div
+            className="text-center leading-none uppercase font-semibold"
+            key={c}
+          >
             {c}
           </div>
         ))}
@@ -239,11 +238,11 @@ const CardBody = (props: CardBodyProps) => {
 type PlayingCardProps = {
   card: Card;
   index: number;
-  isHeld: boolean;
-  onDrop?: (index?: number) => void;
   hasShadow?: boolean;
   targetX: number;
   targetY: number;
+  z: number;
+  skipLerp?: boolean;
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
@@ -254,11 +253,11 @@ export const PlayingCard = (props: PlayingCardProps) => {
     (state: RootState) => state.cardManagement
   );
   const [left, setLeft] = React.useState(props.targetX);
+  const [top, setTop] = React.useState(props.targetY);
   const leftRef = React.useRef(props.targetX);
-  const targetX = React.useRef(props.targetX);
+  const topRef = React.useRef(props.targetY);
+  const targetPos = React.useRef({ x: props.targetX, y: props.targetY });
   const requestRef = React.useRef(0);
-  const top = React.useRef(0);
-  const mousePos = React.useContext(MouseContext);
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
   const handleDragStart = React.useCallback(
@@ -272,8 +271,8 @@ export const PlayingCard = (props: PlayingCardProps) => {
   const wild = isWild(card, round);
 
   React.useEffect(() => {
-    targetX.current = props.targetX;
-  }, [props.targetX]);
+    targetPos.current = { x: props.targetX, y: props.targetY };
+  }, [props.targetX, props.targetY]);
 
   const handleMouseMove = React.useCallback(
     (e: React.MouseEvent) => {
@@ -281,7 +280,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
         return;
       }
 
-      if (cardManagement.heldIndex === NULL_HELD_INDEX && e.buttons === 1) {
+      if (cardManagement.heldIndex === null && e.buttons === 1) {
         handleDragStart(e);
       }
 
@@ -301,31 +300,24 @@ export const PlayingCard = (props: PlayingCardProps) => {
 
   const handleMouseUp = React.useCallback(
     (e: React.MouseEvent) => {
-      if (props.isHeld) {
-        return;
-      }
-
-      if (cardManagement.heldIndex !== NULL_HELD_INDEX) {
-        if (props.index === cardManagement.heldIndex) {
-          e.stopPropagation();
-          dispatch(setHeldIndex(NULL_HELD_INDEX));
-        } else if (props.onDrop) {
-          e.stopPropagation();
-          props.onDrop?.(props.index);
-        }
-      } else if (card.type !== CardType.SPINNER) {
+      if (cardManagement.heldIndex === null && card.type !== CardType.SPINNER) {
         e.stopPropagation();
         handleDragStart(e);
       }
     },
-    [card.type, cardManagement.heldIndex, dispatch, handleDragStart, props]
+    [card.type, cardManagement.heldIndex, handleDragStart]
   );
 
   const animate = () => {
     if (leftRef.current !== undefined) {
-      const delta = targetX.current - leftRef.current;
-      leftRef.current = leftRef.current + delta * 0.1;
-      setLeft((prevCount) => prevCount + delta * 0.1);
+      const deltaX = targetPos.current.x - leftRef.current;
+      const deltaY = targetPos.current.y - topRef.current;
+      const newX = leftRef.current + deltaX * 0.18;
+      const newY = topRef.current + deltaY * 0.18;
+      leftRef.current = newX;
+      topRef.current = newY;
+      setLeft(() => newX);
+      setTop(() => newY);
     }
     requestRef.current = requestAnimationFrame(animate);
   };
@@ -334,10 +326,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
   }, []); // Make sure the effect runs only once
-
-  const heldClasses = props.isHeld
-    ? `fixed pointer-events-none z-40 drop-shadow-xl opacity-50`
-    : "";
 
   if (!card) {
     console.error("Trying to render a null card");
@@ -349,30 +337,19 @@ export const PlayingCard = (props: PlayingCardProps) => {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
       ref={selfRef}
-      style={{ position: "absolute", left: left, top: top.current }}
+      style={{
+        position: "absolute",
+        left: props.skipLerp ? props.targetX : left,
+        top: props.skipLerp ? props.targetY : top,
+        zIndex: props.z,
+      }}
     >
-      {cardManagement.dropSlotIndex === props.index &&
-        cardManagement.heldIndex !== NULL_HELD_INDEX &&
-        !props.isHeld &&
-        props.index >= 0 && <DropSlot key="drop-slot" />}
-      <div
-        className={heldClasses}
-        style={
-          props.isHeld
-            ? {
-                top: mousePos.y - 80,
-                left: mousePos.x - 64,
-              }
-            : undefined
-        }
-      >
-        <CardBody
-          card={card}
-          hasShadow={props.hasShadow || false}
-          isGrouped={isGrouped}
-          isWild={wild}
-        />
-      </div>
+      <CardBody
+        card={card}
+        hasShadow={props.hasShadow || false}
+        isGrouped={isGrouped}
+        isWild={wild}
+      />
     </div>
   );
 };

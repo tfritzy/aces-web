@@ -46,7 +46,7 @@ export const App = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="dark select-none">
+    <div className="select-none">
       <div className="w-full h-screen bg-white dark:bg-slate-900">
         <base href="/" />
         <Background />

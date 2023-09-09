@@ -1,7 +1,5 @@
 import React from "react";
 
-import { Dock } from "Game/Dock";
-import { Deck } from "Game/Deck";
 import { cardBack, parseCard, spinnerCard } from "Game/Types";
 import { API_URL } from "Constants";
 import { Toasts, useToasts } from "components/Toasts";
@@ -20,10 +18,8 @@ import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
 import { ScorecardButton } from "./Scorecard";
 import { useParams } from "react-router-dom";
-import { Pile } from "./Pile";
 import {
   DECK_HELD_INDEX,
-  NULL_HELD_INDEX,
   PILE_HELD_INDEX,
   setDisabled,
   setDropSlotIndex,
@@ -32,7 +28,7 @@ import {
 import { TurnFlowchart } from "./TurnFlowchart";
 import { PlayingCard } from "./PlayingCard";
 import { MouseProvider } from "Game/MouseContext";
-import { DarkmodeButton } from "components/DarkmodeButton";
+import { CardManagement } from "./CardManagement";
 
 type BoardProps = {
   reconnect: (
@@ -99,7 +95,7 @@ export const Board = (props: BoardProps) => {
   React.useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        dispatch(setHeldIndex(NULL_HELD_INDEX));
+        dispatch(setHeldIndex(null));
       }
     };
 
@@ -143,6 +139,10 @@ export const Board = (props: BoardProps) => {
   }, [gameId, handleError, self.token]);
 
   const discard = React.useCallback(async () => {
+    if (heldIndex === null) {
+      return;
+    }
+
     var res = await fetch(`${API_URL}/api/discard`, {
       method: "POST",
       headers: {
@@ -167,10 +167,8 @@ export const Board = (props: BoardProps) => {
 
   const handleDrop = React.useCallback(
     async (dropIndex?: number) => {
-      console.log("Drop index: " + dropIndex, heldIndex);
-
       dropIndex = dropIndex ?? cardManagement.dropSlotIndex ?? undefined;
-      if (dropIndex === undefined || heldIndex === NULL_HELD_INDEX) {
+      if (dropIndex === undefined || heldIndex === null) {
         return;
       }
 
@@ -214,7 +212,7 @@ export const Board = (props: BoardProps) => {
 
         discard().then((res) => {
           dispatch(setDisabled(false));
-          if (res.ok) {
+          if (res?.ok) {
             // Nothing to do.
           } else {
             dispatch(setHand(originalHand));
@@ -245,13 +243,12 @@ export const Board = (props: BoardProps) => {
       } else {
         const finalHand = [...heldCards];
         const dropCard = finalHand[heldIndex];
-        const indexMod = dropIndex > heldIndex ? 1 : 0;
         finalHand.splice(heldIndex, 1);
-        finalHand.splice(dropIndex - indexMod, 0, dropCard);
+        finalHand.splice(dropIndex, 0, dropCard);
         dispatch(setHand(finalHand));
       }
 
-      dispatch(setHeldIndex(NULL_HELD_INDEX));
+      dispatch(setHeldIndex(null));
       setDropSlotIndex(null);
     },
     [
@@ -330,91 +327,33 @@ export const Board = (props: BoardProps) => {
     );
   }, [endTurn, endTurnPending, goOut, goOutPending, canGoOut]);
 
-  let heldCard;
-  if (heldIndex !== NULL_HELD_INDEX) {
-    if (heldIndex === DECK_HELD_INDEX) {
-      heldCard = cardBack;
-    } else if (heldIndex === PILE_HELD_INDEX) {
-      heldCard = game.pile[game.pile.length - 1];
-    } else {
-      heldCard = heldCards[heldIndex];
-    }
-  }
-
   return (
     <MouseProvider>
-      <div
-        className="min-w-screen min-h-screen flex flex-col items-center"
-        onMouseUp={() => {
-          dispatch(setHeldIndex(NULL_HELD_INDEX));
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") {
-            dispatch(setHeldIndex(NULL_HELD_INDEX));
-          }
-        }}
-      >
-        {heldIndex !== NULL_HELD_INDEX && heldCard && (
-          <PlayingCard
-            isHeld
-            card={heldCard}
-            index={PILE_HELD_INDEX}
-            key={heldCard.type + "-" + heldCard.deck}
-            targetX={500}
-            targetY={500}
-          />
-        )}
+      <div>
+        <div
+          className="min-w-screen min-h-screen flex flex-col items-center"
+          onMouseUp={() => {
+            dispatch(setHeldIndex(null));
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              dispatch(setHeldIndex(null));
+            }
+          }}
+        >
+          <div className="w-screen h-screen flex flex-row justify-center">
+            <div className="max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-gray-900">
+              <PlayerList key="playerList" />
 
-        <div className="w-screen h-screen flex flex-row justify-center">
-          <div className="max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-gray-900">
-            <PlayerList key="playerList" />
+              <div className="absolute top-0 right-0">
+                <div className="relative flex flex-col items-end p-2 space-y-2">
+                  <ScorecardButton />
 
-            <div className="absolute top-0 right-0">
-              <div className="relative flex flex-col items-end p-2 space-y-2">
-                <ScorecardButton />
-
-                {isOwnTurn && <TurnFlowchart />}
-              </div>
-            </div>
-
-            <div className="flex flex-col h-screen">
-              <div key="cards" className="flex grow items-center">
-                <div
-                  className="relative flex flex-row justify-center space-x-8 w-full"
-                  key="cards"
-                >
-                  <div>
-                    <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
-                      Deck
-                    </div>
-                    <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
-                      <Deck
-                        key="deck"
-                        heldIndex={heldIndex}
-                        setHeldIndex={setHeldIndex}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-center text-xl text-gray-300 dark:text-slate-700 front-bold pb-4">
-                      Discard
-                    </div>
-                    <div className="py-2 px-3 border-2 border-gray-100 dark:border-gray-800 rounded-lg shadow-inner">
-                      <Pile key="pile" handleDrop={handleDrop} />
-                    </div>
-                  </div>
+                  {isOwnTurn && <TurnFlowchart />}
                 </div>
               </div>
 
-              <div className="justify-center">
-                <Dock
-                  key="dock"
-                  onDrop={handleDrop}
-                  cards={heldCards}
-                  buttons={buttons}
-                />
-              </div>
+              <CardManagement onDrop={handleDrop} />
             </div>
           </div>
         </div>
