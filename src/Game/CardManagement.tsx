@@ -22,7 +22,12 @@ function getWindowDimensions() {
 
 function getInsertSlot(hoveredIndex: number | null, heldIndex: number | null) {
   let insertSlot = hoveredIndex;
-  if (insertSlot !== null && heldIndex !== null && insertSlot >= heldIndex) {
+  if (
+    insertSlot !== null &&
+    heldIndex !== null &&
+    heldIndex > 0 &&
+    insertSlot >= heldIndex
+  ) {
     insertSlot++;
   }
   return insertSlot;
@@ -32,16 +37,16 @@ function getHoveredIndex(
   x: number,
   numCards: number,
   center: number,
-  distBetweenCards: number,
-  currentHeldIndex: number | null
+  distBetweenCards: number
 ) {
-  let left = center - distBetweenCards * (numCards / 2) - cardWidth / 2;
+  let left =
+    center -
+    distBetweenCards * (numCards / 2) -
+    cardWidth / 2 +
+    distBetweenCards;
   let i = 0;
-  while (
-    x >
-    left + (currentHeldIndex === i ? distBetweenCards * 2 : distBetweenCards)
-  ) {
-    left += currentHeldIndex === i ? distBetweenCards * 2 : distBetweenCards;
+  while (x > left + distBetweenCards) {
+    left += distBetweenCards;
     i++;
   }
 
@@ -72,7 +77,6 @@ export const CardManagement = (props: CardManagementProps) => {
   const [windowDimensions, setWindowDimensions] = React.useState(
     getWindowDimensions()
   );
-  const hoveredIndexRef = React.useRef<number | null>(null);
 
   React.useEffect(() => {
     function handleResize() {
@@ -98,22 +102,19 @@ export const CardManagement = (props: CardManagementProps) => {
     mousePos.y > deckY &&
     mousePos.y < deckY + cardHeight;
 
-  const isHoldingCardInHand = heldIndex !== null && heldIndex >= 0;
-  let numCards = hand.length - (isHoldingCardInHand ? 0 : 1);
   const distBetweenCards = 50;
   let hoveredIndex: number | null = null;
   if (isHoveringHand && heldIndex !== null) {
     hoveredIndex = getHoveredIndex(
       mousePos.x,
-      numCards,
+      hand.length,
       windowDimensions.width / 2,
-      distBetweenCards,
-      hoveredIndexRef.current
+      distBetweenCards
     );
-    hoveredIndexRef.current = hoveredIndex;
   }
 
-  const numCardSlots = numCards + (hoveredIndex !== null ? -1 : 0);
+  let numCardSlots = hand.length;
+
   const insertSlot = getInsertSlot(hoveredIndex, heldIndex);
   const handCards = React.useMemo(() => {
     let x =
@@ -226,7 +227,7 @@ export const CardManagement = (props: CardManagementProps) => {
         z={insertSlot ?? 80}
         key={key}
         skipLerp
-        opacity={isHoveringHand ? 0.6 : 1}
+        // opacity={isHoveringHand ? 0.6 : 1}
       />
     );
   }

@@ -199,10 +199,8 @@ const CardBody = (props: CardBodyProps) => {
   const card = props.card;
 
   let contents;
-  if (card.type === CardType.CARD_BACK) {
+  if (card.type === CardType.CARD_BACK || card.type === CardType.SPINNER) {
     contents = <Cardback />;
-  } else if (card.type === CardType.SPINNER) {
-    contents = "spinner";
   } else {
     contents = (
       <>
