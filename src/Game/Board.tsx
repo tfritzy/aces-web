@@ -1,6 +1,6 @@
 import React from "react";
 
-import { cardBack, parseCard, spinnerCard } from "Game/Types";
+import { parseCard, spinnerCard } from "Game/Types";
 import { API_URL } from "Constants";
 import { Toasts, useToasts } from "components/Toasts";
 import { RoundSummary } from "Game/RoundSummary";
@@ -26,7 +26,6 @@ import {
   setHeldIndex,
 } from "store/cardManagementSlice";
 import { TurnFlowchart } from "./TurnFlowchart";
-import { PlayingCard } from "./PlayingCard";
 import { MouseProvider } from "Game/MouseContext";
 import { CardManagement } from "./CardManagement";
 

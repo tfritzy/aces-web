@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
-import { PlayingCard } from "./PlayingCard";
+import { AnimatedPlayingCard } from "./PlayingCard";
 import React from "react";
 import { MouseContext } from "./MouseContext";
 import { cardHeight, cardWidth } from "Constants";
@@ -39,11 +39,7 @@ function getHoveredIndex(
   center: number,
   distBetweenCards: number
 ) {
-  let left =
-    center -
-    distBetweenCards * (numCards / 2) -
-    cardWidth / 2 +
-    distBetweenCards;
+  let left = center - distBetweenCards * (numCards / 2) - cardWidth / 2;
   let i = 0;
   while (x > left + distBetweenCards) {
     left += distBetweenCards;
@@ -66,11 +62,15 @@ type CardManagementProps = {
 };
 
 export const CardManagement = (props: CardManagementProps) => {
+  const dispatch = useDispatch();
   const hand = useSelector((state: RootState) => state.game.hand);
   const pile = useSelector((state: RootState) => state.game.pile);
   const deckSize = useSelector((state: RootState) => state.game.deckSize);
   const heldIndex = useSelector(
     (state: RootState) => state.cardManagement.heldIndex
+  );
+  const dropSlotIndex = useSelector(
+    (state: RootState) => state.cardManagement.dropSlotIndex
   );
   const mousePos = React.useContext(MouseContext);
   const selfRef = React.useRef<HTMLDivElement>(null);
@@ -102,20 +102,31 @@ export const CardManagement = (props: CardManagementProps) => {
     mousePos.y > deckY &&
     mousePos.y < deckY + cardHeight;
 
-  const distBetweenCards = 50;
-  let hoveredIndex: number | null = null;
+  let numCardSlots = hand.length;
+  if (heldIndex !== null && heldIndex >= 0) {
+    numCardSlots -= 1;
+  }
+
+  if (dropSlotIndex !== null) {
+    numCardSlots += 1;
+  }
+
+  const distBetweenCards = Math.min(700 / numCardSlots, cardWidth + 10);
   if (isHoveringHand && heldIndex !== null) {
-    hoveredIndex = getHoveredIndex(
+    const hoveredIndex = getHoveredIndex(
       mousePos.x,
-      hand.length,
+      numCardSlots,
       windowDimensions.width / 2,
       distBetweenCards
     );
+    if (hoveredIndex !== dropSlotIndex) {
+      dispatch(setDropSlotIndex(hoveredIndex));
+    }
+  } else if (dropSlotIndex !== null) {
+    dispatch(setDropSlotIndex(null));
   }
 
-  let numCardSlots = hand.length;
-
-  const insertSlot = getInsertSlot(hoveredIndex, heldIndex);
+  const insertSlot = getInsertSlot(dropSlotIndex, heldIndex);
   const handCards = React.useMemo(() => {
     let x =
       windowDimensions.width / 2 -
@@ -130,7 +141,7 @@ export const CardManagement = (props: CardManagementProps) => {
 
       if (index !== heldIndex) {
         buffer.push(
-          <PlayingCard
+          <AnimatedPlayingCard
             card={card}
             index={index}
             targetX={x}
@@ -145,6 +156,7 @@ export const CardManagement = (props: CardManagementProps) => {
 
     return buffer;
   }, [
+    distBetweenCards,
     dockCenterY,
     hand,
     heldIndex,
@@ -164,7 +176,7 @@ export const CardManagement = (props: CardManagementProps) => {
       }
 
       buffer.push(
-        <PlayingCard
+        <AnimatedPlayingCard
           card={pile[i]}
           index={PILE_HELD_INDEX}
           targetX={pileX}
@@ -189,7 +201,7 @@ export const CardManagement = (props: CardManagementProps) => {
       }
 
       buffer.push(
-        <PlayingCard
+        <AnimatedPlayingCard
           card={cardBack}
           index={DECK_HELD_INDEX}
           targetX={deckCenterX}
@@ -219,7 +231,7 @@ export const CardManagement = (props: CardManagementProps) => {
 
   if (heldCard) {
     cards.push(
-      <PlayingCard
+      <AnimatedPlayingCard
         card={heldCard}
         index={-1}
         targetX={mousePos.x - cardWidth / 2}
@@ -233,8 +245,8 @@ export const CardManagement = (props: CardManagementProps) => {
   }
 
   const handleMouseUp = () => {
-    if (isHoveringHand && heldIndex !== null && hoveredIndex !== null) {
-      props.onDrop(hoveredIndex);
+    if (isHoveringHand && heldIndex !== null && dropSlotIndex !== null) {
+      props.onDrop(dropSlotIndex);
     }
 
     if (isHoveringPile && heldIndex !== null) {

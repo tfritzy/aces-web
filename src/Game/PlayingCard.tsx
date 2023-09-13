@@ -237,26 +237,17 @@ type PlayingCardProps = {
   card: Card;
   index: number;
   hasShadow?: boolean;
-  targetX: number;
-  targetY: number;
   z: number;
-  skipLerp?: boolean;
   opacity?: number;
 };
 
-export const PlayingCard = (props: PlayingCardProps) => {
+const PlayingCard = (props: PlayingCardProps) => {
   const dispatch = useDispatch();
   const hand = useSelector((state: RootState) => state.game.hand);
   const round = useSelector((state: RootState) => state.game.round);
   const cardManagement = useSelector(
     (state: RootState) => state.cardManagement
   );
-  const [left, setLeft] = React.useState(props.targetX);
-  const [top, setTop] = React.useState(props.targetY);
-  const leftRef = React.useRef(props.targetX);
-  const topRef = React.useRef(props.targetY);
-  const targetPos = React.useRef({ x: props.targetX, y: props.targetY });
-  const requestRef = React.useRef(0);
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
   const handleDragStart = React.useCallback(
@@ -268,10 +259,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
   );
   const isGrouped = props.index >= 0 && hand[props.index].isGrouped;
   const wild = isWild(card, round);
-
-  React.useEffect(() => {
-    targetPos.current = { x: props.targetX, y: props.targetY };
-  }, [props.targetX, props.targetY]);
 
   const handleMouseMove = React.useCallback(
     (e: React.MouseEvent) => {
@@ -307,25 +294,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
     [card.type, cardManagement.heldIndex, handleDragStart]
   );
 
-  const animate = () => {
-    if (leftRef.current !== undefined) {
-      const deltaX = targetPos.current.x - leftRef.current;
-      const deltaY = targetPos.current.y - topRef.current;
-      const newX = leftRef.current + deltaX * 0.18;
-      const newY = topRef.current + deltaY * 0.18;
-      leftRef.current = newX;
-      topRef.current = newY;
-      setLeft(() => newX);
-      setTop(() => newY);
-    }
-    requestRef.current = requestAnimationFrame(animate);
-  };
-
-  React.useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []); // Make sure the effect runs only once
-
   if (!card) {
     console.error("Trying to render a null card");
     return null;
@@ -337,9 +305,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
       onMouseMove={handleMouseMove}
       ref={selfRef}
       style={{
-        position: "absolute",
-        left: props.skipLerp ? props.targetX : left,
-        top: props.skipLerp ? props.targetY : top,
         zIndex: props.z,
         opacity: props.opacity ?? 1,
       }}
@@ -350,6 +315,65 @@ export const PlayingCard = (props: PlayingCardProps) => {
         isGrouped={isGrouped}
         isWild={wild}
       />
+    </div>
+  );
+};
+
+type AnimationProps = {
+  targetX: number;
+  targetY: number;
+  skipLerp?: boolean;
+};
+
+export const AnimatedPlayingCard = (
+  props: AnimationProps & PlayingCardProps
+) => {
+  const targetPos = React.useRef({ x: props.targetX, y: props.targetY });
+  const [left, setLeft] = React.useState(props.targetX);
+  const [top, setTop] = React.useState(props.targetY);
+  const leftRef = React.useRef(props.targetX);
+  const topRef = React.useRef(props.targetY);
+  const requestRef = React.useRef(0);
+
+  const { targetX, targetY, skipLerp, ...rest } = props;
+
+  const animate = () => {
+    if (leftRef.current !== undefined) {
+      const deltaX = targetPos.current.x - leftRef.current;
+      const deltaY = targetPos.current.y - topRef.current;
+      const newX = leftRef.current + deltaX * 0.18;
+      const newY = topRef.current + deltaY * 0.18;
+      leftRef.current = newX;
+      topRef.current = newY;
+      setLeft(() => newX);
+      setTop(() => newY);
+
+      if (Math.abs(deltaX) > 0.1 || Math.abs(deltaY) > 0.1) {
+        requestRef.current = requestAnimationFrame(animate);
+      } else {
+        cancelAnimationFrame(requestRef.current);
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, [props.targetX, props.targetY]);
+
+  React.useEffect(() => {
+    targetPos.current = { x: props.targetX, y: props.targetY };
+  }, [props.targetX, props.targetY]);
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: props.skipLerp ? props.targetX : left,
+        top: props.skipLerp ? props.targetY : top,
+      }}
+    >
+      <PlayingCard {...rest} />
     </div>
   );
 };
