@@ -1,12 +1,16 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { PlayingCard } from "./PlayingCard";
 import React from "react";
 import { MouseContext } from "./MouseContext";
 import { cardHeight, cardWidth } from "Constants";
-import { DECK_HELD_INDEX, PILE_HELD_INDEX } from "store/cardManagementSlice";
+import {
+  DECK_HELD_INDEX,
+  PILE_HELD_INDEX,
+  setDropSlotIndex,
+} from "store/cardManagementSlice";
 import { Cardback } from "components/Cardback";
-import { cardBack } from "./Types";
+import { Card, cardBack } from "./Types";
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -16,20 +20,28 @@ function getWindowDimensions() {
   };
 }
 
+function getInsertSlot(hoveredIndex: number | null, heldIndex: number | null) {
+  let insertSlot = hoveredIndex;
+  if (insertSlot !== null && heldIndex !== null && insertSlot >= heldIndex) {
+    insertSlot++;
+  }
+  return insertSlot;
+}
+
 function getHoveredIndex(
   x: number,
   numCards: number,
   center: number,
-  distBetweenCards: number
+  distBetweenCards: number,
+  currentHeldIndex: number | null
 ) {
-  let left =
-    center -
-    distBetweenCards * (numCards / 2) -
-    distBetweenCards / 2 -
-    cardWidth / 2;
+  let left = center - distBetweenCards * (numCards / 2) - cardWidth / 2;
   let i = 0;
-  while (x > left + distBetweenCards) {
-    left += distBetweenCards;
+  while (
+    x >
+    left + (currentHeldIndex === i ? distBetweenCards * 2 : distBetweenCards)
+  ) {
+    left += currentHeldIndex === i ? distBetweenCards * 2 : distBetweenCards;
     i++;
   }
 
@@ -45,6 +57,7 @@ const deckPercentFromTop = 0.2;
 
 type CardManagementProps = {
   onDrop: (dropIndex?: number) => void;
+  buttons: React.ReactNode;
 };
 
 export const CardManagement = (props: CardManagementProps) => {
@@ -59,6 +72,7 @@ export const CardManagement = (props: CardManagementProps) => {
   const [windowDimensions, setWindowDimensions] = React.useState(
     getWindowDimensions()
   );
+  const hoveredIndexRef = React.useRef<number | null>(null);
 
   React.useEffect(() => {
     function handleResize() {
@@ -75,8 +89,8 @@ export const CardManagement = (props: CardManagementProps) => {
   const dockTop = dockCenterY - dockHeight / 2;
   const dockBottom = dockCenterY + dockHeight / 2;
   const deckY = windowDimensions.height * deckPercentFromTop;
-  const deckCenterX = windowDimensions.width / 2 - cardWidth;
-  const pileX = windowDimensions.width / 2;
+  const deckCenterX = windowDimensions.width / 2 - cardWidth - 25;
+  const pileX = windowDimensions.width / 2 + 25;
   const isHoveringHand = mousePos.y > dockTop && mousePos.y < dockBottom;
   const isHoveringPile =
     mousePos.x > pileX &&
@@ -86,22 +100,21 @@ export const CardManagement = (props: CardManagementProps) => {
 
   const isHoldingCardInHand = heldIndex !== null && heldIndex >= 0;
   let numCards = hand.length - (isHoldingCardInHand ? 0 : 1);
+  const distBetweenCards = 50;
   let hoveredIndex: number | null = null;
-  const distBetweenCards = 45;
-  if (isHoveringHand && isHoldingCardInHand) {
+  if (isHoveringHand && heldIndex !== null) {
     hoveredIndex = getHoveredIndex(
       mousePos.x,
       numCards,
       windowDimensions.width / 2,
-      distBetweenCards
+      distBetweenCards,
+      hoveredIndexRef.current
     );
+    hoveredIndexRef.current = hoveredIndex;
   }
 
-  const numCardSlots = numCards + (hoveredIndex !== null ? 1 : 0);
-  let insertSlot = hoveredIndex;
-  if (insertSlot !== null && heldIndex !== null && insertSlot >= heldIndex) {
-    insertSlot++;
-  }
+  const numCardSlots = numCards + (hoveredIndex !== null ? -1 : 0);
+  const insertSlot = getInsertSlot(hoveredIndex, heldIndex);
   const handCards = React.useMemo(() => {
     let x =
       windowDimensions.width / 2 -
@@ -122,7 +135,7 @@ export const CardManagement = (props: CardManagementProps) => {
             targetX={x}
             targetY={dockCenterY - cardHeight / 2}
             key={card.type + "-" + card.deck}
-            z={index}
+            z={index + 1}
           />
         );
         x += distBetweenCards;
@@ -180,7 +193,7 @@ export const CardManagement = (props: CardManagementProps) => {
           index={DECK_HELD_INDEX}
           targetX={deckCenterX}
           targetY={deckStartY - i * 1}
-          key={i === deckSize - 1 ? cardBack.type + "-" + cardBack.deck : i}
+          key={"deck-" + i}
           z={i}
         />
       );
@@ -190,13 +203,17 @@ export const CardManagement = (props: CardManagementProps) => {
   }, [deckCenterX, deckY, deckSize, heldIndex]);
   cards.push(...deckCards);
 
-  let heldCard;
+  let heldCard: Card | null = null;
+  let key: string | null = null;
   if (heldIndex === PILE_HELD_INDEX) {
     heldCard = pile.length ? pile[pile.length - 1] : null;
+    key = heldCard ? heldCard.type + "-" + heldCard.deck : null;
   } else if (heldIndex === DECK_HELD_INDEX) {
     heldCard = cardBack;
+    key = "deck-" + (deckSize - 1);
   } else if (heldIndex !== null && heldIndex >= 0) {
     heldCard = hand[heldIndex];
+    key = heldCard.type + "-" + heldCard.deck;
   }
 
   if (heldCard) {
@@ -206,15 +223,15 @@ export const CardManagement = (props: CardManagementProps) => {
         index={-1}
         targetX={mousePos.x - cardWidth / 2}
         targetY={mousePos.y - cardHeight / 2}
-        z={hoveredIndex ?? 80}
-        key={heldCard.type + "-" + heldCard.deck}
+        z={insertSlot ?? 80}
+        key={key}
         skipLerp
+        opacity={isHoveringHand ? 0.6 : 1}
       />
     );
   }
 
   const handleMouseUp = () => {
-    console.log("Mouse up", isHoveringHand, heldIndex, hoveredIndex);
     if (isHoveringHand && heldIndex !== null && hoveredIndex !== null) {
       props.onDrop(hoveredIndex);
     }
@@ -229,6 +246,10 @@ export const CardManagement = (props: CardManagementProps) => {
       {cards}
 
       {isHoveringPile && <div className="bg-red-200">PILE</div>}
+
+      {isHoveringHand && <div className="bg-green-200">Hand</div>}
+
+      {props.buttons}
     </div>
   );
 };

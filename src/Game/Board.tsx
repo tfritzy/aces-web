@@ -353,7 +353,7 @@ export const Board = (props: BoardProps) => {
                 </div>
               </div>
 
-              <CardManagement onDrop={handleDrop} />
+              <CardManagement onDrop={handleDrop} buttons={buttons} />
             </div>
           </div>
         </div>

@@ -207,7 +207,7 @@ const CardBody = (props: CardBodyProps) => {
     contents = (
       <>
         {props.isWild && (
-          <div className="absolute top-1 right-2 uppercase text-xs font-mono text-gray-500">
+          <div className="absolute bottom-1 left-2 uppercase text-xs font-mono text-gray-500">
             wild
           </div>
         )}
@@ -243,6 +243,7 @@ type PlayingCardProps = {
   targetY: number;
   z: number;
   skipLerp?: boolean;
+  opacity?: number;
 };
 
 export const PlayingCard = (props: PlayingCardProps) => {
@@ -342,6 +343,7 @@ export const PlayingCard = (props: PlayingCardProps) => {
         left: props.skipLerp ? props.targetX : left,
         top: props.skipLerp ? props.targetY : top,
         zIndex: props.z,
+        opacity: props.opacity ?? 1,
       }}
     >
       <CardBody
