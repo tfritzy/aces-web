@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
-import { AnimatedPlayingCard } from "./PlayingCard";
+import { AnimatedPlayingCard, PlayingCard } from "./PlayingCard";
 import React from "react";
 import { MouseContext } from "./MouseContext";
 import { cardHeight, cardWidth } from "Constants";
@@ -58,7 +58,6 @@ const deckPercentFromTop = 0.2;
 
 type CardManagementProps = {
   onDrop: (dropIndex?: number) => void;
-  buttons: React.ReactNode;
 };
 
 export const CardManagement = (props: CardManagementProps) => {
@@ -200,16 +199,27 @@ export const CardManagement = (props: CardManagementProps) => {
         continue;
       }
 
-      buffer.push(
-        <AnimatedPlayingCard
-          card={cardBack}
-          index={DECK_HELD_INDEX}
-          targetX={deckCenterX}
-          targetY={deckStartY - i * 1}
-          key={"deck-" + i}
-          z={i}
-        />
-      );
+      if (i === deckSize - 1) {
+        buffer.push(
+          <AnimatedPlayingCard
+            card={cardBack}
+            index={DECK_HELD_INDEX}
+            targetX={deckCenterX}
+            targetY={deckStartY - i * 1}
+            key={"deck-" + i}
+            z={i}
+          />
+        );
+      } else {
+        // buffer.push(
+        //   <PlayingCard
+        //     card={cardBack}
+        //     index={DECK_HELD_INDEX}
+        //     key={"deck-" + i}
+        //     z={i}
+        //   />
+        // );
+      }
     }
 
     return buffer;
@@ -257,12 +267,6 @@ export const CardManagement = (props: CardManagementProps) => {
   return (
     <div ref={selfRef} onMouseUp={handleMouseUp}>
       {cards}
-
-      {isHoveringPile && <div className="bg-red-200">PILE</div>}
-
-      {isHoveringHand && <div className="bg-green-200">Hand</div>}
-
-      {props.buttons}
     </div>
   );
 };

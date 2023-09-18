@@ -241,7 +241,7 @@ type PlayingCardProps = {
   opacity?: number;
 };
 
-const PlayingCard = (props: PlayingCardProps) => {
+export const PlayingCard = (props: PlayingCardProps) => {
   const dispatch = useDispatch();
   const hand = useSelector((state: RootState) => state.game.hand);
   const round = useSelector((state: RootState) => state.game.round);
@@ -269,19 +269,8 @@ const PlayingCard = (props: PlayingCardProps) => {
       if (cardManagement.heldIndex === null && e.buttons === 1) {
         handleDragStart(e);
       }
-
-      e.stopPropagation();
-      if (props.index >= 0) {
-        const targetBounds = selfRef.current?.getBoundingClientRect();
-        const targetCenter = targetBounds.left + targetBounds.width / 2;
-        const side = e.clientX < targetCenter ? 0 : 1;
-
-        dispatch(setDropSlotIndex(props.index + side));
-      } else {
-        dispatch(setDropSlotIndex(props.index));
-      }
     },
-    [cardManagement.heldIndex, dispatch, handleDragStart, props.index]
+    [cardManagement.heldIndex, handleDragStart]
   );
 
   const handleMouseUp = React.useCallback(
