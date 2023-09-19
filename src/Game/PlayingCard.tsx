@@ -241,13 +241,16 @@ type PlayingCardProps = {
   opacity?: number;
 };
 
-export const PlayingCard = (props: PlayingCardProps) => {
+type PerformanceBoostProps = {
+  isWild: boolean;
+  isGrouped: boolean;
+  heldIndex: number | null;
+};
+
+export const PlayingCard = (
+  props: PlayingCardProps & PerformanceBoostProps
+) => {
   const dispatch = useDispatch();
-  const hand = useSelector((state: RootState) => state.game.hand);
-  const round = useSelector((state: RootState) => state.game.round);
-  const cardManagement = useSelector(
-    (state: RootState) => state.cardManagement
-  );
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
   const handleDragStart = React.useCallback(
@@ -257,8 +260,6 @@ export const PlayingCard = (props: PlayingCardProps) => {
     },
     [dispatch, props]
   );
-  const isGrouped = props.index >= 0 && hand[props.index].isGrouped;
-  const wild = isWild(card, round);
 
   const handleMouseMove = React.useCallback(
     (e: React.MouseEvent) => {
@@ -266,21 +267,21 @@ export const PlayingCard = (props: PlayingCardProps) => {
         return;
       }
 
-      if (cardManagement.heldIndex === null && e.buttons === 1) {
+      if (props.heldIndex === null && e.buttons === 1) {
         handleDragStart(e);
       }
     },
-    [cardManagement.heldIndex, handleDragStart]
+    [props.heldIndex, handleDragStart]
   );
 
   const handleMouseUp = React.useCallback(
     (e: React.MouseEvent) => {
-      if (cardManagement.heldIndex === null && card.type !== CardType.SPINNER) {
+      if (props.heldIndex === null && card.type !== CardType.SPINNER) {
         e.stopPropagation();
         handleDragStart(e);
       }
     },
-    [card.type, cardManagement.heldIndex, handleDragStart]
+    [card.type, props.heldIndex, handleDragStart]
   );
 
   if (!card) {
@@ -301,8 +302,8 @@ export const PlayingCard = (props: PlayingCardProps) => {
       <CardBody
         card={card}
         hasShadow={props.hasShadow || false}
-        isGrouped={isGrouped}
-        isWild={wild}
+        isGrouped={props.isGrouped}
+        isWild={props.isWild}
       />
     </div>
   );
@@ -323,8 +324,13 @@ export const AnimatedPlayingCard = (
   const leftRef = React.useRef(props.targetX);
   const topRef = React.useRef(props.targetY);
   const requestRef = React.useRef(0);
-
-  const { targetX, targetY, skipLerp, ...rest } = props;
+  const round = useSelector((state: RootState) => state.game.round);
+  const hand = useSelector((state: RootState) => state.game.hand);
+  const isGrouped = props.index >= 0 && hand[props.index].isGrouped;
+  const wild = isWild(props.card, round);
+  const heldIndex = useSelector(
+    (state: RootState) => state.cardManagement.heldIndex
+  );
 
   const animate = () => {
     if (leftRef.current !== undefined) {
@@ -354,6 +360,30 @@ export const AnimatedPlayingCard = (
     targetPos.current = { x: props.targetX, y: props.targetY };
   }, [props.targetX, props.targetY]);
 
+  const card = React.useMemo(
+    () => (
+      <PlayingCard
+        card={props.card}
+        index={props.index}
+        z={props.index}
+        hasShadow={props.hasShadow}
+        opacity={props.opacity}
+        isGrouped={isGrouped}
+        isWild={wild}
+        heldIndex={heldIndex}
+      />
+    ),
+    [
+      heldIndex,
+      isGrouped,
+      props.card,
+      props.hasShadow,
+      props.index,
+      props.opacity,
+      wild,
+    ]
+  );
+
   return (
     <div
       style={{
@@ -362,7 +392,7 @@ export const AnimatedPlayingCard = (
         top: props.skipLerp ? props.targetY : top,
       }}
     >
-      <PlayingCard {...rest} />
+      {card}
     </div>
   );
 };

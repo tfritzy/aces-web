@@ -58,6 +58,7 @@ const deckPercentFromTop = 0.2;
 
 type CardManagementProps = {
   onDrop: (dropIndex?: number) => void;
+  buttons: JSX.Element;
 };
 
 export const CardManagement = (props: CardManagementProps) => {
@@ -249,7 +250,6 @@ export const CardManagement = (props: CardManagementProps) => {
         z={insertSlot ?? 80}
         key={key}
         skipLerp
-        // opacity={isHoveringHand ? 0.6 : 1}
       />
     );
   }
@@ -267,6 +267,14 @@ export const CardManagement = (props: CardManagementProps) => {
   return (
     <div ref={selfRef} onMouseUp={handleMouseUp}>
       {cards}
+
+      <div className="absolute w-screen" style={{ height: cardHeight }}>
+        <div className="w-[800px] bg-red-300"></div>
+      </div>
+
+      <div style={{ position: "absolute", bottom: deckY + cardHeight }}>
+        {props.buttons}
+      </div>
     </div>
   );
 };

@@ -305,7 +305,7 @@ export const Board = (props: BoardProps) => {
   const canGoOut = game.hand.length > 0 && game.hand.every((c) => c.isGrouped);
   const buttons = React.useMemo(() => {
     return (
-      <div className="flex justify-center w-full">
+      <div className="flex justify-end w-[400px]">
         <div className="flex justify-end space-x-2 p-2 w-full">
           <Button
             key="goOut"
@@ -351,12 +351,10 @@ export const Board = (props: BoardProps) => {
                   {isOwnTurn && <TurnFlowchart />}
                 </div>
               </div>
-
-              <div className="absolute bottom-[400px] right-0">{buttons}</div>
             </div>
           </div>
 
-          <CardManagement onDrop={handleDrop} />
+          <CardManagement onDrop={handleDrop} buttons={buttons} />
 
           <RoundSummary
             shown={
