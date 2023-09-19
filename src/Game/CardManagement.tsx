@@ -200,27 +200,16 @@ export const CardManagement = (props: CardManagementProps) => {
         continue;
       }
 
-      if (i === deckSize - 1) {
-        buffer.push(
-          <AnimatedPlayingCard
-            card={cardBack}
-            index={DECK_HELD_INDEX}
-            targetX={deckCenterX}
-            targetY={deckStartY - i * 1}
-            key={"deck-" + i}
-            z={i}
-          />
-        );
-      } else {
-        // buffer.push(
-        //   <PlayingCard
-        //     card={cardBack}
-        //     index={DECK_HELD_INDEX}
-        //     key={"deck-" + i}
-        //     z={i}
-        //   />
-        // );
-      }
+      buffer.push(
+        <AnimatedPlayingCard
+          card={cardBack}
+          index={DECK_HELD_INDEX}
+          targetX={deckCenterX}
+          targetY={deckStartY - i * 1}
+          key={"deck-" + i}
+          z={i}
+        />
+      );
     }
 
     return buffer;
@@ -266,15 +255,28 @@ export const CardManagement = (props: CardManagementProps) => {
 
   return (
     <div ref={selfRef} onMouseUp={handleMouseUp}>
+      <div
+        style={{
+          position: "fixed",
+          top: dockCenterY - cardHeight / 2 - 25,
+          left: "50%",
+          transform: "translateX(-50%)",
+        }}
+      >
+        <div
+          className="relative w-[800px] rounded-lg border border-gray-300 dark:border-gray-600"
+          style={{
+            height: cardHeight + 50,
+            boxShadow: "0 0 200px rgba(0,0,0,0.2) inset",
+          }}
+        >
+          <div className="absolute -top-11 right-0">{props.buttons}</div>
+        </div>
+      </div>
+
       {cards}
 
-      <div className="absolute w-screen" style={{ height: cardHeight }}>
-        <div className="w-[800px] bg-red-300"></div>
-      </div>
-
-      <div style={{ position: "absolute", bottom: deckY + cardHeight }}>
-        {props.buttons}
-      </div>
+      <div style={{ position: "absolute", top: dockCenterY - 150 }}></div>
     </div>
   );
 };

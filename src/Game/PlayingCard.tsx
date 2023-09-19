@@ -336,8 +336,8 @@ export const AnimatedPlayingCard = (
     if (leftRef.current !== undefined) {
       const deltaX = targetPos.current.x - leftRef.current;
       const deltaY = targetPos.current.y - topRef.current;
-      const newX = leftRef.current + deltaX * 0.18;
-      const newY = topRef.current + deltaY * 0.18;
+      const newX = leftRef.current + deltaX * 0.12;
+      const newY = topRef.current + deltaY * 0.12;
       leftRef.current = newX;
       topRef.current = newY;
       setLeft(() => newX);
@@ -354,11 +354,18 @@ export const AnimatedPlayingCard = (
   React.useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
+    // Intentionally short list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.targetX, props.targetY]);
 
   React.useEffect(() => {
     targetPos.current = { x: props.targetX, y: props.targetY };
-  }, [props.targetX, props.targetY]);
+
+    if (props.skipLerp) {
+      leftRef.current = props.targetX;
+      topRef.current = props.targetY;
+    }
+  }, [props.targetX, props.targetY, props.skipLerp]);
 
   const card = React.useMemo(
     () => (
