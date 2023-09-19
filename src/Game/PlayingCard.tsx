@@ -190,9 +190,9 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
 
 type CardBodyProps = {
   card: Card;
-  hasShadow: boolean;
   isGrouped: boolean;
   isWild: boolean;
+  shadow?: string;
 };
 
 const CardBody = (props: CardBodyProps) => {
@@ -225,7 +225,7 @@ const CardBody = (props: CardBodyProps) => {
         card
       )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden select-none relative font-serif ${
         props.isGrouped ? "ring-2 ring-emerald-200" : ""
-      } ${props.hasShadow ? "shadow-md" : ""}`}
+      } ${props.shadow}`}
       style={{ height: cardHeight, width: cardWidth }}
     >
       {contents}
@@ -236,7 +236,7 @@ const CardBody = (props: CardBodyProps) => {
 type PlayingCardProps = {
   card: Card;
   index: number;
-  hasShadow?: boolean;
+  shadow?: string;
   z: number;
   opacity?: number;
 };
@@ -301,7 +301,7 @@ export const PlayingCard = (
     >
       <CardBody
         card={card}
-        hasShadow={props.hasShadow || false}
+        shadow={props.shadow}
         isGrouped={props.isGrouped}
         isWild={props.isWild}
       />
@@ -346,6 +346,10 @@ export const AnimatedPlayingCard = (
       if (Math.abs(deltaX) > 0.1 || Math.abs(deltaY) > 0.1) {
         requestRef.current = requestAnimationFrame(animate);
       } else {
+        setLeft(() => targetPos.current.x);
+        setTop(() => targetPos.current.y);
+        leftRef.current = targetPos.current.x;
+        topRef.current = targetPos.current.y;
         cancelAnimationFrame(requestRef.current);
       }
     }
@@ -373,7 +377,7 @@ export const AnimatedPlayingCard = (
         card={props.card}
         index={props.index}
         z={props.index}
-        hasShadow={props.hasShadow}
+        shadow={props.shadow}
         opacity={props.opacity}
         isGrouped={isGrouped}
         isWild={wild}
@@ -384,7 +388,7 @@ export const AnimatedPlayingCard = (
       heldIndex,
       isGrouped,
       props.card,
-      props.hasShadow,
+      props.shadow,
       props.index,
       props.opacity,
       wild,

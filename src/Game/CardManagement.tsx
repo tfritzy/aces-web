@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
-import { AnimatedPlayingCard, PlayingCard } from "./PlayingCard";
+import { AnimatedPlayingCard } from "./PlayingCard";
 import React from "react";
 import { MouseContext } from "./MouseContext";
 import { cardHeight, cardWidth } from "Constants";
@@ -9,8 +9,9 @@ import {
   PILE_HELD_INDEX,
   setDropSlotIndex,
 } from "store/cardManagementSlice";
-import { Cardback } from "components/Cardback";
 import { Card, cardBack } from "./Types";
+
+const shadowSizes = ["shadow-lg", "shadow-md", "shadow-sm", "", ""];
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -39,7 +40,7 @@ function getHoveredIndex(
   center: number,
   distBetweenCards: number
 ) {
-  let left = center - distBetweenCards * (numCards / 2) - cardWidth / 2;
+  let left = center - distBetweenCards * (numCards / 2);
   let i = 0;
   while (x > left + distBetweenCards) {
     left += distBetweenCards;
@@ -128,10 +129,7 @@ export const CardManagement = (props: CardManagementProps) => {
 
   const insertSlot = getInsertSlot(dropSlotIndex, heldIndex);
   const handCards = React.useMemo(() => {
-    let x =
-      windowDimensions.width / 2 -
-      distBetweenCards * (numCardSlots / 2) -
-      cardWidth / 2;
+    let x = windowDimensions.width / 2 - distBetweenCards * (numCardSlots / 2);
     const buffer: JSX.Element[] = [];
 
     hand.forEach((card, index) => {
@@ -175,14 +173,28 @@ export const CardManagement = (props: CardManagementProps) => {
         continue;
       }
 
+      let shadow = 3;
+      if (i < 2) {
+        shadow = 0;
+      } else if (i < 3) {
+        shadow = 1;
+      } else if (i < 7) {
+        shadow = 2;
+      }
+
+      if (pile.length < 5) {
+        shadow += 1;
+      }
+
       buffer.push(
         <AnimatedPlayingCard
           card={pile[i]}
           index={PILE_HELD_INDEX}
           targetX={pileX}
-          targetY={pileStartY - i * 1}
+          targetY={pileStartY - i * 2}
           key={pile[i].type + "-" + pile[i].deck}
           z={i}
+          shadow={shadowSizes[shadow]}
         />
       );
     }
@@ -200,14 +212,28 @@ export const CardManagement = (props: CardManagementProps) => {
         continue;
       }
 
+      let shadow = 3;
+      if (i < 2) {
+        shadow = 0;
+      } else if (i < 3) {
+        shadow = 1;
+      } else if (i < 7) {
+        shadow = 2;
+      }
+
+      if (deckSize < 7) {
+        shadow += 1;
+      }
+
       buffer.push(
         <AnimatedPlayingCard
           card={cardBack}
           index={DECK_HELD_INDEX}
           targetX={deckCenterX}
-          targetY={deckStartY - i * 1}
+          targetY={deckStartY - i * 2}
           key={"deck-" + i}
           z={i}
+          shadow={shadowSizes[shadow]}
         />
       );
     }
@@ -239,6 +265,7 @@ export const CardManagement = (props: CardManagementProps) => {
         z={insertSlot ?? 80}
         key={key}
         skipLerp
+        shadow="drop-shadow-lg"
       />
     );
   }
@@ -264,10 +291,9 @@ export const CardManagement = (props: CardManagementProps) => {
         }}
       >
         <div
-          className="relative w-[800px] rounded-lg border border-gray-300 dark:border-gray-600"
+          className="relative w-[800px] rounded-lg border border-gray-300 dark:border-gray-700 shadow-[0_0_200px_#00000005_inset] dark:shadow-[0_0_200px_#00000033_inset]"
           style={{
             height: cardHeight + 50,
-            boxShadow: "0 0 200px rgba(0,0,0,0.2) inset",
           }}
         >
           <div className="absolute -top-11 right-0">{props.buttons}</div>
