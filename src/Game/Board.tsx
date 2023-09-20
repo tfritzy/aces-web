@@ -340,16 +340,14 @@ export const Board = (props: BoardProps) => {
             }
           }}
         >
-          <div className="fixed w-screen h-screen flex flex-row justify-center">
-            <div className="fixed max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-gray-900">
-              <PlayerList key="playerList" />
+          <div className="absolute max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-gray-900">
+            <PlayerList key="playerList" />
 
-              <div className="absolute top-0 right-0">
-                <div className="relative flex flex-col items-end p-2 space-y-2">
-                  <ScorecardButton />
+            <div className="absolute top-0 right-0">
+              <div className="relative flex flex-col items-end p-2 space-y-2">
+                <ScorecardButton />
 
-                  {isOwnTurn && <TurnFlowchart />}
-                </div>
+                {isOwnTurn && <TurnFlowchart />}
               </div>
             </div>
           </div>

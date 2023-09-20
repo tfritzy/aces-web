@@ -2,6 +2,7 @@ import { Button } from "components/Button";
 import { Modal } from "components/Modal";
 import React from "react";
 import { useSelector } from "react-redux";
+import { Player } from "store/playerSlice";
 import { RootState } from "store/store";
 
 export const ScorecardButton = () => {
@@ -50,7 +51,12 @@ type ScorecardProps = {
 };
 
 export const Scorecard = (props: ScorecardProps) => {
-  const players = useSelector((state: RootState) => state.players.players);
+  const players: (Player | null)[] = [
+    ...useSelector((state: RootState) => state.players.players),
+  ];
+  while (players.length < 4) {
+    players.push(null);
+  }
 
   const cellClasses = "py-1 px-2 border border-gray-200 dark:border-gray-700 ";
   const numRounds = 12;
@@ -62,7 +68,7 @@ export const Scorecard = (props: ScorecardProps) => {
           {i + 1}
         </td>
         {players.map((p, j) => {
-          const score = p.scorePerRound && p.scorePerRound[i];
+          const score = p?.scorePerRound && p.scorePerRound[i];
 
           return (
             <td
@@ -106,7 +112,7 @@ export const Scorecard = (props: ScorecardProps) => {
                       className={`${cellClasses} text-sm font-normal`}
                       key={i}
                     >
-                      {p.displayName}
+                      {p?.displayName}
                     </th>
                   );
                 })}
@@ -120,7 +126,7 @@ export const Scorecard = (props: ScorecardProps) => {
                 Total
               </td>
               {players.map((p, j) => {
-                const totalScore = p.scorePerRound?.reduce(
+                const totalScore = p?.scorePerRound?.reduce(
                   (acc, cur) => acc + cur,
                   0
                 );

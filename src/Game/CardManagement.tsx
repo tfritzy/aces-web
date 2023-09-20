@@ -26,7 +26,7 @@ function getInsertSlot(hoveredIndex: number | null, heldIndex: number | null) {
   if (
     insertSlot !== null &&
     heldIndex !== null &&
-    heldIndex > 0 &&
+    heldIndex >= 0 &&
     insertSlot >= heldIndex
   ) {
     insertSlot++;
@@ -112,6 +112,7 @@ export const CardManagement = (props: CardManagementProps) => {
     numCardSlots += 1;
   }
 
+  let insertSlot: number | null = null;
   const distBetweenCards = Math.min(700 / numCardSlots, cardWidth + 10);
   if (isHoveringHand && heldIndex !== null) {
     const hoveredIndex = getHoveredIndex(
@@ -120,6 +121,7 @@ export const CardManagement = (props: CardManagementProps) => {
       windowDimensions.width / 2,
       distBetweenCards
     );
+    insertSlot = getInsertSlot(hoveredIndex, heldIndex);
     if (hoveredIndex !== dropSlotIndex) {
       dispatch(setDropSlotIndex(hoveredIndex));
     }
@@ -127,7 +129,6 @@ export const CardManagement = (props: CardManagementProps) => {
     dispatch(setDropSlotIndex(null));
   }
 
-  const insertSlot = getInsertSlot(dropSlotIndex, heldIndex);
   const handCards = React.useMemo(() => {
     let x = windowDimensions.width / 2 - distBetweenCards * (numCardSlots / 2);
     const buffer: JSX.Element[] = [];
@@ -262,7 +263,7 @@ export const CardManagement = (props: CardManagementProps) => {
         index={-1}
         targetX={mousePos.x - cardWidth / 2}
         targetY={mousePos.y - cardHeight / 2}
-        z={insertSlot ?? 80}
+        z={dropSlotIndex ?? 80}
         key={key}
         skipLerp
         shadow="drop-shadow-lg"
