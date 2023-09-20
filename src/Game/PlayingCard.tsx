@@ -31,18 +31,40 @@ const cardSuitColPlacements = {
   [CardValue.TEN]: [4, 2, 4],
 } as const;
 
-export const getSuitIcon = (suit: Suit) => {
+export const getSuitIcon = (suit: Suit): JSX.Element | undefined => {
   switch (suit) {
     case Suit.CLUBS:
-      return "♣";
+      return <div className="font-bold">♣</div>;
     case Suit.DIAMONDS:
-      return "♦";
+      return <div>♦</div>;
     case Suit.HEARTS:
-      return "♥";
+      return <div>♥</div>;
     case Suit.SPADES:
-      return "♠";
+      return <div>♠</div>;
     case Suit.SUITLESS:
-      return "◌";
+      return (
+        <div>
+          <svg
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 29.904 29.904"
+          >
+            <g>
+              <g>
+                <path
+                  d="M28.405,14.7c-0.479,0-0.897,0.228-1.172,0.576c-1.56-1.127-4.992-2.994-7.975-0.271c0,0-3.021-4.168-0.982-7.569
+			c0.246,0.178,0.547,0.286,0.875,0.286c0.827,0,1.5-0.671,1.5-1.5s-0.673-1.5-1.5-1.5c-0.828,0-1.502,0.671-1.502,1.5
+			c0,0.168,0.032,0.327,0.084,0.478c-2.141,0.819-5.836,2.858-6.39,7.307c0,0-3.429-4.541-8.573-1.594
+			c-0.265-0.425-0.732-0.711-1.27-0.711c-0.829,0-1.501,0.672-1.501,1.5s0.672,1.5,1.501,1.5c0.828,0,1.499-0.672,1.499-1.5
+			c0-0.047-0.01-0.091-0.014-0.137c1.794,0.14,4.67,1.726,5.461,10.151l0.09,0.688c0,0.707,2.858,1.279,6.382,1.279
+			c3.526,0,6.383-0.574,6.383-1.279c0,0,0.229-5.78,5.611-7.623c0.041,0.791,0.688,1.423,1.491,1.423c0.83,0,1.5-0.673,1.5-1.5
+			C29.907,15.371,29.235,14.7,28.405,14.7z"
+                />
+              </g>
+            </g>
+          </svg>
+        </div>
+      );
   }
 };
 
@@ -81,8 +103,8 @@ export const getValueIcon = (card: Card): string[] => {
   }
 };
 
-const themedBlack = `text-${lightModeBlack} dark:text-${darkModeBlack} stroke-${lightModeBlack} dark:stroke-${darkModeBlack} fill-${lightModeBlack} dark:fill-${darkModeBlack}`;
-const themedRed = `text-${lightModeRed} dark:text-${darkModeRed} stroke-${lightModeRed} dark:stroke-${darkModeRed} fill-${lightModeRed} dark:fill-${darkModeRed}`;
+const themedBlack = `text-${lightModeBlack} dark:text-${darkModeBlack} stroke-${lightModeBlack} dark:stroke-${darkModeBlack} fill-${lightModeBlack} dark:fill-${darkModeBlack} `;
+const themedRed = `text-${lightModeRed} dark:text-${darkModeRed} stroke-${lightModeRed} dark:stroke-${darkModeRed} fill-${lightModeRed} dark:fill-${darkModeRed} `;
 const cardBackground = "bg-gray-50 dark:bg-gray-950";
 
 const getCardColor = (card: Card) => {
@@ -111,26 +133,22 @@ const CardCol = (props: CardColProps) => {
   }
 
   const flex = props.reverse ? "flex-col -rotate-180" : "flex-col";
-  const className = `flex h-full text-lg leading-5 select-none items-center ${flex} w-4`;
-  const suitIndicator = (
-    <div className="text-md">{getSuitIcon(props.card.suit)}</div>
-  );
+  const className = `flex space-y-1 h-full text-lg leading-5 select-none items-center ${flex} w-4`;
   const valueIcon = getValueIcon(props.card);
 
   return (
     <div className={className}>
       <div className={`${cardBackground}`}>
         {valueIcon.map((c) => (
-          <div
-            className="text-center leading-none uppercase font-semibold"
-            key={c}
-          >
+          <div className="text-center font-semibold h-[18px]" key={c}>
             {c}
           </div>
         ))}
       </div>
 
-      <div className={`${cardBackground}`}>{suitIndicator}</div>
+      <div className={`${cardBackground} text-md`}>
+        {getSuitIcon(props.card.suit)}
+      </div>
     </div>
   );
 };
@@ -179,8 +197,8 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
     );
   } else {
     face = (
-      <div className="w-full h-full flex justify-center items-center text-center align-middle text-6xl">
-        {getSuitIcon(card.suit)}
+      <div className="w-full h-full flex justify-center items-center text-center align-middle">
+        <div className="w-12 h-12 text-6xl">{getSuitIcon(card.suit)}</div>
       </div>
     );
   }
