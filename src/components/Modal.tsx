@@ -1,3 +1,5 @@
+import React from "react";
+
 type ModalProps = {
   shown: boolean;
   width?: string;
@@ -6,6 +8,23 @@ type ModalProps = {
 };
 
 export const Modal = (props: ModalProps) => {
+  // Close on escape
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        props.onClose?.();
+      }
+    };
+
+    if (props.shown) {
+      window.addEventListener("keydown", handleEscape);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [props.shown]);
+
   return (
     <div
       className={`fixed bg-[#00000022] left-[50%] top-[50%] transform -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center z-50 transition-all duration-300 ease-in-out ${
@@ -21,8 +40,14 @@ export const Modal = (props: ModalProps) => {
           onClick={(e) => e.stopPropagation()}
         >
           <div className={props.width}>
-            <div className="rounded-md shadow-lg shadow-[#00000033] border bg-white border-gray-300 dark:border-gray-700 dark:bg-gray-800">
+            <div className="relative rounded-md shadow-lg shadow-[#00000033] border bg-white border-gray-300 dark:border-gray-700 dark:bg-gray-800">
               {props.children}
+              <button
+                onClick={props.onClose}
+                className="absolute text-md right-3 top-2 text-gray-700 dark:text-gray-300 hover:text-red-300"
+              >
+                🗙
+              </button>
             </div>
           </div>
         </div>

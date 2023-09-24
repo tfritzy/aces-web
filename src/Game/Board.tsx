@@ -28,6 +28,7 @@ import {
 import { TurnFlowchart } from "./TurnFlowchart";
 import { MouseProvider } from "Game/MouseContext";
 import { CardManagement } from "./CardManagement";
+import { HotkeysButton } from "./Hotkeys";
 
 type BoardProps = {
   reconnect: (
@@ -84,6 +85,9 @@ export const Board = (props: BoardProps) => {
       if (event.key === "e") {
         endTurn();
       }
+      if (event.key === "g") {
+        goOut();
+      }
       if (event.key === "p") {
         if (heldIndex === null) {
           dispatch(setHeldIndex(PILE_HELD_INDEX));
@@ -94,7 +98,13 @@ export const Board = (props: BoardProps) => {
 
       // if is numeric key
       if (event.key.match(/[0-9]/)) {
-        const num = parseInt(event.key);
+        let num = parseInt(event.key);
+
+        // + 10 if shift
+        if (event.shiftKey) {
+          num += 10;
+        }
+
         if (num > 0 && num <= heldCards.length) {
           if (heldIndex === null) {
             dispatch(setHeldIndex(num - 1));
@@ -190,7 +200,11 @@ export const Board = (props: BoardProps) => {
         return;
       }
 
-      if (dropIndex === PILE_HELD_INDEX && heldIndex === DECK_HELD_INDEX) {
+      if (
+        (dropIndex === PILE_HELD_INDEX || dropIndex === DECK_HELD_INDEX) &&
+        (heldIndex === DECK_HELD_INDEX || heldIndex === PILE_HELD_INDEX)
+      ) {
+        setHeldIndex(null);
         return;
       }
 
@@ -360,7 +374,10 @@ export const Board = (props: BoardProps) => {
 
             <div className="absolute top-0 right-0">
               <div className="relative flex flex-col items-end p-2 space-y-2">
-                <ScorecardButton />
+                <div className="flex flex-row space-x-2">
+                  <HotkeysButton />
+                  <ScorecardButton />
+                </div>
 
                 {isOwnTurn && <TurnFlowchart />}
               </div>

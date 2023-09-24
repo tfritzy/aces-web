@@ -84,10 +84,12 @@ export const CardManagement = (props: CardManagementProps) => {
   const [windowDimensions, setWindowDimensions] = React.useState(
     getWindowDimensions()
   );
+  const needsCardsResize = React.useRef(false);
 
   React.useEffect(() => {
     function handleResize() {
       setWindowDimensions(getWindowDimensions());
+      needsCardsResize.current = true;
     }
 
     window.addEventListener("resize", handleResize);
@@ -154,6 +156,7 @@ export const CardManagement = (props: CardManagementProps) => {
             key={card.type + "-" + card.deck}
             z={index + 1}
             shadow="shadow-sm"
+            skipLerp={needsCardsResize.current}
           />
         );
         x += distBetweenCards;
@@ -207,6 +210,7 @@ export const CardManagement = (props: CardManagementProps) => {
           key={pile[i].type + "-" + pile[i].deck}
           z={i}
           shadow={shadowSizes[shadow]}
+          skipLerp={needsCardsResize.current}
         />
       );
     }
@@ -308,6 +312,8 @@ export const CardManagement = (props: CardManagementProps) => {
     }
   };
 
+  needsCardsResize.current = false;
+
   return (
     <div ref={selfRef} onMouseUp={handleMouseUp}>
       <div
@@ -329,7 +335,7 @@ export const CardManagement = (props: CardManagementProps) => {
       </div>
 
       <div
-        className="border-2 rounded-lg shadow-inner"
+        className="border-2 rounded-lg shadow-inner dark:border-gray-800"
         style={{
           position: "fixed",
           left: deckCenterX - 15,
@@ -344,7 +350,7 @@ export const CardManagement = (props: CardManagementProps) => {
       </div>
 
       <div
-        className="border-2 rounded-lg shadow-inner"
+        className="border-2 rounded-lg shadow-inner dark:border-gray-800"
         style={{
           position: "fixed",
           left: pileX - 15,

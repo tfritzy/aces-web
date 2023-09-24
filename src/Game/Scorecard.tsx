@@ -1,6 +1,7 @@
+import React from "react";
+
 import { Button } from "components/Button";
 import { Modal } from "components/Modal";
-import React from "react";
 import { useSelector } from "react-redux";
 import { Player } from "store/playerSlice";
 import { RootState } from "store/store";
@@ -93,12 +94,6 @@ export const Scorecard = (props: ScorecardProps) => {
           <h1 className="text-2xl font-bold text-center px-4 py-2">
             Scorecard
           </h1>
-          <button
-            onClick={props.onClose}
-            className="absolute right-2 top-1 text-red-600 dark:text-red-400"
-          >
-            🗙
-          </button>
         </div>
 
         <div className="">
