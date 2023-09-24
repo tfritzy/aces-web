@@ -11,7 +11,13 @@ import {
 } from "store/cardManagementSlice";
 import { Card, cardBack } from "./Types";
 
-const shadowSizes = ["shadow-lg", "shadow-md", "shadow-sm", "", ""];
+const shadowSizes = [
+  "shadow-md shadow-[#00000033]",
+  "shadow-md",
+  "shadow-sm",
+  "",
+  "",
+];
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -55,7 +61,7 @@ function getHoveredIndex(
 
 const dockHeight = cardHeight + 100;
 const dockYPercent = 0.75;
-const deckPercentFromTop = 0.2;
+const deckPercentFromTop = 0.27;
 
 type CardManagementProps = {
   onDrop: (dropIndex?: number) => void;
@@ -113,7 +119,7 @@ export const CardManagement = (props: CardManagementProps) => {
   }
 
   let insertSlot: number | null = null;
-  const distBetweenCards = Math.min(700 / numCardSlots, cardWidth + 10);
+  const distBetweenCards = Math.min(900 / numCardSlots, cardWidth + 10);
   if (isHoveringHand && heldIndex !== null) {
     const hoveredIndex = getHoveredIndex(
       mousePos.x,
@@ -147,6 +153,7 @@ export const CardManagement = (props: CardManagementProps) => {
             targetY={dockCenterY - cardHeight / 2}
             key={card.type + "-" + card.deck}
             z={index + 1}
+            shadow="shadow-sm"
           />
         );
         x += distBetweenCards;
@@ -175,15 +182,19 @@ export const CardManagement = (props: CardManagementProps) => {
       }
 
       let shadow = 3;
-      if (i < 2) {
+      if (i < 1) {
         shadow = 0;
-      } else if (i < 3) {
+      } else if (i < 2) {
         shadow = 1;
-      } else if (i < 7) {
+      } else if (i < 3) {
         shadow = 2;
       }
 
       if (pile.length < 5) {
+        shadow += 1;
+      }
+
+      if (pile.length < 2) {
         shadow += 1;
       }
 
@@ -192,7 +203,7 @@ export const CardManagement = (props: CardManagementProps) => {
           card={pile[i]}
           index={PILE_HELD_INDEX}
           targetX={pileX}
-          targetY={pileStartY - i * 2}
+          targetY={pileStartY - i}
           key={pile[i].type + "-" + pile[i].deck}
           z={i}
           shadow={shadowSizes[shadow]}
@@ -214,29 +225,44 @@ export const CardManagement = (props: CardManagementProps) => {
       }
 
       let shadow = 3;
-      if (i < 2) {
+      if (i < 1) {
         shadow = 0;
-      } else if (i < 3) {
+      } else if (i < 2) {
         shadow = 1;
-      } else if (i < 7) {
+      } else if (i < 3) {
         shadow = 2;
       }
 
-      if (deckSize < 7) {
+      if (deckSize < 5) {
         shadow += 1;
       }
 
-      buffer.push(
-        <AnimatedPlayingCard
-          card={cardBack}
-          index={DECK_HELD_INDEX}
-          targetX={deckCenterX}
-          targetY={deckStartY - i * 2}
-          key={"deck-" + i}
-          z={i}
-          shadow={shadowSizes[shadow]}
-        />
-      );
+      if (i >= deckSize - 2) {
+        buffer.push(
+          <AnimatedPlayingCard
+            card={cardBack}
+            index={DECK_HELD_INDEX}
+            targetX={deckCenterX}
+            targetY={deckStartY - i * 2}
+            key={"deck-" + i}
+            z={i}
+            shadow={shadowSizes[shadow]}
+            skipLerp
+          />
+        );
+      } else {
+        buffer.push(
+          <div
+            className={`absolute cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden ${shadowSizes[shadow]}`}
+            style={{
+              left: deckCenterX,
+              top: deckStartY - i * 2,
+              width: cardWidth,
+              height: cardHeight,
+            }}
+          ></div>
+        );
+      }
     }
 
     return buffer;
@@ -267,6 +293,7 @@ export const CardManagement = (props: CardManagementProps) => {
         key={key}
         skipLerp
         shadow="drop-shadow-lg"
+        opacity={isHoveringHand ? 0.5 : 1}
       />
     );
   }
@@ -292,12 +319,42 @@ export const CardManagement = (props: CardManagementProps) => {
         }}
       >
         <div
-          className="relative w-[800px] rounded-lg border border-gray-300 dark:border-gray-700 shadow-[0_0_200px_#00000005_inset] dark:shadow-[0_0_200px_#00000033_inset]"
+          className="relative w-[950px] rounded-lg border border-gray-300 dark:border-gray-700 shadow-[0_0_200px_#00000003_inset] dark:shadow-[0_0_200px_#00000033_inset]"
           style={{
             height: cardHeight + 50,
           }}
         >
           <div className="absolute -top-11 right-0">{props.buttons}</div>
+        </div>
+      </div>
+
+      <div
+        className="border-2 rounded-lg shadow-inner"
+        style={{
+          position: "fixed",
+          left: deckCenterX - 15,
+          top: deckY - 15,
+          width: cardWidth + 30,
+          height: cardHeight + 30,
+        }}
+      >
+        <div className="absolute text-center -top-8 w-full text-gray-400 text-md">
+          Deck
+        </div>
+      </div>
+
+      <div
+        className="border-2 rounded-lg shadow-inner"
+        style={{
+          position: "fixed",
+          left: pileX - 15,
+          top: deckY - 15,
+          width: cardWidth + 30,
+          height: cardHeight + 30,
+        }}
+      >
+        <div className="absolute text-center -top-8 w-full text-gray-400 text-md">
+          Pile
         </div>
       </div>
 

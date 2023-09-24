@@ -21,7 +21,7 @@ export const Modal = (props: ModalProps) => {
           onClick={(e) => e.stopPropagation()}
         >
           <div className={props.width}>
-            <div className="rounded-md shadow-lg shadow-[#00000044] border bg-white border-gray-300 dark:border-gray-700 dark:bg-gray-800">
+            <div className="rounded-md shadow-lg shadow-[#00000033] border bg-white border-gray-300 dark:border-gray-700 dark:bg-gray-800">
               {props.children}
             </div>
           </div>

@@ -101,6 +101,15 @@ const handleMessage = (
         setAlertMessage(`${displayName} went out! You have one more turn.`);
       }
       break;
+    case EventType.ReshuffleDeck:
+      dispatch(setDeckSize(message.deckSize));
+      dispatch(setPile(message.pile.map(parseCard)));
+      addToast({
+        message: "Pile shuffled back into deck",
+        type: "info",
+        id: generateId("toast", 12),
+      });
+      break;
     case EventType.PlayerDoneForRound:
       dispatch(
         updatePlayer({
@@ -274,7 +283,7 @@ export const Game = () => {
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center overflow-hidden">
       <Toasts toasts={toasts} key="toasts" />
       {content}
 

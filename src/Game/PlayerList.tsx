@@ -49,7 +49,7 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
       )}
 
       <div
-        className={`rounded-lg flex flex-row space-x-1 items-center bg-slate-50  shadow-md border border-gray-300 dark:border-gray-500 dark:bg-gray-700 pl-3 overflow-hidden ${
+        className={`rounded-lg flex flex-row space-x-1 items-center bg-slate-50 border border-gray-300 dark:border-gray-500 dark:bg-gray-700 pl-3 overflow-hidden ${
           isSelf ? "pr-6" : "pr-3"
         }`}
       >

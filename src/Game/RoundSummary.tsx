@@ -10,6 +10,15 @@ import { Minicard } from "components/Minicard";
 import { getDefaultAvatar } from "helpers/getDefaultAvatar";
 import { GameState, resetAll } from "store/gameSlice";
 import { useNavigate } from "react-router-dom";
+import Confetti from "react-confetti";
+
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height,
+  };
+}
 
 type SummaryPlayer = Player & {
   placement: number;
@@ -28,6 +37,21 @@ export const RoundSummary = (props: RoundSummaryProps) => {
   const isGameOver = game.state === GameState.Finished;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [windowDimensions, setWindowDimensions] = React.useState(
+    getWindowDimensions()
+  );
+  const [sortedPlayers, setSortedPlayers] = React.useState<SummaryPlayer[]>([]);
+
+  const ownId = useSelector((state: RootState) => state.self.id);
+  const isLeader = sortedPlayers[0]?.id === ownId;
+  React.useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const parent = React.useRef(null);
   React.useEffect(() => {
@@ -36,8 +60,6 @@ export const RoundSummary = (props: RoundSummaryProps) => {
         duration: 250,
       });
   }, [parent]);
-
-  const [sortedPlayers, setSortedPlayers] = React.useState<SummaryPlayer[]>([]);
 
   React.useEffect(() => {
     const players = gamePlayers.map((p) => ({
@@ -81,7 +103,14 @@ export const RoundSummary = (props: RoundSummaryProps) => {
   };
 
   return (
-    <Modal width="w-[900px]" shown={props.shown} onClose={props.onContinue}>
+    <Modal shown={props.shown} onClose={props.onContinue}>
+      {isGameOver && isLeader && (
+        <Confetti
+          width={windowDimensions.width}
+          height={windowDimensions.height}
+        />
+      )}
+
       <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-500">
         <div className="font-semibold text-lg p-2 px-6">
           {isGameOver ? "Final standings" : `Round ${game.round} results`}
@@ -143,7 +172,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                       </div>
                     </td>
 
-                    <td key="grouped" className="px-3 py-2 min-w-[200px]">
+                    <td key="grouped" className="px-3 py-2">
                       <div className="flex flex-row flex-wrap">
                         {p.mostRecentGroupedCards.map((g) => (
                           <div className="flex flex-row px-1">
@@ -157,7 +186,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                       </div>
                     </td>
 
-                    <td key="ungrouped" className="px-3 py-2 min min-w-[200px]">
+                    <td key="ungrouped" className="px-3 py-2 min">
                       <div className="flex flex-row flex-wrap">
                         {p.mostRecentUngroupedCards.map((c) => (
                           <div className="m-[1px]">

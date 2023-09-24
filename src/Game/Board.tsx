@@ -42,7 +42,6 @@ export const Board = (props: BoardProps) => {
   const heldIndex = useSelector(
     (state: RootState) => state.cardManagement.heldIndex
   );
-
   const [endTurnPending, setEndTurnPending] = React.useState<boolean>(false);
   const [goOutPending, setGoOutPending] = React.useState<boolean>(false);
   const { toasts, addToast } = useToasts();
@@ -56,20 +55,6 @@ export const Board = (props: BoardProps) => {
   const dispatch: AppDispatch = useDispatch();
   const gameId = useParams().gameId || "";
   const isOwnTurn = players[game.turn]?.id === self.id;
-
-  // //shuffle the cards in the hand every 3000 ms
-  // React.useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const hand = [...heldCards];
-  //     const shuffledCards = hand.sort(() => Math.random() - 0.5);
-  //     dispatch(setHand(shuffledCards));
-  //     console.log(
-  //       "shuffled hand",
-  //       shuffledCards.map((c) => c.type)
-  //     );
-  //   }, 3000);
-  //   return () => clearInterval(interval);
-  // }, [dispatch, heldCards]);
 
   const handleError = React.useCallback(
     async (response: Response) => {
@@ -92,18 +77,48 @@ export const Board = (props: BoardProps) => {
   );
 
   React.useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleHotkeys = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         dispatch(setHeldIndex(null));
       }
+      if (event.key === "e") {
+        endTurn();
+      }
+      if (event.key === "p") {
+        if (heldIndex === null) {
+          dispatch(setHeldIndex(PILE_HELD_INDEX));
+        } else {
+          handleDrop(PILE_HELD_INDEX);
+        }
+      }
+
+      // if is numeric key
+      if (event.key.match(/[0-9]/)) {
+        const num = parseInt(event.key);
+        if (num > 0 && num <= heldCards.length) {
+          if (heldIndex === null) {
+            dispatch(setHeldIndex(num - 1));
+          } else {
+            handleDrop(num - 1);
+          }
+        }
+      }
+
+      if (event.key === "d") {
+        if (heldIndex === null) {
+          dispatch(setHeldIndex(DECK_HELD_INDEX));
+        } else {
+          handleDrop(DECK_HELD_INDEX);
+        }
+      }
     };
 
-    window.addEventListener("keydown", handleEscape);
+    window.addEventListener("keydown", handleHotkeys);
 
     return () => {
-      window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("keydown", handleHotkeys);
     };
-  }, []);
+  }, [dispatch, heldCards.length, heldIndex]);
 
   const drawFromPile = React.useCallback(async () => {
     var res = await fetch(`${API_URL}/api/draw_from_pile`, {
@@ -340,7 +355,7 @@ export const Board = (props: BoardProps) => {
             }
           }}
         >
-          <div className="absolute max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-gray-900">
+          <div className="absolute max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-md border-gray-100 dark:border-slate-700 bg-white dark:bg-gray-900">
             <PlayerList key="playerList" />
 
             <div className="absolute top-0 right-0">

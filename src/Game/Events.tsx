@@ -11,6 +11,7 @@ export enum EventType {
   PlayerWentOut,
   AdvanceRound,
   PlayerDoneForRound,
+  ReshuffleDeck,
   GameEndEvent,
 }
 
@@ -73,6 +74,13 @@ export type PlayerDoneForRoundEvent = {
   ungroupedCards: Card[];
 };
 
+export type ReshuffleDeckEvent = {
+  type: EventType.ReshuffleDeck;
+  i: number;
+  deckSize: number;
+  pile: Card[];
+};
+
 export type GameEndEvent = {
   type: EventType.GameEndEvent;
   i: number;
@@ -88,4 +96,5 @@ export type Message =
   | DrawFromPileEvent
   | PlayerWentOutEvent
   | PlayerDoneForRoundEvent
+  | ReshuffleDeckEvent
   | GameEndEvent;
