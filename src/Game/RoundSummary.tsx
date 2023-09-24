@@ -103,132 +103,133 @@ export const RoundSummary = (props: RoundSummaryProps) => {
   };
 
   return (
-    <Modal shown={props.shown} onClose={props.onContinue}>
+    <>
       {isGameOver && isLeader && (
         <Confetti
           width={windowDimensions.width}
           height={windowDimensions.height}
         />
       )}
+      <Modal shown={props.shown} onClose={props.onContinue}>
+        <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-500">
+          <div className="font-semibold text-lg p-2 px-6">
+            {isGameOver ? "Final standings" : `Round ${game.round} results`}
+          </div>
 
-      <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-500">
-        <div className="font-semibold text-lg p-2 px-6">
-          {isGameOver ? "Final standings" : `Round ${game.round} results`}
-        </div>
+          <div className="px-6 py-4">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th key="rank" className="px-3 py-2 text-left"></th>
+                  <th key="player" className="px-3 py-2 text-left">
+                    Player
+                  </th>
+                  <th key="grouped" className="px-3 py-2 text-left">
+                    Grouped
+                  </th>
+                  <th key="ungrouped" className="px-3 py-2 text-left">
+                    Ungrouped
+                  </th>
+                  <th key="round" className="px-3 py-2 text-left">
+                    Round
+                  </th>
+                  <th key="total" className="px-3 py-2 text-left">
+                    Total
+                  </th>
+                </tr>
+              </thead>
 
-        <div className="px-6 py-4">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b">
-                <th key="rank" className="px-3 py-2 text-left"></th>
-                <th key="player" className="px-3 py-2 text-left">
-                  Player
-                </th>
-                <th key="grouped" className="px-3 py-2 text-left">
-                  Grouped
-                </th>
-                <th key="ungrouped" className="px-3 py-2 text-left">
-                  Ungrouped
-                </th>
-                <th key="round" className="px-3 py-2 text-left">
-                  Round
-                </th>
-                <th key="total" className="px-3 py-2 text-left">
-                  Total
-                </th>
-              </tr>
-            </thead>
+              <tbody>
+                {sortedPlayers.map((p, i) => {
+                  const icon = getDefaultAvatar(p.id);
 
-            <tbody>
-              {sortedPlayers.map((p, i) => {
-                const icon = getDefaultAvatar(p.id);
+                  return (
+                    <tr
+                      className="border-collapse border-gray-200 dark:border-gray-500"
+                      key={p.id}
+                    >
+                      <td key="placement" className="px-3 py-2">
+                        <div className="font-bold text-xl leading-none text-center px-2 pr-4">
+                          {p.placement}
+                          {getChevron(p)}
+                        </div>
+                      </td>
 
-                return (
-                  <tr
-                    className="border-collapse border-gray-200 dark:border-gray-500"
-                    key={p.id}
-                  >
-                    <td key="placement" className="px-3 py-2">
-                      <div className="font-bold text-xl leading-none text-center px-2 pr-4">
-                        {p.placement}
-                        {getChevron(p)}
-                      </div>
-                    </td>
-
-                    <td key="player" className="px-3 py-2">
-                      <div>
-                        <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 rounded px-2 max-w-max">
-                          <div className="overflow-hidden w-12 h-12 ">
-                            <img
-                              src={icon}
-                              className="rounded-full w-10 h-12 mx-auto translate-y-2 -translate-x-1"
-                              alt="avatar"
-                            />
-                          </div>
-                          <div className="text-left truncate">
-                            {p.displayName}
+                      <td key="player" className="px-3 py-2">
+                        <div>
+                          <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 rounded px-2 max-w-max">
+                            <div className="overflow-hidden w-12 h-12 ">
+                              <img
+                                src={icon}
+                                className="rounded-full w-10 h-12 mx-auto translate-y-2 -translate-x-1"
+                                alt="avatar"
+                              />
+                            </div>
+                            <div className="text-left truncate">
+                              {p.displayName}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td key="grouped" className="px-3 py-2">
-                      <div className="flex flex-row flex-wrap">
-                        {p.mostRecentGroupedCards.map((g) => (
-                          <div className="flex flex-row px-1">
-                            {g.map((c) => (
-                              <div className="m-[1px]">
-                                <Minicard card={c} />
-                              </div>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    </td>
+                      <td key="grouped" className="px-3 py-2">
+                        <div className="flex flex-row flex-wrap">
+                          {p.mostRecentGroupedCards.map((g) => (
+                            <div className="flex flex-row px-1">
+                              {g.map((c) => (
+                                <div className="m-[1px]">
+                                  <Minicard card={c} />
+                                </div>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      </td>
 
-                    <td key="ungrouped" className="px-3 py-2 min">
-                      <div className="flex flex-row flex-wrap">
-                        {p.mostRecentUngroupedCards.map((c) => (
-                          <div className="m-[1px]">
-                            <Minicard card={c} />
-                          </div>
-                        ))}
-                      </div>
-                    </td>
+                      <td key="ungrouped" className="px-3 py-2 min">
+                        <div className="flex flex-row flex-wrap">
+                          {p.mostRecentUngroupedCards.map((c) => (
+                            <div className="m-[1px]">
+                              <Minicard card={c} />
+                            </div>
+                          ))}
+                        </div>
+                      </td>
 
-                    <td key="round" className="px-3 py-2">
-                      <div>{p.roundScore}</div>
-                    </td>
+                      <td key="round" className="px-3 py-2">
+                        <div>{p.roundScore}</div>
+                      </td>
 
-                    <td key="total" className="px-3 py-2">
-                      <div>{p.totalScore}</div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      <td key="total" className="px-3 py-2">
+                        <div>{p.totalScore}</div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex justify-end p-2">
+            {isGameOver ? (
+              <Button
+                onClick={() => {
+                  dispatch(resetAll());
+                  navigate("/");
+                }}
+                text="Return home"
+                type="primary"
+              />
+            ) : (
+              <Button
+                onClick={props.onContinue}
+                text="Next round"
+                type="primary"
+              />
+            )}
+          </div>
         </div>
-
-        <div className="flex justify-end p-2">
-          {isGameOver ? (
-            <Button
-              onClick={() => {
-                dispatch(resetAll());
-                navigate("/");
-              }}
-              text="Return home"
-              type="primary"
-            />
-          ) : (
-            <Button
-              onClick={props.onContinue}
-              text="Next round"
-              type="primary"
-            />
-          )}
-        </div>
-      </div>
-    </Modal>
+      </Modal>
+    </>
   );
 };
