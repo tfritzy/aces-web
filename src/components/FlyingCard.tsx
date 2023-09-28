@@ -1,8 +1,8 @@
 import { getSuitIcon } from "Game/PlayingCard";
 import { Suit } from "Game/Types";
 
-const themedBlack = `border-slate-300 text-slate-300 dark:border-slate-700 dark:text-slate-700`;
-const themedRed = `border-rose-200 dark:border-rose-800 text-rose-200 dark:text-rose-800`;
+const themedBlack = `border-slate-200 text-slate-300 dark:border-slate-700 dark:text-slate-700`;
+const themedRed = `border-rose-100 dark:border-rose-800 text-rose-200 dark:text-rose-800`;
 
 const getCardColor = (suit: Suit) => {
   switch (suit) {

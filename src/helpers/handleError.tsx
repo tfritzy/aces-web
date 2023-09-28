@@ -5,7 +5,10 @@ export const handleError = async (
   response: Response,
   addToast: (props: ToastProps) => void
 ) => {
-  if (response.status.toString().startsWith("4")) {
+  if (
+    response.status.toString().startsWith("4") ||
+    response.status.toString().startsWith("5")
+  ) {
     let body = await response.text();
     addToast({
       message: body,

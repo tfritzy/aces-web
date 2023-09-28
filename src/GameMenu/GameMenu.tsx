@@ -90,6 +90,7 @@ const joinGame = (
     } else {
       handleError(res, addToast);
       onFailure();
+      setPending(false);
     }
   });
 };
@@ -284,31 +285,37 @@ const CreateGameMenu = (props: CreateGameMenuProps) => {
         "display-name": self.displayName,
         "player-id": self.id,
       },
-    }).then(async (res) => {
-      setCreatePending(false);
-      if (res.ok) {
-        const body = await res.json();
-        resetAll(dispatch);
-        dispatch(setGameId(body.id));
-        dispatch(setState(GameState.Setup));
-        dispatch(
-          setPlayers([
-            {
-              displayName: self.displayName,
-              id: self.id,
-              mostRecentGroupedCards: [],
-              mostRecentUngroupedCards: [],
-              scorePerRound: [],
-              totalScore: 0,
-            },
-          ])
-        );
+    })
+      .then(async (res) => {
+        setCreatePending(false);
+        if (res.ok) {
+          const body = await res.json();
+          resetAll(dispatch);
+          dispatch(setGameId(body.id));
+          dispatch(setState(GameState.Setup));
+          dispatch(
+            setPlayers([
+              {
+                displayName: self.displayName,
+                id: self.id,
+                mostRecentGroupedCards: [],
+                mostRecentUngroupedCards: [],
+                scorePerRound: [],
+                totalScore: 0,
+              },
+            ])
+          );
 
-        return navigate(`/${body.id}`);
-      } else {
-        handleError(res, props.addToast);
-      }
-    });
+          return navigate(`/${body.id}`);
+        } else {
+          handleError(res, props.addToast);
+          setCreatePending(false);
+        }
+      })
+      .catch((e) => {
+        setCreatePending(false);
+        console.error(e);
+      });
   };
 
   return (
