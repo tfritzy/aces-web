@@ -48,7 +48,7 @@ export const Lobby = (props: LobbyProps) => {
   const currentdomain = window.location.hostname;
 
   return (
-    <Modal shown={props.shown} width="w-72">
+    <Modal shown={props.shown} width="w-72" dontShadeBackground>
       <div className="text-gray-700 dark:text-white divide-y divide-gray-200 dark:divide-gray-600">
         <div className="p-3 text-lg font-semibold">Lobby</div>
 

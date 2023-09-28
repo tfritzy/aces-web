@@ -201,18 +201,32 @@ export const CardManagement = (props: CardManagementProps) => {
         shadow += 1;
       }
 
-      buffer.push(
-        <AnimatedPlayingCard
-          card={pile[i]}
-          index={PILE_HELD_INDEX}
-          targetX={pileX}
-          targetY={pileStartY - i}
-          key={pile[i].type + "-" + pile[i].deck}
-          z={i}
-          shadow={shadowSizes[shadow]}
-          skipLerp={needsCardsResize.current}
-        />
-      );
+      if (i >= pile.length - 2) {
+        buffer.push(
+          <AnimatedPlayingCard
+            card={pile[i]}
+            index={PILE_HELD_INDEX}
+            targetX={pileX}
+            targetY={pileStartY - i}
+            key={pile[i].type + "-" + pile[i].deck}
+            z={i}
+            shadow={shadowSizes[shadow]}
+            skipLerp={needsCardsResize.current}
+          />
+        );
+      } else {
+        buffer.push(
+          <div
+            className={`absolute cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden ${shadowSizes[shadow]}`}
+            style={{
+              left: pileX,
+              top: pileStartY - i,
+              width: cardWidth,
+              height: cardHeight,
+            }}
+          ></div>
+        );
+      }
     }
 
     return buffer;
@@ -247,7 +261,7 @@ export const CardManagement = (props: CardManagementProps) => {
             card={cardBack}
             index={DECK_HELD_INDEX}
             targetX={deckCenterX}
-            targetY={deckStartY - i * 2}
+            targetY={deckStartY - i}
             key={"deck-" + i}
             z={i}
             shadow={shadowSizes[shadow]}
@@ -260,7 +274,7 @@ export const CardManagement = (props: CardManagementProps) => {
             className={`absolute cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden ${shadowSizes[shadow]}`}
             style={{
               left: deckCenterX,
-              top: deckStartY - i * 2,
+              top: deckStartY - i,
               width: cardWidth,
               height: cardHeight,
             }}
@@ -325,7 +339,7 @@ export const CardManagement = (props: CardManagementProps) => {
         }}
       >
         <div
-          className="relative w-[950px] rounded-lg border border-gray-300 dark:border-gray-700 shadow-[0_0_200px_#00000003_inset] dark:shadow-[0_0_200px_#00000033_inset]"
+          className="relative w-[950px] rounded-lg border border-gray-300 dark:border-gray-700 shadow-[0_0_10px_#00000011_inset] dark:shadow-[0_0_10px_#00000099_inset]"
           style={{
             height: cardHeight + 50,
           }}
@@ -335,7 +349,7 @@ export const CardManagement = (props: CardManagementProps) => {
       </div>
 
       <div
-        className="border-2 rounded-lg shadow-inner dark:border-gray-800"
+        className="border-2 rounded-lg shadow-[0_0_10px_#00000011_inset] dark:shadow-[0_0_10px_#00000099_inset] dark:border-gray-800"
         style={{
           position: "fixed",
           left: deckCenterX - 15,
@@ -350,7 +364,7 @@ export const CardManagement = (props: CardManagementProps) => {
       </div>
 
       <div
-        className="border-2 rounded-lg shadow-inner dark:border-gray-800"
+        className="border-2 rounded-lg shadow-[0_0_10px_#00000011_inset] dark:shadow-[0_0_10px_#00000099_inset] dark:border-gray-800"
         style={{
           position: "fixed",
           left: pileX - 15,
