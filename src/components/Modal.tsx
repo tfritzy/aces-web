@@ -42,12 +42,14 @@ export const Modal = (props: ModalProps) => {
           <div className={props.width}>
             <div className="relative rounded-md shadow-lg shadow-[#00000033] border bg-white border-gray-300 dark:border-gray-700 dark:bg-gray-800">
               {props.children}
-              <button
-                onClick={props.onClose}
-                className="absolute text-md right-3 top-2 text-gray-700 dark:text-gray-300 hover:text-red-300"
-              >
-                🗙
-              </button>
+              {props.onClose && (
+                <button
+                  onClick={props.onClose}
+                  className="absolute text-md right-3 top-2 text-gray-700 dark:text-gray-300 hover:text-red-300"
+                >
+                  🗙
+                </button>
+              )}
             </div>
           </div>
         </div>

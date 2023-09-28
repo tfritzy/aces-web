@@ -275,7 +275,6 @@ export const Game = () => {
             type: "error",
           });
         }}
-        onClose={() => {}}
       />
     );
   } else {
