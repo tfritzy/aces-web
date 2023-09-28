@@ -198,7 +198,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
   } else {
     face = (
       <div className="w-full h-full flex justify-center items-center text-center align-middle">
-        <div className="w-12 h-12 text-6xl">{getSuitIcon(card.suit)}</div>
+        <div className="w-16 h-16 text-6xl">{getSuitIcon(card.suit)}</div>
       </div>
     );
   }

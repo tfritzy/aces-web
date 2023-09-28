@@ -13,16 +13,13 @@ export const Background = () => {
 
   const elements = React.useMemo(
     () => (
-      <ul
-        className="background"
-        // style={{ boxShadow: "0 0 200px rgba(0,0,0,0.9) inset" }}
-      >
+      <ul className="background dark:shadow-[0_0_200px_rgba(0,0,0,0.9)_inset]">
         {Array.from(Array(3).keys()).map((i) => (
           <li
             style={{
               left: (i + 5) * 225 - 1360,
               bottom: (i + 5) * 225,
-              animationDuration: "45s",
+              animationDuration: "90s",
             }}
             key={"0_" + i}
           >
@@ -35,7 +32,7 @@ export const Background = () => {
             style={{
               left: (i + 3) * 225 - 1020,
               bottom: (i + 3) * 225,
-              animationDuration: "50s",
+              animationDuration: "100s",
               animationDirection: "reverse",
             }}
             key={"1_" + i}
@@ -49,7 +46,7 @@ export const Background = () => {
             style={{
               left: (i + 1) * 225 - 680,
               bottom: (i + 1) * 225,
-              animationDuration: "43s",
+              animationDuration: "86s",
               animationDirection: "reverse",
             }}
             key={"2_" + i}
@@ -63,7 +60,7 @@ export const Background = () => {
             style={{
               left: i * 225 - 340,
               bottom: i * 225,
-              animationDuration: "44s",
+              animationDuration: "88s",
             }}
             key={"3_" + i}
           >
@@ -76,7 +73,7 @@ export const Background = () => {
             style={{
               left: (i - 2) * 225,
               bottom: (i - 2) * 225,
-              animationDuration: "56s",
+              animationDuration: "112s",
             }}
             key={"4_" + i}
           >
@@ -89,7 +86,7 @@ export const Background = () => {
             style={{
               left: (i - 1) * 225 + 340,
               bottom: (i - 1) * 225,
-              animationDuration: "46s",
+              animationDuration: "92s",
             }}
             key={"5_" + i}
           >
@@ -102,7 +99,7 @@ export const Background = () => {
             style={{
               left: (i - 1) * 225 + 680,
               bottom: (i - 1) * 225,
-              animationDuration: "53s",
+              animationDuration: "106s",
 
               animationDirection: "reverse",
             }}
@@ -117,7 +114,7 @@ export const Background = () => {
             style={{
               left: (i - 1) * 225 + 1020,
               bottom: (i - 1) * 225,
-              animationDuration: "57s",
+              animationDuration: "114s",
             }}
             key={"7_" + i}
           >
@@ -130,7 +127,7 @@ export const Background = () => {
             style={{
               left: (i - 1) * 225 + 1360,
               bottom: (i - 1) * 225,
-              animationDuration: "42s",
+              animationDuration: "84s",
             }}
             key={"8_" + i}
           >
@@ -143,7 +140,7 @@ export const Background = () => {
             style={{
               left: i * 225 + 1700,
               bottom: i * 225,
-              animationDuration: "51s",
+              animationDuration: "102s",
               animationDirection: "reverse",
             }}
             key={"9_" + i}
@@ -157,7 +154,7 @@ export const Background = () => {
             style={{
               left: i * 225 + 2040,
               bottom: i * 225,
-              animationDuration: "44s",
+              animationDuration: "88s",
             }}
             key={"10_" + i}
           >
@@ -170,7 +167,7 @@ export const Background = () => {
             style={{
               left: i * 225 + 2380,
               bottom: i * 225,
-              animationDuration: "41s",
+              animationDuration: "82s",
             }}
             key={"10_" + i}
           >

@@ -10,15 +10,15 @@ type HotkeyBoxProps = {
 
 const HotkeyBox = (props: HotkeyBoxProps) => {
   return (
-    <div className="flex flex-row space-x-3">
+    <div className="flex flex-row space-x-3 w-max">
       <div className="flex flex-row space-x-1 w-32">
         {props.shift && (
-          <div className="px-2 text-lg font-bold font-mono text-white rounded bg-gray-600 text-center">
+          <div className="px-2 text-lg font-bold font-mono text-gray-600 dark:text-white rounded text-center bg-gray-200 dark:bg-gray-600">
             Shift
           </div>
         )}
         {props.shift && <div className="text-lg font-bold font-mono">+</div>}
-        <div className="px-2 text-lg font-bold font-mono text-white rounded bg-gray-600 text-center">
+        <div className="px-2 text-lg font-bold font-mono text-gray-600 dark:text-white rounded text-center bg-gray-200 dark:bg-gray-600">
           {props.button}
         </div>
       </div>
