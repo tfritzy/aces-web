@@ -11,11 +11,17 @@ export const MouseProvider = ({ children }: { children: JSX.Element }) => {
       setMouseX(event.clientX);
       setMouseY(event.clientY);
     };
+    const handleTouchMove = (event: TouchEvent) => {
+      setMouseX(event.touches[0].clientX);
+      setMouseY(event.touches[0].clientY);
+    };
 
     window.addEventListener("mousemove", handleMouseMove, true);
+    window.addEventListener("touchmove", handleTouchMove, true);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
 
