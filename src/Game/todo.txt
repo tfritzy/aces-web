@@ -1,18 +1,18 @@
-No it's your turn notif
+[x] No it's your turn notif
 Cards fly in and out when others do stuff
 Incorrect round summary
 Reconnect
-Trackpad support
+[x] Trackpad support
 [x] Go out buttons match game state
-Middle symbol orientation
-Wild indicator broken
+[x] Middle symbol orientation
+[x] Wild indicator broken
 Permanant last turn indicator
 [x] wash clicking summary modal closes it
-Turn indicator flashes larger when over
+[x] Turn indicator flashes larger when over
 With large hard rightmost card exceeds bounds
-Sort hand
+[x] Sort hand
 See past turn hands
 [x] Clicking x on final round tries to play another round
 [x] down click should just pick up
-Max width on summary card group
+[x] Max width on summary card group
 Sound effect on your turn

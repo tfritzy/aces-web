@@ -39,6 +39,8 @@ const handleMessage = (
   state: RootState,
   handleError: (response: Response) => void
 ) => {
+  console.log(message);
+
   switch (message.type) {
     case EventType.JoinGame:
       dispatch(
@@ -75,13 +77,14 @@ const handleMessage = (
       dispatch(setTurnPhase(TurnPhase.Ending));
       break;
     case EventType.AdvanceRound:
-      dispatch(setRound(message.round));
       dispatch(setState(GameState.TurnSummary));
       dispatch(setTurnPhase(TurnPhase.Drawing));
       break;
     case EventType.AdvanceTurn:
       dispatch(setTurn(message.turn));
+      console.log(message, state.players.players[message.turn]);
       if (state.self.id === state.players.players[message.turn].id) {
+        console.log("Adding toast");
         addToast({
           message: "It's your turn",
           type: "info",
@@ -283,8 +286,8 @@ export const Game = () => {
 
   return (
     <div className="flex flex-col items-center overflow-hidden">
-      <Toasts toasts={toasts} key="toasts" />
       {content}
+      <Toasts toasts={toasts} key="toasts" />
 
       <Alert
         close={() => setAlertMessageShown(false)}

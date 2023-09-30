@@ -177,7 +177,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                       </td>
 
                       <td key="grouped" className="px-3 py-2">
-                        <div className="flex flex-row flex-wrap">
+                        <div className="flex flex-row flex-wrap max-w-[175px]">
                           {p.mostRecentGroupedCards.map((g) => (
                             <div className="flex flex-row px-1">
                               {g.map((c) => (
@@ -191,7 +191,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                       </td>
 
                       <td key="ungrouped" className="px-3 py-2 min">
-                        <div className="flex flex-row flex-wrap">
+                        <div className="flex flex-row flex-wrap max-w-[175px]">
                           {p.mostRecentUngroupedCards.map((c) => (
                             <div className="m-[1px]">
                               <Minicard card={c} />

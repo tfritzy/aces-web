@@ -1,4 +1,3 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { getDefaultAvatar } from "helpers/getDefaultAvatar";
 import { useSelector } from "react-redux";
 import { TurnPhase } from "store/gameSlice";
@@ -12,7 +11,6 @@ type PlayerStatusProps = {
 };
 
 export const PlayerStatus = (props: PlayerStatusProps) => {
-  const [parent] = useAutoAnimate();
   const turn = useSelector((state: RootState) => state.game.turn);
   const self = useSelector((state: RootState) => state.self);
   const turnPhase = useSelector((state: RootState) => state.game.turnPhase);
@@ -28,11 +26,7 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
   }
 
   return (
-    <div
-      className="flex flex-row items-center space-x-3"
-      key={props.player.id}
-      ref={parent}
-    >
+    <div className="flex flex-row items-center space-x-3" key={props.player.id}>
       {turn === props.index && (
         <div
           key="arrow"

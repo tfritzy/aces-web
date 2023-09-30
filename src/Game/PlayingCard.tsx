@@ -161,7 +161,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
       <div className="flex grow flex-row w-full px-1">
         <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
           {Array.from({ length: counts[0] }).map((_, i) => (
-            <div className={i >= counts[0] / 2 ? "rotate-180" : ""} key={i}>
+            <div className={i > counts[0] / 2 - 1 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card.suit)}
             </div>
           ))}
@@ -169,7 +169,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
 
         <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
           {Array.from({ length: counts[1] }).map((_, i) => (
-            <div className={i >= counts[1] / 2 ? "rotate-180" : ""} key={i}>
+            <div className={i > counts[1] / 2 - 1 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card.suit)}
             </div>
           ))}
@@ -177,7 +177,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
 
         <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
           {Array.from({ length: counts[2] }).map((_, i) => (
-            <div className={i >= counts[2] / 2 ? "rotate-180" : ""} key={i}>
+            <div className={i > counts[2] / 2 - 1 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card.suit)}
             </div>
           ))}
@@ -215,7 +215,7 @@ const CardBody = (props: CardBodyProps) => {
       <>
         {props.isWild && (
           <div
-            className={`absolute top-1 right-2 uppercase text-xs font-mono rotate-180 ${getCardColor(
+            className={`absolute top-3 right-3 uppercase text-xs font-mono rotate-180 ${getCardColor(
               card
             )}`}
           >
@@ -225,7 +225,7 @@ const CardBody = (props: CardBodyProps) => {
 
         {props.isWild && (
           <div
-            className={`absolute bottom-1 left-2 uppercase text-xs font-mono ${getCardColor(
+            className={`absolute bottom-3 left-3 uppercase text-xs font-mono ${getCardColor(
               card
             )}`}
           >
@@ -245,7 +245,7 @@ const CardBody = (props: CardBodyProps) => {
   return (
     <div
       className={`${
-        props.isGrouped ? "border-2 border-green-400 dark:border-green-500" : ""
+        props.isGrouped ? "border-2 border-green-400 dark:border-green-400" : ""
       } ${getCardColor(
         card
       )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden select-none relative font-serif  ${

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { parseCard, spinnerCard } from "Game/Types";
+import { Suit, parseCard, spinnerCard } from "Game/Types";
 import { API_URL } from "Constants";
 import { Toasts, useToasts } from "components/Toasts";
 import { RoundSummary } from "Game/RoundSummary";
@@ -78,58 +78,82 @@ export const Board = (props: BoardProps) => {
     [addToast]
   );
 
-  React.useEffect(() => {
-    const handleHotkeys = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        dispatch(setHeldIndex(null));
-      }
-      if (event.key === "e") {
-        endTurn();
-      }
-      if (event.key === "g") {
-        goOut();
-      }
-      if (event.key === "p") {
-        if (heldIndex === null) {
-          dispatch(setHeldIndex(PILE_HELD_INDEX));
-        } else {
-          handleDrop(PILE_HELD_INDEX);
-        }
+  const endTurn = React.useCallback(async () => {
+    setEndTurnPending(true);
+    var res = await fetch(`${API_URL}/api/end_turn`, {
+      method: "POST",
+      headers: {
+        token: self.token,
+        "game-id": gameId,
+      },
+      body: JSON.stringify({
+        hand: heldCards,
+      }),
+    });
+    setEndTurnPending(false);
+
+    if (!res.ok) {
+      await handleError(res);
+    }
+  }, [gameId, handleError, heldCards, self.token]);
+
+  const goOut = React.useCallback(async () => {
+    setGoOutPending(true);
+    var res = await fetch(`${API_URL}/api/go_out`, {
+      method: "POST",
+      headers: {
+        token: self.token,
+        "game-id": gameId,
+      },
+      body: JSON.stringify({
+        cards: heldCards,
+      }),
+    });
+    setGoOutPending(false);
+
+    if (!res.ok) {
+      await handleError(res);
+    }
+  }, [gameId, handleError, heldCards, self.token]);
+
+  const sort = React.useCallback(async () => {
+    const hand = [...heldCards];
+    hand.sort((a, b) => {
+      if (a.suit === b.suit) {
+        return a.type - b.type;
       }
 
-      // if is numeric key
-      if (event.key.match(/[0-9]/)) {
-        let num = parseInt(event.key);
+      return a.suit - b.suit;
+    });
+    dispatch(setHand(hand));
+  }, [heldCards, dispatch]);
 
-        // + 10 if shift
-        if (event.shiftKey) {
-          num += 10;
-        }
+  const discard = React.useCallback(async () => {
+    if (heldIndex === null) {
+      return;
+    }
 
-        if (num > 0 && num <= heldCards.length) {
-          if (heldIndex === null) {
-            dispatch(setHeldIndex(num - 1));
-          } else {
-            handleDrop(num - 1);
-          }
-        }
-      }
+    var res = await fetch(`${API_URL}/api/discard`, {
+      method: "POST",
+      headers: {
+        token: self.token,
+        "game-id": gameId,
+        card: heldCards[heldIndex].type.toString(),
+      },
+      body: JSON.stringify({
+        card: {
+          type: heldCards[heldIndex].type,
+          deck: heldCards[heldIndex].deck,
+        },
+      }),
+    });
 
-      if (event.key === "d") {
-        if (heldIndex === null) {
-          dispatch(setHeldIndex(DECK_HELD_INDEX));
-        } else {
-          handleDrop(DECK_HELD_INDEX);
-        }
-      }
-    };
+    if (!res.ok) {
+      await handleError(res);
+    }
 
-    window.addEventListener("keydown", handleHotkeys);
-
-    return () => {
-      window.removeEventListener("keydown", handleHotkeys);
-    };
-  }, [dispatch, heldCards.length, heldIndex]);
+    return res;
+  }, [gameId, handleError, heldCards, heldIndex, self.token]);
 
   const drawFromPile = React.useCallback(async () => {
     var res = await fetch(`${API_URL}/api/draw_from_pile`, {
@@ -162,33 +186,6 @@ export const Board = (props: BoardProps) => {
 
     return res;
   }, [gameId, handleError, self.token]);
-
-  const discard = React.useCallback(async () => {
-    if (heldIndex === null) {
-      return;
-    }
-
-    var res = await fetch(`${API_URL}/api/discard`, {
-      method: "POST",
-      headers: {
-        token: self.token,
-        "game-id": gameId,
-        card: heldCards[heldIndex].type.toString(),
-      },
-      body: JSON.stringify({
-        card: {
-          type: heldCards[heldIndex].type,
-          deck: heldCards[heldIndex].deck,
-        },
-      }),
-    });
-
-    if (!res.ok) {
-      await handleError(res);
-    }
-
-    return res;
-  }, [gameId, handleError, heldCards, heldIndex, self.token]);
 
   const handleDrop = React.useCallback(
     async (dropIndex?: number) => {
@@ -294,74 +291,97 @@ export const Board = (props: BoardProps) => {
     ]
   );
 
-  const endTurn = React.useCallback(async () => {
-    setEndTurnPending(true);
-    var res = await fetch(`${API_URL}/api/end_turn`, {
-      method: "POST",
-      headers: {
-        token: self.token,
-        "game-id": gameId,
-      },
-      body: JSON.stringify({
-        hand: heldCards,
-      }),
-    });
-    setEndTurnPending(false);
+  React.useEffect(() => {
+    const handleHotkeys = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        dispatch(setHeldIndex(null));
+      }
+      if (event.key === "e") {
+        endTurn();
+      }
+      if (event.key === "g") {
+        goOut();
+      }
+      if (event.key === "s") {
+        sort();
+      }
+      if (event.key === "p") {
+        if (heldIndex === null) {
+          dispatch(setHeldIndex(PILE_HELD_INDEX));
+        } else {
+          handleDrop(PILE_HELD_INDEX);
+        }
+      }
 
-    if (!res.ok) {
-      await handleError(res);
-    }
-  }, [gameId, handleError, heldCards, self.token]);
+      // if is numeric key
+      if (event.key.match(/[0-9]/)) {
+        let num = parseInt(event.key);
 
-  const goOut = React.useCallback(async () => {
-    setGoOutPending(true);
-    var res = await fetch(`${API_URL}/api/go_out`, {
-      method: "POST",
-      headers: {
-        token: self.token,
-        "game-id": gameId,
-      },
-      body: JSON.stringify({
-        cards: heldCards,
-      }),
-    });
-    setGoOutPending(false);
+        // + 10 if shift
+        if (event.shiftKey) {
+          num += 10;
+        }
 
-    if (!res.ok) {
-      await handleError(res);
-    }
-  }, [gameId, handleError, heldCards, self.token]);
+        if (num > 0 && num <= heldCards.length) {
+          if (heldIndex === null) {
+            dispatch(setHeldIndex(num - 1));
+          } else {
+            handleDrop(num - 1);
+          }
+        }
+      }
+
+      if (event.key === "d") {
+        if (heldIndex === null) {
+          dispatch(setHeldIndex(DECK_HELD_INDEX));
+        } else {
+          handleDrop(DECK_HELD_INDEX);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleHotkeys);
+
+    return () => {
+      window.removeEventListener("keydown", handleHotkeys);
+    };
+  }, [dispatch, endTurn, goOut, handleDrop, heldCards.length, heldIndex, sort]);
 
   const canGoOut = game.hand.length > 0 && game.hand.every((c) => c.isGrouped);
   const isInEndRoundPhase = game.turnPhase === TurnPhase.Ending;
   const buttons = React.useMemo(() => {
     return (
-      <div className="flex justify-end w-[400px]">
-        <div className="flex justify-end space-x-2 p-2 w-full">
-          <Button
-            key="goOut"
-            onClick={goOut}
-            text="Go out"
-            type={isInEndRoundPhase && canGoOut ? "primary" : "secondary"}
-            pending={goOutPending}
-            disabled={!isInEndRoundPhase}
-          />
-          <Button
-            key="endTurn"
-            onClick={endTurn}
-            text="End turn"
-            type={isInEndRoundPhase && !canGoOut ? "primary" : "secondary"}
-            pending={endTurnPending}
-            disabled={!isInEndRoundPhase}
-          />
+      <div className="flex justify-end py-2 w-[950px]">
+        <div className="flex justify-between w-full">
+          <Button key="sort" onClick={sort} text="Sort" type={"secondary"} />
+
+          <div className="flex flex-row space-x-1">
+            <Button
+              key="goOut"
+              onClick={goOut}
+              text="Go out"
+              type={isInEndRoundPhase && canGoOut ? "primary" : "secondary"}
+              pending={goOutPending}
+              disabled={!isInEndRoundPhase}
+            />
+            <Button
+              key="endTurn"
+              onClick={endTurn}
+              text="End turn"
+              type={isInEndRoundPhase && !canGoOut ? "primary" : "secondary"}
+              pending={endTurnPending}
+              disabled={!isInEndRoundPhase}
+            />
+          </div>
         </div>
       </div>
     );
   }, [
+    sort,
     goOut,
+    isInEndRoundPhase,
     canGoOut,
     goOutPending,
-    isInEndRoundPhase,
     endTurn,
     endTurnPending,
   ]);

@@ -41,6 +41,7 @@ export const Hotkeys = (props: HotkeysProps) => {
 
         <HotkeyBox button="D" description="Pick up from deck" />
         <HotkeyBox button="P" description="Pick up or drop pile" />
+        <HotkeyBox button="S" description="Sort hand" />
         <HotkeyBox button="E" description="End turn" />
         <HotkeyBox button="G" description="Go out" />
         <HotkeyBox button="Esc" description="Drop card" />

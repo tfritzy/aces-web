@@ -13,7 +13,7 @@ const getColorClasses = (type: ToastType) => {
     case "error":
       return "bg-rose-400 text-white stroke-white dark:bg-gray-800 dark:text-rose-400 dark:stroke-rose-400";
     case "info":
-      return "bg-gray-400 text-white stroke-white dark:bg-gray-800 dark:text-gray-200 dark:stroke-gray-200";
+      return "bg-gray-50 text-gray-800 dark:text-white stroke-gray-800 dark:stroke-white dark:bg-gray-800 dark:text-gray-200 dark:stroke-gray-200";
     default:
       return "black";
   }
@@ -73,6 +73,7 @@ const getIcon = (type: ToastType) => {
 };
 
 export const Toast = (props: ToastProps) => {
+  console.log("render toast", props);
   return (
     <div
       id="toast-simple"
