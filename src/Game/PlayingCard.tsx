@@ -278,32 +278,26 @@ export const PlayingCard = (
   const dispatch = useDispatch();
   const selfRef = React.useRef<HTMLDivElement>(null);
   const card = props.card;
-  const handleDragStart = React.useCallback(
-    (e: React.MouseEvent) => {
-      dispatch(setHeldIndex(props.index));
-      dispatch(setDropSlotIndex(props.index));
-    },
-    [dispatch, props]
-  );
+  const handleDragStart = React.useCallback(() => {
+    dispatch(setHeldIndex(props.index));
+    dispatch(setDropSlotIndex(props.index));
+  }, [dispatch, props]);
 
-  const handleMouseMove = React.useCallback(
-    (e: React.MouseEvent) => {
-      if (!selfRef.current) {
-        return;
-      }
+  const handleGrab = React.useCallback(() => {
+    if (!selfRef.current) {
+      return;
+    }
 
-      if (props.heldIndex === null && e.buttons === 1) {
-        handleDragStart(e);
-      }
-    },
-    [props.heldIndex, handleDragStart]
-  );
+    if (props.heldIndex === null) {
+      handleDragStart();
+    }
+  }, [props.heldIndex, handleDragStart]);
 
   const handleMouseUp = React.useCallback(
     (e: React.MouseEvent) => {
       if (props.heldIndex === null && card.type !== CardType.SPINNER) {
         e.stopPropagation();
-        handleDragStart(e);
+        handleDragStart();
       }
     },
     [card.type, props.heldIndex, handleDragStart]
@@ -317,7 +311,8 @@ export const PlayingCard = (
   return (
     <div
       onMouseUp={handleMouseUp}
-      onMouseDown={handleMouseMove}
+      onMouseDown={handleGrab}
+      onTouchStart={handleGrab}
       ref={selfRef}
       style={{
         zIndex: props.z,
