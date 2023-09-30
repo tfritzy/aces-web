@@ -329,7 +329,7 @@ export const CardManagement = (props: CardManagementProps) => {
   needsCardsResize.current = false;
 
   return (
-    <div ref={selfRef} onMouseUp={handleMouseUp}>
+    <div ref={selfRef} onMouseUp={handleMouseUp} onTouchEnd={handleMouseUp}>
       <div
         style={{
           position: "fixed",
