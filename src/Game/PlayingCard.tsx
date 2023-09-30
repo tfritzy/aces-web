@@ -5,18 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
 import { setDropSlotIndex, setHeldIndex } from "store/cardManagementSlice";
 import { DropSlot } from "components/DropSlot";
-import {
-  cardHeight,
-  cardWidth,
-  darkModeBlack,
-  darkModeRed,
-  lightModeBlack,
-  lightModeRed,
-} from "Constants";
+import { cardHeight, cardWidth, red, black } from "Constants";
 import { isWild } from "helpers/getGroupedCards";
-import { MouseContext } from "./MouseContext";
 import { Cardback } from "components/Cardback";
-import { random } from "lodash";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -47,7 +38,7 @@ export const getSuitIcon = (suit: Suit): JSX.Element | undefined => {
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 29.904 29.904"
+            viewBox="0 0 31 31"
           >
             <g>
               <g>
@@ -103,21 +94,19 @@ export const getValueIcon = (card: Card): string[] => {
   }
 };
 
-const themedBlack = `text-${lightModeBlack} dark:text-${darkModeBlack} stroke-${lightModeBlack} dark:stroke-${darkModeBlack} fill-${lightModeBlack} dark:fill-${darkModeBlack} `;
-const themedRed = `text-${lightModeRed} dark:text-${darkModeRed} stroke-${lightModeRed} dark:stroke-${darkModeRed} fill-${lightModeRed} dark:fill-${darkModeRed} `;
 const cardBackground = "bg-gray-50 dark:bg-gray-950";
 
 const getCardColor = (card: Card) => {
   switch (card.suit) {
     case Suit.CLUBS:
     case Suit.SPADES:
-      return themedBlack;
+      return black;
     case Suit.DIAMONDS:
     case Suit.HEARTS:
-      return themedRed;
+      return red;
     case Suit.SUITLESS:
-      if (card.type === CardType.JOKER_A) return themedRed;
-      if (card.type === CardType.JOKER_B) return themedBlack;
+      if (card.type === CardType.JOKER_A) return red;
+      if (card.type === CardType.JOKER_B) return black;
       return "text-gray-400";
   }
 };
@@ -198,7 +187,9 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
   } else {
     face = (
       <div className="w-full h-full flex justify-center items-center text-center align-middle">
-        <div className="w-16 h-16 text-6xl">{getSuitIcon(card.suit)}</div>
+        <div className="w-[50px] h-[50px] text-6xl">
+          {getSuitIcon(card.suit)}
+        </div>
       </div>
     );
   }
@@ -223,7 +214,21 @@ const CardBody = (props: CardBodyProps) => {
     contents = (
       <>
         {props.isWild && (
-          <div className="absolute bottom-1 left-2 uppercase text-xs font-mono text-gray-500">
+          <div
+            className={`absolute top-1 right-2 uppercase text-xs font-mono rotate-180 ${getCardColor(
+              card
+            )}`}
+          >
+            wild
+          </div>
+        )}
+
+        {props.isWild && (
+          <div
+            className={`absolute bottom-1 left-2 uppercase text-xs font-mono ${getCardColor(
+              card
+            )}`}
+          >
             wild
           </div>
         )}
@@ -239,11 +244,13 @@ const CardBody = (props: CardBodyProps) => {
 
   return (
     <div
-      className={`${getCardColor(
+      className={`${
+        props.isGrouped ? "border-2 border-green-400 dark:border-green-500" : ""
+      } ${getCardColor(
         card
-      )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden select-none relative font-serif ${
-        props.isGrouped ? "ring-2 ring-emerald-200" : ""
-      } ${props.shadow}`}
+      )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden select-none relative font-serif  ${
+        props.shadow
+      }`}
       style={{ height: cardHeight, width: cardWidth }}
     >
       {contents}
@@ -310,7 +317,7 @@ export const PlayingCard = (
   return (
     <div
       onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
+      onMouseDown={handleMouseMove}
       ref={selfRef}
       style={{
         zIndex: props.z,

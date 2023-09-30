@@ -6,6 +6,7 @@ type ButtonProps = {
   type: "primary" | "secondary";
   pending?: boolean;
   size?: "small" | "jumbo";
+  disabled?: boolean;
 };
 
 export const Button = (props: ButtonProps) => {
@@ -24,7 +25,7 @@ export const Button = (props: ButtonProps) => {
       <button
         onClick={props.onClick}
         className={`flex font-semibold justify-center items-center rounded-md hover:drop-shadow border ${typeClasses} ${sizeClasses} space-x-1 disabled:opacity-50 px-2 py-1 shadow-sm transition-all`}
-        disabled={props.pending}
+        disabled={props.pending || props.disabled}
       >
         {props.pending && <Spinner />}
 

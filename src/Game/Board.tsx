@@ -13,6 +13,7 @@ import {
   setDeckSize,
   setPile,
   setHand,
+  TurnPhase,
 } from "store/gameSlice";
 import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
@@ -332,6 +333,7 @@ export const Board = (props: BoardProps) => {
   }, [gameId, handleError, heldCards, self.token]);
 
   const canGoOut = game.hand.length > 0 && game.hand.every((c) => c.isGrouped);
+  const isInEndRoundPhase = game.turnPhase === TurnPhase.Ending;
   const buttons = React.useMemo(() => {
     return (
       <div className="flex justify-end w-[400px]">
@@ -340,20 +342,29 @@ export const Board = (props: BoardProps) => {
             key="goOut"
             onClick={goOut}
             text="Go out"
-            type={canGoOut ? "primary" : "secondary"}
+            type={isInEndRoundPhase && canGoOut ? "primary" : "secondary"}
             pending={goOutPending}
+            disabled={!isInEndRoundPhase}
           />
           <Button
             key="endTurn"
             onClick={endTurn}
             text="End turn"
-            type={!canGoOut ? "primary" : "secondary"}
+            type={isInEndRoundPhase && !canGoOut ? "primary" : "secondary"}
             pending={endTurnPending}
+            disabled={!isInEndRoundPhase}
           />
         </div>
       </div>
     );
-  }, [endTurn, endTurnPending, goOut, goOutPending, canGoOut]);
+  }, [
+    goOut,
+    canGoOut,
+    goOutPending,
+    isInEndRoundPhase,
+    endTurn,
+    endTurnPending,
+  ]);
 
   return (
     <MouseProvider>

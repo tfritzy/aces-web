@@ -6,6 +6,7 @@ type ModalProps = {
   children: React.ReactNode;
   onClose?: () => void;
   dontShadeBackground?: boolean;
+  ignoreWashClick?: boolean;
 };
 
 export const Modal = (props: ModalProps) => {
@@ -33,7 +34,7 @@ export const Modal = (props: ModalProps) => {
           ? "bg-opacity-20 opacity-100"
           : "bg-opacity-0 opacity-0 pointer-events-none"
       } ${!props.dontShadeBackground ? "bg-[#00000022]" : ""}`}
-      onClick={props.onClose}
+      onClick={!props.ignoreWashClick ? props.onClose : undefined}
     >
       {props.shown && (
         <div

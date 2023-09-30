@@ -1,9 +1,4 @@
-import {
-  darkModeBlack,
-  darkModeRed,
-  lightModeBlack,
-  lightModeRed,
-} from "Constants";
+import { red, black, borderedRed, borderedBlack } from "Constants";
 import { getSuitIcon, getValueIcon } from "Game/PlayingCard";
 import { Card, CardType, Suit } from "Game/Types";
 
@@ -11,21 +6,18 @@ type MinicardProps = {
   card: Card;
 };
 
-const themedBlack = `border-${lightModeBlack} text-${lightModeBlack} dark:border-${darkModeBlack} dark:text-${darkModeBlack}`;
-const themedRed = `border-${lightModeRed} dark:border-${darkModeRed} text-${lightModeRed} dark:text-${darkModeRed}`;
-
 const getCardColor = (card: Card) => {
   switch (card.suit) {
     case Suit.CLUBS:
     case Suit.SPADES:
-      return themedBlack;
+      return borderedBlack;
     case Suit.DIAMONDS:
     case Suit.HEARTS:
-      return themedRed;
+      return borderedRed;
     case Suit.SUITLESS:
-      if (card.type === CardType.JOKER_A) return themedRed;
-      if (card.type === CardType.JOKER_B) return themedBlack;
-      return "text-gray-400";
+      if (card.type === CardType.JOKER_A) return borderedRed;
+      if (card.type === CardType.JOKER_B) return borderedBlack;
+      return borderedBlack;
   }
 };
 

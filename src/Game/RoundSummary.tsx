@@ -110,7 +110,11 @@ export const RoundSummary = (props: RoundSummaryProps) => {
           height={windowDimensions.height}
         />
       )}
-      <Modal shown={props.shown} onClose={props.onContinue}>
+      <Modal
+        shown={props.shown}
+        onClose={!isGameOver ? props.onContinue : undefined}
+        ignoreWashClick
+      >
         <div className="divide-solid divide-y divide-gray-300 dark:divide-gray-500">
           <div className="font-semibold text-lg p-2 px-6">
             {isGameOver ? "Final standings" : `Round ${game.round} results`}

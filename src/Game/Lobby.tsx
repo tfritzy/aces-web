@@ -55,12 +55,15 @@ export const Lobby = (props: LobbyProps) => {
         <div className="flex flex-col space-y-4 p-3 pb-5">
           <div>
             <div className="mb-2">Invite by link</div>
-            <CopyBox text={`${currentdomain}/${props.gameId}/join`} />
+            <CopyBox
+              text={`${currentdomain}/${props.gameId}/join`}
+              copyText={`https://${currentdomain}/${props.gameId}/join`}
+            />
           </div>
 
           <div>
             <div className="mb-2">Invite by code</div>
-            <CopyBox text={props.gameId} />
+            <CopyBox text={props.gameId} copyText={props.gameId} />
           </div>
 
           <div className="">

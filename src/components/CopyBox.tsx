@@ -2,6 +2,7 @@ import React from "react";
 
 type CopyBoxProps = {
   text: string;
+  copyText: string;
 };
 
 const copyIcon = (
@@ -54,7 +55,7 @@ export const CopyBox = (props: CopyBoxProps) => {
   const [hovered, setHovered] = React.useState(false);
 
   const copy = () => {
-    navigator.clipboard.writeText(props.text);
+    navigator.clipboard.writeText(props.copyText);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
