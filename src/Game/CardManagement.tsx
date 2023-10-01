@@ -9,7 +9,7 @@ import {
   PILE_HELD_INDEX,
   setDropSlotIndex,
 } from "store/cardManagementSlice";
-import { Card, cardBack } from "./Types";
+import { Card } from "./Types";
 
 const shadowSizes = [
   "shadow-md shadow-[#00000033]",
@@ -72,7 +72,8 @@ export const CardManagement = (props: CardManagementProps) => {
   const dispatch = useDispatch();
   const hand = useSelector((state: RootState) => state.game.hand);
   const pile = useSelector((state: RootState) => state.game.pile);
-  const deckSize = useSelector((state: RootState) => state.game.deckSize);
+  const deck = useSelector((state: RootState) => state.game.deck);
+  const deckSize = useSelector((state: RootState) => state.game.deck.length);
   const heldIndex = useSelector(
     (state: RootState) => state.cardManagement.heldIndex
   );
@@ -153,7 +154,7 @@ export const CardManagement = (props: CardManagementProps) => {
             index={index}
             targetX={x}
             targetY={dockCenterY - cardHeight / 2}
-            key={card.type + "-" + card.deck}
+            key={card.id}
             z={index + 1}
             shadow="shadow-sm"
             skipLerp={needsCardsResize.current}
@@ -208,7 +209,7 @@ export const CardManagement = (props: CardManagementProps) => {
             index={PILE_HELD_INDEX}
             targetX={pileX}
             targetY={pileStartY - i}
-            key={pile[i].type + "-" + pile[i].deck}
+            key={pile[i].id}
             z={i}
             shadow={shadowSizes[shadow]}
             skipLerp={needsCardsResize.current}
@@ -224,6 +225,7 @@ export const CardManagement = (props: CardManagementProps) => {
               width: cardWidth,
               height: cardHeight,
             }}
+            key={pile[i].id}
           ></div>
         );
       }
@@ -258,14 +260,13 @@ export const CardManagement = (props: CardManagementProps) => {
       if (i >= deckSize - 2) {
         buffer.push(
           <AnimatedPlayingCard
-            card={cardBack}
+            card={deck[i]}
             index={DECK_HELD_INDEX}
             targetX={deckCenterX}
             targetY={deckStartY - i}
-            key={"deck-" + i}
+            key={deck[i].id}
             z={i}
             shadow={shadowSizes[shadow]}
-            skipLerp
           />
         );
       } else {
@@ -278,26 +279,23 @@ export const CardManagement = (props: CardManagementProps) => {
               width: cardWidth,
               height: cardHeight,
             }}
+            key={deck[i].id}
           ></div>
         );
       }
     }
 
     return buffer;
-  }, [deckCenterX, deckY, deckSize, heldIndex]);
+  }, [deckY, deckSize, heldIndex, deck, deckCenterX]);
   cards.push(...deckCards);
 
   let heldCard: Card | null = null;
-  let key: string | null = null;
   if (heldIndex === PILE_HELD_INDEX) {
     heldCard = pile.length ? pile[pile.length - 1] : null;
-    key = heldCard ? heldCard.type + "-" + heldCard.deck : null;
   } else if (heldIndex === DECK_HELD_INDEX) {
-    heldCard = cardBack;
-    key = "deck-" + (deckSize - 1);
+    heldCard = deck[deck.length - 1];
   } else if (heldIndex !== null && heldIndex >= 0) {
     heldCard = hand[heldIndex];
-    key = heldCard.type + "-" + heldCard.deck;
   }
 
   if (heldCard) {
@@ -308,7 +306,7 @@ export const CardManagement = (props: CardManagementProps) => {
         targetX={mousePos.x - cardWidth / 2}
         targetY={mousePos.y - cardHeight / 2}
         z={dropSlotIndex ?? 80}
-        key={key}
+        key={heldCard.id}
         skipLerp
         shadow="drop-shadow-lg"
         opacity={isHoveringHand ? 0.5 : 1}

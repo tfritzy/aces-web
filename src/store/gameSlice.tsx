@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Card } from "Game/Types";
+import { Card, CardType } from "Game/Types";
+import { generateId } from "helpers/generateId";
 import { getGroups } from "helpers/getGroupedCards";
 
 export enum GameState {
@@ -24,7 +25,7 @@ type Game = {
   turn: number;
   pile: Card[];
   hand: Card[];
-  deckSize: number;
+  deck: Card[];
   turnPhase: TurnPhase;
 };
 
@@ -33,7 +34,7 @@ const initialGameState: Game = {
   state: GameState.Invalid,
   pile: [],
   hand: [],
-  deckSize: 0,
+  deck: [],
   round: 0,
   turn: 0,
   turnPhase: TurnPhase.Drawing,
@@ -59,7 +60,24 @@ export const gameSlice = createSlice({
       state.pile = action.payload;
     },
     setDeckSize: (state, action: { payload: number }) => {
-      state.deckSize = action.payload;
+      while (state.deck.length < action.payload) {
+        state.deck.push({
+          type: CardType.CARD_BACK,
+          deck: 0,
+          isGrouped: false,
+          id: generateId("card", 12),
+          value: 0,
+          suit: 0,
+        });
+      }
+
+      state.deck = state.deck.slice(0, action.payload);
+    },
+    setDeck: (state, action: { payload: Card[] }) => {
+      state.deck = action.payload;
+    },
+    popTopDeck: (state) => {
+      state.deck.pop();
     },
     setRound: (state, action: { payload: number }) => {
       state.round = action.payload;
@@ -91,6 +109,8 @@ export const {
   addToPile,
   removeTopFromPile,
   setDeckSize,
+  setDeck,
+  popTopDeck,
   setRound,
   setTurn,
   setHand,

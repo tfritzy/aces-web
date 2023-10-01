@@ -9,6 +9,7 @@ export type Card = {
   isGrouped: boolean;
   createdTimeMs?: number;
   score?: number;
+  id: string;
 };
 
 export enum CardType {
@@ -104,22 +105,6 @@ export enum CardValue {
   JOKER,
 }
 
-export const spinnerCard: Card = {
-  type: CardType.SPINNER,
-  suit: Suit.SUITLESS,
-  value: CardValue.INVALID,
-  deck: 0,
-  isGrouped: false,
-};
-
-export const cardBack: Card = {
-  type: CardType.CARD_BACK,
-  suit: Suit.SUITLESS,
-  value: CardValue.INVALID,
-  deck: 0,
-  isGrouped: false,
-};
-
 export type GameStateForPlayer = {
   hand: Card[];
   deckSize: number;
@@ -186,5 +171,6 @@ export const parseCard = (card: SchemaCard): Card => {
     value: getValue(card.type),
     score: getScore(getValue(card.type)),
     isGrouped: false,
+    id: `${card.type}-${card.deck}`,
   };
 };

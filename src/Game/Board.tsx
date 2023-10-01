@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Suit, parseCard, spinnerCard } from "Game/Types";
+import { parseCard } from "Game/Types";
 import { API_URL } from "Constants";
 import { Toasts, useToasts } from "components/Toasts";
 import { RoundSummary } from "Game/RoundSummary";
@@ -10,10 +10,11 @@ import { AppDispatch, RootState } from "store/store";
 import {
   GameState,
   removeTopFromPile,
-  setDeckSize,
   setPile,
   setHand,
   TurnPhase,
+  popTopDeck,
+  setDeck,
 } from "store/gameSlice";
 import { generateId } from "helpers/generateId";
 import { PlayerList } from "Game/PlayerList";
@@ -246,10 +247,12 @@ export const Board = (props: BoardProps) => {
           }
         });
       } else if (dropIndex >= 0 && heldIndex === DECK_HELD_INDEX) {
-        const originalDeckSize = game.deckSize;
+        const originalDeck = [...game.deck];
+        const topCard = game.deck[game.deck.length - 1];
         const pendingHand = [...heldCards];
-        pendingHand.splice(dropIndex, 0, spinnerCard);
+        pendingHand.splice(dropIndex, 0, topCard);
         dispatch(setHand(pendingHand));
+        dispatch(setDeck(originalDeck.slice(0, -1)));
         dispatch(setDisabled(true));
 
         const pendingSlot = dropIndex;
@@ -260,10 +263,10 @@ export const Board = (props: BoardProps) => {
             const drawnCard = parseCard(await res.json());
             finalHand.splice(pendingSlot, 0, drawnCard);
             dispatch(setHand(finalHand));
-            dispatch(setDeckSize(game.deckSize - 1));
+            dispatch(popTopDeck());
           } else {
             dispatch(setHand(originalHand));
-            dispatch(setDeckSize(originalDeckSize));
+            dispatch(setDeck(originalDeck));
           }
         });
       } else {
@@ -284,7 +287,7 @@ export const Board = (props: BoardProps) => {
       dispatch,
       drawFromDeck,
       drawFromPile,
-      game.deckSize,
+      game.deck,
       game.pile,
       heldCards,
       heldIndex,

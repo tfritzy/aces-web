@@ -2,6 +2,7 @@ import {
   GameState,
   TurnPhase,
   addToPile,
+  popTopDeck,
   removeTopFromPile,
   setDeckSize,
   setGameId,
@@ -59,7 +60,7 @@ const handleMessage = (
       break;
     case EventType.DrawFromDeck:
       if (message.playerId !== state.self.id) {
-        dispatch(setDeckSize(state.game.deckSize - 1));
+        dispatch(popTopDeck());
       }
       dispatch(setTurnPhase(TurnPhase.Discarding));
       break;
