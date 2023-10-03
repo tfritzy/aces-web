@@ -14,6 +14,7 @@ export const MouseProvider = ({ children }: { children: JSX.Element }) => {
     const handleTouchMove = (event: TouchEvent) => {
       setMouseX(event.touches[0].clientX);
       setMouseY(event.touches[0].clientY);
+      event.preventDefault();
     };
 
     window.addEventListener("mousemove", handleMouseMove, true);
