@@ -12,7 +12,7 @@ type ButtonProps = {
 export const Button = (props: ButtonProps) => {
   const typeClasses =
     props.type === "primary"
-      ? "bg-violet-500 border-violet-700 text-white hover:border-violet-800 dark:border-violet-400 dark:hover:border-violet-300 shadow-violet-500/50"
+      ? "bg-rose-500 border-rose-700 text-white hover:border-rose-800 dark:border-rose-400 dark:hover:border-rose-300 shadow-rose-500/50"
       : "bg-white dark:bg-slate-700 border-gray-400 dark:border-slate-500 text-gray-800 dark:text-white hover:border-gray-500";
 
   const sizeClasses =

@@ -4,7 +4,7 @@ import { TurnPhase } from "store/gameSlice";
 import { RootState } from "store/store";
 
 const highlighted =
-  "px-2 py-1 bg-violet-100 dark:bg-violet-500 rounded text-violet-600 font-semibold border border-violet-300 dark:border-violet-400 dark:text-white";
+  "px-2 py-1 bg-rose-100 dark:bg-rose-600 rounded text-rose-600 font-semibold border border-rose-300 dark:border-rose-400 dark:text-white";
 const nonHighlighted =
   "px-2 py-1 rounded bg-gray-50 text-gray-500 font-semibold border dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200";
 const disabledStyling = " opacity-50";
