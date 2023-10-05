@@ -351,12 +351,32 @@ export const Board = (props: BoardProps) => {
   }, [dispatch, endTurn, goOut, handleDrop, heldCards.length, heldIndex, sort]);
 
   const canGoOut = game.hand.length > 0 && game.hand.every((c) => c.isGrouped);
-  const isInEndRoundPhase = game.turnPhase === TurnPhase.Ending;
+  const isInEndRoundPhase = isOwnTurn && game.turnPhase === TurnPhase.Ending;
   const buttons = React.useMemo(() => {
     return (
       <div className="flex justify-end py-2 w-[950px]">
         <div className="flex justify-between w-full">
-          <Button key="sort" onClick={sort} text="Sort" type={"secondary"} />
+          <Button
+            key="sort"
+            onClick={sort}
+            text={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                className="w-5 h-5 stroke-black dark:stroke-white"
+              >
+                <path
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M10 14H2M8 10H2M6 6H2M12 18H2M19 20V4m0 16 3-3m-3 3-3-3m3-13 3 3m-3-3-3 3"
+                ></path>
+              </svg>
+            }
+            type={"secondary"}
+          />
 
           <div className="flex flex-row space-x-1">
             <Button

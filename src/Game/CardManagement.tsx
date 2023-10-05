@@ -62,6 +62,8 @@ function getHoveredIndex(
 const dockHeight = cardHeight + 100;
 const dockYPercent = 0.75;
 const deckPercentFromTop = 0.27;
+const handPadding = 25;
+const handWidth = 950;
 
 type CardManagementProps = {
   onDrop: (dropIndex?: number) => void;
@@ -107,10 +109,10 @@ export const CardManagement = (props: CardManagementProps) => {
   const pileX = windowDimensions.width / 2 + 25;
   const isHoveringHand = mousePos.y > dockTop && mousePos.y < dockBottom;
   const isHoveringPile =
-    mousePos.x > pileX &&
-    mousePos.x < pileX + cardWidth &&
-    mousePos.y > deckY &&
-    mousePos.y < deckY + cardHeight;
+    mousePos.x > pileX - 50 &&
+    mousePos.x < pileX + cardWidth + 50 &&
+    mousePos.y > deckY - 50 &&
+    mousePos.y < deckY + cardHeight + 50;
 
   let numCardSlots = hand.length;
   if (heldIndex !== null && heldIndex >= 0) {
@@ -122,7 +124,14 @@ export const CardManagement = (props: CardManagementProps) => {
   }
 
   let insertSlot: number | null = null;
-  const distBetweenCards = Math.min(900 / numCardSlots, cardWidth + 10);
+  const distBetweenCards = Math.min(
+    (handWidth - handPadding * 2 - cardWidth) / (numCardSlots - 1),
+    cardWidth + 10
+  );
+  const handStartX =
+    distBetweenCards === cardWidth + 10
+      ? windowDimensions.width / 2 - (numCardSlots / 2) * distBetweenCards
+      : windowDimensions.width / 2 - handWidth / 2 + handPadding;
   if (isHoveringHand && heldIndex !== null) {
     const hoveredIndex = getHoveredIndex(
       mousePos.x,
@@ -139,7 +148,7 @@ export const CardManagement = (props: CardManagementProps) => {
   }
 
   const handCards = React.useMemo(() => {
-    let x = windowDimensions.width / 2 - distBetweenCards * (numCardSlots / 2);
+    let x = handStartX;
     const buffer: JSX.Element[] = [];
 
     hand.forEach((card, index) => {
@@ -165,15 +174,7 @@ export const CardManagement = (props: CardManagementProps) => {
     });
 
     return buffer;
-  }, [
-    distBetweenCards,
-    dockCenterY,
-    hand,
-    heldIndex,
-    insertSlot,
-    numCardSlots,
-    windowDimensions.width,
-  ]);
+  }, [distBetweenCards, dockCenterY, hand, handStartX, heldIndex, insertSlot]);
   cards.push(...handCards);
 
   const pileCards = React.useMemo(() => {
@@ -267,6 +268,7 @@ export const CardManagement = (props: CardManagementProps) => {
             key={deck[i].id}
             z={i}
             shadow={shadowSizes[shadow]}
+            skipLerp={needsCardsResize.current}
           />
         );
       } else {
@@ -337,9 +339,10 @@ export const CardManagement = (props: CardManagementProps) => {
         }}
       >
         <div
-          className="relative w-[950px] rounded-lg border border-gray-300 dark:border-gray-700 shadow-[0_0_10px_#00000011_inset] dark:shadow-[0_0_10px_#00000099_inset]"
+          className="relative rounded-lg border border-gray-300 dark:border-gray-700 shadow-[0_0_10px_#00000011_inset] dark:shadow-[0_0_10px_#00000099_inset]"
           style={{
             height: cardHeight + 50,
+            width: handWidth,
           }}
         >
           <div className="absolute -top-11 right-0">{props.buttons}</div>
