@@ -133,7 +133,7 @@ const JoinSpecificGameMenu = (props: JoinSpecificGameMenuProps) => {
           onClick={() => {
             navigate("/");
           }}
-          className="text-rose-500 dark:text-rose-400 font-semibold"
+          className="text-rose-500 dark:text-rose-500 font-semibold"
         >
           Return home
         </button>
@@ -256,7 +256,7 @@ const JoinGameMenu = (props: JoinGameMenuProps) => {
         Or{" "}
         <button
           onClick={props.setCreatingGame}
-          className="text-rose-500 dark:text-rose-400 font-semibold"
+          className="text-rose-500 dark:text-rose-500 font-semibold"
         >
           create new game
         </button>
@@ -332,7 +332,7 @@ const CreateGameMenu = (props: CreateGameMenuProps) => {
         Or{" "}
         <button
           onClick={props.setJoiningGame}
-          className="text-rose-500 dark:text-rose-400 font-semibold"
+          className="text-rose-500 dark:text-rose-500 font-semibold"
         >
           join an exsiting game
         </button>

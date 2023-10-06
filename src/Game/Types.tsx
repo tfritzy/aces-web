@@ -1,6 +1,12 @@
 import { GameState } from "store/gameSlice";
 import { Player } from "store/playerSlice";
 
+export enum TransitionType {
+  FlyOutOfDeck,
+  FlyOutOfPile,
+  FlyInToPile,
+}
+
 export type Card = {
   type: CardType;
   suit: Suit;
@@ -10,6 +16,7 @@ export type Card = {
   createdTimeMs?: number;
   score?: number;
   id: string;
+  needsTransition?: TransitionType;
 };
 
 export enum CardType {

@@ -73,7 +73,6 @@ const getIcon = (type: ToastType) => {
 };
 
 export const Toast = (props: ToastProps) => {
-  console.log("render toast", props);
   return (
     <div
       id="toast-simple"

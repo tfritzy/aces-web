@@ -63,7 +63,7 @@ export const HotkeysButton = () => {
         text={
           <svg
             width="24px"
-            stroke-width="1.5"
+            strokeWidth="1.5"
             height="24px"
             viewBox="0 0 24 24"
             fill="none"
@@ -72,16 +72,16 @@ export const HotkeysButton = () => {
           >
             <path
               d="M4 19V5a2 2 0 012-2h13.4a.6.6 0 01.6.6v13.114M6 17h14M6 21h14"
-              stroke-width="1.5"
-              stroke-linecap="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
             ></path>
             <path
               d="M6 21a2 2 0 110-4"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             ></path>
-            <path d="M9 7h6" stroke-width="1.5" stroke-linecap="round"></path>
+            <path d="M9 7h6" strokeWidth="1.5" strokeLinecap="round"></path>
           </svg>
         }
       />

@@ -4,6 +4,7 @@ import {
   addToPile,
   popTopDeck,
   removeTopFromPile,
+  setDeck,
   setDeckSize,
   setGameId,
   setHand,
@@ -22,7 +23,7 @@ import { Board } from "./Board";
 import { EventType, Message } from "./Events";
 import { ToastProps } from "components/Toast";
 import { addPlayer, setPlayers, updatePlayer } from "store/playerSlice";
-import { SchemaCard, parseCard } from "./Types";
+import { SchemaCard, TransitionType, parseCard } from "./Types";
 import { API_URL } from "Constants";
 import { useEffect } from "react";
 import React from "react";
@@ -31,6 +32,7 @@ import { Alert } from "components/Alert";
 import { useParams } from "react-router-dom";
 import { Modal } from "components/Modal";
 import { LoadingState } from "components/LoadingState";
+import { cardManagementSlice, setOnTheWayOut } from "store/cardManagementSlice";
 
 const handleMessage = (
   message: Message,
@@ -40,8 +42,6 @@ const handleMessage = (
   state: RootState,
   handleError: (response: Response) => void
 ) => {
-  console.log(message);
-
   switch (message.type) {
     case EventType.JoinGame:
       dispatch(
@@ -60,19 +60,33 @@ const handleMessage = (
       break;
     case EventType.DrawFromDeck:
       if (message.playerId !== state.self.id) {
+        const topCard = { ...state.game.deck[state.game.deck.length - 1] };
+        topCard.needsTransition = TransitionType.FlyOutOfDeck;
+        const onTheWayOut = [...state.cardManagement.onTheWayOut];
+        onTheWayOut.push(topCard);
+        dispatch(setOnTheWayOut(onTheWayOut));
+
         dispatch(popTopDeck());
       }
       dispatch(setTurnPhase(TurnPhase.Discarding));
       break;
     case EventType.DrawFromPile:
       if (message.playerId !== state.self.id) {
-        dispatch(removeTopFromPile());
+        const topCard = { ...state.game.pile[state.game.pile.length - 1] };
+        topCard.needsTransition = TransitionType.FlyOutOfPile;
+        const onTheWayOut = [...state.cardManagement.onTheWayOut];
+        onTheWayOut.push(topCard);
+        dispatch(setOnTheWayOut(onTheWayOut));
+
+        const newPile = state.game.pile.slice(0, state.game.pile.length - 1);
+        dispatch(setPile(newPile));
       }
       dispatch(setTurnPhase(TurnPhase.Discarding));
       break;
     case EventType.Discard:
       if (message.playerId !== state.self.id) {
         const card = parseCard(message.card);
+        card.needsTransition = TransitionType.FlyInToPile;
         dispatch(addToPile(card));
       }
       dispatch(setTurnPhase(TurnPhase.Ending));
@@ -83,9 +97,7 @@ const handleMessage = (
       break;
     case EventType.AdvanceTurn:
       dispatch(setTurn(message.turn));
-      console.log(message, state.players.players[message.turn]);
       if (state.self.id === state.players.players[message.turn].id) {
-        console.log("Adding toast");
         addToast({
           message: "It's your turn",
           type: "info",

@@ -76,12 +76,11 @@ export const CardManagement = (props: CardManagementProps) => {
   const pile = useSelector((state: RootState) => state.game.pile);
   const deck = useSelector((state: RootState) => state.game.deck);
   const deckSize = useSelector((state: RootState) => state.game.deck.length);
-  const heldIndex = useSelector(
-    (state: RootState) => state.cardManagement.heldIndex
+  const cardManagement = useSelector(
+    (state: RootState) => state.cardManagement
   );
-  const dropSlotIndex = useSelector(
-    (state: RootState) => state.cardManagement.dropSlotIndex
-  );
+  const heldIndex = cardManagement.heldIndex;
+  const dropSlotIndex = cardManagement.dropSlotIndex;
   const mousePos = React.useContext(MouseContext);
   const selfRef = React.useRef<HTMLDivElement>(null);
   const [windowDimensions, setWindowDimensions] = React.useState(
@@ -290,6 +289,27 @@ export const CardManagement = (props: CardManagementProps) => {
     return buffer;
   }, [deckY, deckSize, heldIndex, deck, deckCenterX]);
   cards.push(...deckCards);
+
+  const onTheWayOutCards = React.useMemo(() => {
+    const buffer: JSX.Element[] = [];
+    for (let i = 0; i < cardManagement.onTheWayOut.length; i++) {
+      buffer.push(
+        <AnimatedPlayingCard
+          card={cardManagement.onTheWayOut[i]}
+          index={-1}
+          targetX={deckCenterX}
+          targetY={deckY - i}
+          key={cardManagement.onTheWayOut[i].id}
+          z={i}
+          shadow="shadow-sm"
+          skipLerp={needsCardsResize.current}
+        />
+      );
+    }
+
+    return buffer;
+  }, [cardManagement.onTheWayOut, deckCenterX, deckY]);
+  cards.push(...onTheWayOutCards);
 
   let heldCard: Card | null = null;
   if (heldIndex === PILE_HELD_INDEX) {

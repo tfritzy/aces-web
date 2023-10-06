@@ -1,13 +1,18 @@
 import * as React from "react";
-import { CardType } from "./Types";
+import { CardType, TransitionType } from "./Types";
 import { Suit, Card, CardValue } from "Game/Types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/store";
-import { setDropSlotIndex, setHeldIndex } from "store/cardManagementSlice";
-import { DropSlot } from "components/DropSlot";
+import {
+  setDropSlotIndex,
+  setHeldIndex,
+  setOnTheWayOut,
+} from "store/cardManagementSlice";
 import { cardHeight, cardWidth, red, black } from "Constants";
 import { isWild } from "helpers/getGroupedCards";
 import { Cardback } from "components/Cardback";
+import { setDeck, setPile } from "store/gameSlice";
+import { CardManagement } from "./CardManagement";
 
 // How many icons are in each column of the face of the non-face cards.
 const cardSuitColPlacements = {
@@ -343,53 +348,101 @@ export const AnimatedPlayingCard = (
   const [top, setTop] = React.useState(props.targetY);
   const leftRef = React.useRef(props.targetX);
   const topRef = React.useRef(props.targetY);
+  const speed = React.useRef(0.01);
   const requestRef = React.useRef(0);
-  const round = useSelector((state: RootState) => state.game.round);
-  const hand = useSelector((state: RootState) => state.game.hand);
-  const isGrouped = props.index >= 0 && hand[props.index].isGrouped;
-  const wild = isWild(props.card, round);
-  const heldIndex = useSelector(
-    (state: RootState) => state.cardManagement.heldIndex
+  const game = useSelector((state: RootState) => state.game);
+  const isGrouped = props.index >= 0 && game.hand[props.index].isGrouped;
+  const wild = isWild(props.card, game.round);
+  const dispatch = useDispatch();
+  const cardManagement = useSelector(
+    (state: RootState) => state.cardManagement
   );
 
   const animate = () => {
     if (leftRef.current !== undefined) {
       const deltaX = targetPos.current.x - leftRef.current;
       const deltaY = targetPos.current.y - topRef.current;
-      const newX = leftRef.current + deltaX * 0.12;
-      const newY = topRef.current + deltaY * 0.12;
+      const newX = leftRef.current + deltaX * speed.current;
+      const newY = topRef.current + deltaY * speed.current;
       leftRef.current = newX;
       topRef.current = newY;
       setLeft(() => newX);
       setTop(() => newY);
 
       if (Math.abs(deltaX) > 0.1 || Math.abs(deltaY) > 0.1) {
+        speed.current = Math.min(0.12, speed.current * 1.05);
         requestRef.current = requestAnimationFrame(animate);
       } else {
+        speed.current = 0.06;
         setLeft(() => targetPos.current.x);
         setTop(() => targetPos.current.y);
         leftRef.current = targetPos.current.x;
         topRef.current = targetPos.current.y;
         cancelAnimationFrame(requestRef.current);
+
+        if (props.card.needsTransition === TransitionType.FlyInToPile) {
+          const cardIndex = game.pile.findIndex((c) => c.id === props.card.id);
+          if (cardIndex !== -1) {
+            const card = { ...game.pile[cardIndex] };
+            card.needsTransition = undefined;
+            const newPile = [...game.pile];
+            newPile[newPile.length - 1] = card;
+            dispatch(setPile(newPile));
+          }
+        } else if (props.card.needsTransition === TransitionType.FlyOutOfPile) {
+          const newOnTheWayOut = cardManagement.onTheWayOut.filter(
+            (c) => c.id !== props.card.id
+          );
+          dispatch(setOnTheWayOut(newOnTheWayOut));
+        } else if (props.card.needsTransition === TransitionType.FlyOutOfDeck) {
+          const newOnTheWayOut = cardManagement.onTheWayOut.filter(
+            (c) => c.id !== props.card.id
+          );
+          dispatch(setOnTheWayOut(newOnTheWayOut));
+        }
       }
     }
   };
 
   React.useEffect(() => {
+    speed.current = 0.06;
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
     // Intentionally short list.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.targetX, props.targetY]);
+  }, [props.targetX, props.targetY, props.card.needsTransition]);
 
   React.useEffect(() => {
     targetPos.current = { x: props.targetX, y: props.targetY };
+
+    if (
+      props.card.needsTransition === TransitionType.FlyOutOfDeck ||
+      props.card.needsTransition === TransitionType.FlyOutOfPile
+    ) {
+      targetPos.current = { x: props.targetX, y: props.targetY - 800 };
+    }
 
     if (props.skipLerp) {
       leftRef.current = props.targetX;
       topRef.current = props.targetY;
     }
-  }, [props.targetX, props.targetY, props.skipLerp]);
+  }, [
+    props.targetX,
+    props.targetY,
+    props.skipLerp,
+    props.card.needsTransition,
+  ]);
+
+  React.useEffect(() => {
+    if (props.card.needsTransition === TransitionType.FlyInToPile) {
+      leftRef.current = props.targetX;
+      topRef.current = props.targetY - 800;
+      setLeft(() => props.targetX);
+      setTop(() => props.targetY - 800);
+    }
+    // Intentionally short list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.card.needsTransition]);
 
   const card = React.useMemo(
     () => (
@@ -401,11 +454,11 @@ export const AnimatedPlayingCard = (
         opacity={props.opacity}
         isGrouped={isGrouped}
         isWild={wild}
-        heldIndex={heldIndex}
+        heldIndex={cardManagement.heldIndex}
       />
     ),
     [
-      heldIndex,
+      cardManagement.heldIndex,
       isGrouped,
       props.card,
       props.shadow,
