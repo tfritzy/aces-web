@@ -4,12 +4,14 @@ type Self = {
   displayName: string;
   id: string;
   token: string;
+  darkMode: boolean;
 };
 
 const initialGameState: Self = {
   displayName: "",
   id: "",
   token: "",
+  darkMode: false,
 };
 
 export const selfSlice = createSlice({
@@ -25,7 +27,11 @@ export const selfSlice = createSlice({
     setToken: (state, action: { payload: string }) => {
       state.token = action.payload;
     },
+    setDarkMode: (state, action: { payload: boolean }) => {
+      state.darkMode = action.payload;
+    },
   },
 });
 
-export const { setDisplayName, setUserId, setToken } = selfSlice.actions;
+export const { setDisplayName, setUserId, setToken, setDarkMode } =
+  selfSlice.actions;

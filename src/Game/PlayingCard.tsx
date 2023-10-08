@@ -348,7 +348,6 @@ export const AnimatedPlayingCard = (
   const [top, setTop] = React.useState(props.targetY);
   const leftRef = React.useRef(props.targetX);
   const topRef = React.useRef(props.targetY);
-  const speed = React.useRef(0.01);
   const requestRef = React.useRef(0);
   const game = useSelector((state: RootState) => state.game);
   const isGrouped = props.index >= 0 && game.hand[props.index].isGrouped;
@@ -362,18 +361,16 @@ export const AnimatedPlayingCard = (
     if (leftRef.current !== undefined) {
       const deltaX = targetPos.current.x - leftRef.current;
       const deltaY = targetPos.current.y - topRef.current;
-      const newX = leftRef.current + deltaX * speed.current;
-      const newY = topRef.current + deltaY * speed.current;
+      const newX = leftRef.current + deltaX * 0.12;
+      const newY = topRef.current + deltaY * 0.12;
       leftRef.current = newX;
       topRef.current = newY;
       setLeft(() => newX);
       setTop(() => newY);
 
       if (Math.abs(deltaX) > 0.1 || Math.abs(deltaY) > 0.1) {
-        speed.current = Math.min(0.12, speed.current * 1.05);
         requestRef.current = requestAnimationFrame(animate);
       } else {
-        speed.current = 0.06;
         setLeft(() => targetPos.current.x);
         setTop(() => targetPos.current.y);
         leftRef.current = targetPos.current.x;
@@ -405,7 +402,6 @@ export const AnimatedPlayingCard = (
   };
 
   React.useEffect(() => {
-    speed.current = 0.06;
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
     // Intentionally short list.

@@ -31,6 +31,7 @@ import { TurnFlowchart } from "./TurnFlowchart";
 import { MouseProvider } from "Game/MouseContext";
 import { CardManagement } from "./CardManagement";
 import { HotkeysButton } from "./Hotkeys";
+import { DarkmodeButton } from "components/DarkmodeButton";
 
 type BoardProps = {
   reconnect: (
@@ -429,6 +430,7 @@ export const Board = (props: BoardProps) => {
             <div className="absolute top-0 right-0">
               <div className="relative flex flex-col items-end p-2 space-y-2">
                 <div className="flex flex-row space-x-2">
+                  <DarkmodeButton />
                   <HotkeysButton />
                   <ScorecardButton />
                 </div>

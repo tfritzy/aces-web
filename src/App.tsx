@@ -2,12 +2,13 @@ import React from "react";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { GameMenu } from "GameMenu/GameMenu";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Cookies from "universal-cookie";
 import { generateId } from "helpers/generateId";
-import { setToken, setUserId } from "store/selfSlice";
+import { setDarkMode, setToken, setUserId } from "store/selfSlice";
 import { Background } from "components/Background";
 import { Game } from "Game/Game";
+import { RootState } from "store/store";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
 
 export const App = (): JSX.Element => {
   const dispatch = useDispatch();
+  const darkMode = useSelector((state: RootState) => state.self.darkMode);
 
   React.useEffect(() => {
     const cookies = new Cookies();
@@ -42,15 +44,26 @@ export const App = (): JSX.Element => {
       cookies.set("playerId", playerId, { path: "/" });
     }
     dispatch(setUserId(playerId));
+
+    const systemDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
+    const darkModeCookie = cookies.get("darkMode");
+    if (darkModeCookie) {
+      dispatch(setDarkMode(darkModeCookie === "true"));
+    } else {
+      dispatch(setDarkMode(systemDarkMode.matches));
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className="select-none">
-      <div className="w-full h-screen bg-gray-50 dark:bg-slate-900">
-        <base href="/" />
-        <Background />
-        <RouterProvider router={router} />
+      <div className={darkMode ? "dark" : ""}>
+        <div className="w-full h-screen bg-gray-50 dark:bg-slate-900">
+          <base href="/" />
+          <Background />
+          <RouterProvider router={router} />
+        </div>
       </div>
     </div>
   );

@@ -62,13 +62,11 @@ export const HotkeysButton = () => {
         type="secondary"
         text={
           <svg
-            width="24px"
             strokeWidth="1.5"
-            height="24px"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="stroke-gray-600 dark:stroke-white"
+            className="w-5 h-5 stroke-gray-600 dark:stroke-white"
           >
             <path
               d="M4 19V5a2 2 0 012-2h13.4a.6.6 0 01.6.6v13.114M6 17h14M6 21h14"
