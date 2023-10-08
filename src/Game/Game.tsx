@@ -275,7 +275,7 @@ export const Game = () => {
   } else if (game.state === GameState.Invalid) {
     content = (
       <Modal shown>
-        <LoadingState text={"Fetching game state..."} />
+        <LoadingState text="Fetching game state..." />
       </Modal>
     );
   } else if (game.state === GameState.Setup) {

@@ -67,6 +67,7 @@ export type PlayerWentOutEvent = {
 export type PlayerDoneForRoundEvent = {
   type: EventType.PlayerDoneForRound;
   i: number;
+  round: number;
   playerId: string;
   roundScore: number;
   totalScore: number;
