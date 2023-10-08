@@ -260,7 +260,7 @@ export const Game = () => {
   }, [recentMessage]);
 
   let content;
-  if (!websocket) {
+  if (!websocket || websocket?.readyState !== WebSocket.OPEN) {
     content = (
       <OpenWebsocketModal
         playerToken={self.token}
@@ -270,6 +270,8 @@ export const Game = () => {
         onSuccess={(ws) => setWebsocket(ws)}
       />
     );
+  }
+  if (websocket?.readyState !== WebSocket.OPEN) {
   } else if (game.state === GameState.Invalid) {
     content = (
       <Modal shown>

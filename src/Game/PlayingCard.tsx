@@ -253,7 +253,7 @@ const CardBody = (props: CardBodyProps) => {
         props.isGrouped ? "border-2 border-green-400 dark:border-green-400" : ""
       } ${getCardColor(
         card
-      )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden select-none relative font-serif  ${
+      )} ${cardBackground} cursor-pointer border-gray-400 dark:border-gray-700 border-solid border rounded-lg overflow-hidden select-none relative font-serif dark:shadow-[#00000055] ${
         props.shadow
       }`}
       style={{ height: cardHeight, width: cardWidth }}

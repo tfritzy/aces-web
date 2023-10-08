@@ -67,12 +67,15 @@ export const OpenWebsocketModal = (props: OpenWebsocketModalProps) => {
       return;
     }
 
-    connect();
+    // Only initially automatically connect. Otherwise require user to click.
+    if (!props.websocket) {
+      connect();
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.playerToken]);
 
-  if (props.websocket) {
+  if (props.websocket?.readyState === WebSocket.OPEN) {
     return null;
   }
 
@@ -91,8 +94,29 @@ export const OpenWebsocketModal = (props: OpenWebsocketModalProps) => {
         />
       </div>
     );
-  } else {
+  } else if (props.websocket?.readyState === WebSocket.CONNECTING || pending) {
     content = <LoadingState text="Establishing connection..." />;
+  } else if (props.websocket?.readyState === WebSocket.CLOSING) {
+    content = (
+      <div className="flex flex-col items-center space-y-3">
+        <Spinner />
+        <div className="text-center">Closing connection...</div>
+      </div>
+    );
+  } else if (props.websocket?.readyState === WebSocket.CLOSED) {
+    content = (
+      <div className="flex flex-col items-center space-y-3">
+        <Warning />
+        <div className="text-center">Lost connection to server</div>
+        <Button
+          onClick={() => {
+            connect();
+          }}
+          text="Reconnect"
+          type="primary"
+        />
+      </div>
+    );
   }
 
   return (

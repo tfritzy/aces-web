@@ -330,7 +330,7 @@ export const CardManagement = (props: CardManagementProps) => {
         z={dropSlotIndex ?? 80}
         key={heldCard.id}
         skipLerp
-        shadow="drop-shadow-lg"
+        shadow="shadow-lg"
         opacity={isHoveringHand ? 0.5 : 1}
       />
     );
