@@ -251,7 +251,7 @@ const CardBody = (props: CardBodyProps) => {
     <div
       className={`${
         props.isGrouped
-          ? "border-2 border-emerald-400 dark:border-emerald-400 shadow-emerald-200 dark:shadow-emerald-600 shadow-md"
+          ? "border-2 border-green-400 dark:border-green-400 shadow-green-200 dark:shadow-emerald-600 shadow-sm"
           : ""
       } ${getCardColor(
         card
