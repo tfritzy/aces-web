@@ -13,7 +13,7 @@ export const Background = () => {
 
   const elements = React.useMemo(
     () => (
-      <ul className="background dark:shadow-[0_0_200px_rgba(0,0,0,0.9)_inset]">
+      <ul className="background dark:shadow-[0_0_200px_rgba(0,0,0,0.9)_inset] select-none">
         {Array.from(Array(3).keys()).map((i) => (
           <li
             style={{

@@ -300,7 +300,7 @@ export const Game = () => {
   }
 
   return (
-    <div className="flex flex-col items-center overflow-hidden">
+    <div className="flex flex-col items-center overflow-hidden select-none">
       {content}
       <Toasts toasts={toasts} key="toasts" />
 

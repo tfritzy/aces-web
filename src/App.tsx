@@ -9,10 +9,15 @@ import { setDarkMode, setToken, setUserId } from "store/selfSlice";
 import { Background } from "components/Background";
 import { Game } from "Game/Game";
 import { RootState } from "store/store";
+import { LandingPage } from "Documentation/LandingPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <LandingPage />,
+  },
+  {
+    path: "/lobby",
     element: <GameMenu shown />,
   },
   {
@@ -57,13 +62,11 @@ export const App = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="select-none">
-      <div className={darkMode ? "dark" : ""}>
-        <div className="w-full h-screen bg-gray-50 dark:bg-slate-900">
-          <base href="/" />
-          <Background />
-          <RouterProvider router={router} />
-        </div>
+    <div className={darkMode ? "dark" : ""}>
+      <Background />
+      <div className="w-full h-screen bg-gray-50 dark:bg-slate-900">
+        <base href="/" />
+        <RouterProvider router={router} />
       </div>
     </div>
   );
