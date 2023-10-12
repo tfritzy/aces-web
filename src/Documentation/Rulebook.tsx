@@ -9,7 +9,9 @@ const SmolCard = (props: {
   size?: "m" | "s";
 }) => {
   const size =
-    props.size === "s" ? "scale-[.5] w-[70px]" : "scale-[.8] w-[110px]";
+    props.size === "s"
+      ? "pointer-events-none scale-[.5] w-[70px]"
+      : "pointer-events-none scale-[.8] w-[110px]";
   return (
     <div className={size}>
       <PlayingCard
