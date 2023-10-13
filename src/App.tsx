@@ -13,11 +13,11 @@ import { LandingPage } from "Documentation/LandingPage";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/rules",
     element: <LandingPage />,
   },
   {
-    path: "/lobby",
+    path: "/",
     element: <GameMenu shown />,
   },
   {
