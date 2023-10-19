@@ -17,3 +17,4 @@ See past turn hands
 [x] Max width on summary card group
 Sound effect on your turn
 Fix bug with grouping: 3D 2D 2H 2S 8D 8H 8C JH JD Jo
+Make codes not case sensitive.

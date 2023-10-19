@@ -10,6 +10,7 @@ import { Background } from "components/Background";
 import { Game } from "Game/Game";
 import { RootState } from "store/store";
 import { LandingPage } from "Documentation/LandingPage";
+import { Modal } from "components/Modal";
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,25 @@ export const App = (): JSX.Element => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const aspectRatio = window.innerHeight / window.innerWidth;
+  const isMobile = aspectRatio > 1.4;
+
+  if (isMobile) {
+    return (
+      <>
+        <Background />
+        <Modal shown>
+          <div className="flex flex-col items-center justify-center px-8 py-6 space-y-4">
+            <div className="text-center text-gray-700 dark:text-gray-100">
+              "Sorry, Aces is not currently available on mobile. Please join
+              from a desktop or laptop."
+            </div>
+          </div>
+        </Modal>
+      </>
+    );
+  }
 
   return (
     <div className={darkMode ? "dark" : ""}>
