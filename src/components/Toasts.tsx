@@ -38,9 +38,9 @@ export const Toasts = (props: ToastsProps) => {
   const [animationParent] = useAutoAnimate();
 
   return (
-    <div className="fixed left-0 top-0 w-screen full-height min-w-screen pointer-events-none pt-2">
+    <div className="fixed left-0 top-0 full-width full-height pointer-events-none pt-2">
       <div
-        className="flex flex-col min-w-screen items-center space-y-2"
+        className="flex flex-col full-width items-center space-y-2"
         ref={animationParent}
       >
         {props.toasts.map((item) => (
