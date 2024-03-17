@@ -51,6 +51,5 @@ html, body {
 }
 
 .no-emoji {
-  font-family: "Segoe UI Symbol", "Symbola", "DejaVu Sans", sans-serif;
   font-feature-settings: "liga" 0;
 }
