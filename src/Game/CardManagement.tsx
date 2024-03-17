@@ -59,10 +59,9 @@ function getHoveredIndex(
   return i;
 }
 
-const dockHeight = cardHeight + 100;
 const dockYPercent = 0.75;
-const deckPercentFromTop = 0.33;
-const handPadding = 25;
+const handPadding = 6;
+const dockHeight = cardHeight + handPadding * 2;
 
 type CardManagementProps = {
   onDrop: (dropIndex?: number) => void;
@@ -100,7 +99,7 @@ export const CardManagement = (props: CardManagementProps) => {
 
   const cards: JSX.Element[] = [];
 
-  const mobileHeight = windowDimensions.height < 725;
+  const mobileHeight = windowDimensions.height < 600;
   const mobileWidth = windowDimensions.width < 500;
   const dockCenterY = mobileWidth
     ? windowDimensions.height - dockHeight / 2
@@ -109,7 +108,7 @@ export const CardManagement = (props: CardManagementProps) => {
   const dockBottom = dockCenterY + dockHeight / 2;
   const deckY = mobileHeight
     ? cardHeight / 2 - 10
-    : dockCenterY - cardHeight * 2.5;
+    : dockCenterY - cardHeight - windowDimensions.height * 0.3;
   const deckCenterX = windowDimensions.width / 2 - cardWidth - 25;
   const pileX = windowDimensions.width / 2 + 25;
   const isHoveringHand = mousePos.y > dockTop && mousePos.y < dockBottom;
@@ -167,7 +166,7 @@ export const CardManagement = (props: CardManagementProps) => {
             card={card}
             index={index}
             targetX={x}
-            targetY={dockCenterY - cardHeight / 2}
+            targetY={dockCenterY - cardHeight / 2 - handPadding * 3}
             key={card.id}
             z={index + 1}
             shadow="shadow-sm"
@@ -365,9 +364,9 @@ export const CardManagement = (props: CardManagementProps) => {
         }}
       >
         <div
-          className="relative rounded-lg border border-gray-300 dark:border-gray-700 shadow-[0_0_10px_#00000011_inset] dark:shadow-[0_0_10px_#00000099_inset]"
+          className="relative rounded-lg border border-gray-200 dark:border-gray-800 shadow-[0_0_6px_#00000006_inset] dark:shadow-[0_0_6px_#00000066_inset]"
           style={{
-            height: cardHeight + 50,
+            height: dockHeight,
             width: handWidth,
           }}
         >
@@ -378,13 +377,13 @@ export const CardManagement = (props: CardManagementProps) => {
       </div>
 
       <div
-        className="border-2 rounded-lg shadow-[0_0_10px_#00000011_inset] dark:shadow-[0_0_10px_#00000099_inset] dark:border-gray-800"
+        className="border rounded-lg shadow-[0_0_6px_#00000006_inset] dark:shadow-[0_0_6px_#00000055_inset] dark:border-gray-800"
         style={{
           position: "fixed",
-          left: deckCenterX - 15,
-          top: deckY - 15,
-          width: cardWidth + 30,
-          height: cardHeight + 30,
+          left: deckCenterX - 10,
+          top: deckY - 10,
+          width: cardWidth + 20,
+          height: cardHeight + 20,
         }}
       >
         <div className="absolute text-center -top-8 w-full text-gray-400 text-md">
@@ -393,13 +392,13 @@ export const CardManagement = (props: CardManagementProps) => {
       </div>
 
       <div
-        className="border-2 rounded-lg shadow-[0_0_10px_#00000011_inset] dark:shadow-[0_0_10px_#00000099_inset] dark:border-gray-800"
+        className="border rounded-lg shadow-[0_0_6px_#00000006_inset] dark:shadow-[0_0_6px_#00000055_inset] dark:border-gray-800"
         style={{
           position: "fixed",
-          left: pileX - 15,
-          top: deckY - 15,
-          width: cardWidth + 30,
-          height: cardHeight + 30,
+          left: pileX - 10,
+          top: deckY - 10,
+          width: cardWidth + 20,
+          height: cardHeight + 20,
         }}
       >
         <div className="absolute text-center -top-8 w-full text-gray-400 text-md">
