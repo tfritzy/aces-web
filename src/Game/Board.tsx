@@ -438,7 +438,7 @@ export const Board = (props: BoardProps) => {
                   <ScorecardButton />
                 </div>
 
-                {isOwnTurn && <TurnFlowchart />}
+                {isOwnTurn && <TurnFlowchart goOut={goOut} endTurn={endTurn} />}
               </div>
             </div>
           </div>

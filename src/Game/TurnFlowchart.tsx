@@ -9,11 +9,16 @@ const nonHighlighted =
   "px-2 py-1 rounded bg-gray-50 text-gray-500 font-semibold border dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200";
 const disabledStyling = " opacity-50";
 
-export const TurnFlowchart = () => {
+type TurnFlowchartProps = {
+  goOut: () => void;
+  endTurn: () => void;
+};
+
+export const TurnFlowchart = (props: TurnFlowchartProps) => {
   const phase = useSelector((state: RootState) => state.game.turnPhase);
   const game = useSelector((state: RootState) => state.game);
   const canGoOut = game.hand.length > 0 && game.hand.every((c) => c.isGrouped);
-  const isMobile = window.matchMedia("(max-width: 640px)").matches;
+  const isMobile = window.innerWidth < 768;
 
   if (isMobile) {
     return null;
@@ -50,6 +55,7 @@ export const TurnFlowchart = () => {
                 (phase === TurnPhase.Ending ? highlighted : nonHighlighted) +
                 (!canGoOut ? disabledStyling : "")
               }
+              onClick={canGoOut ? props.goOut : undefined}
             >
               Go out
             </div>
@@ -59,6 +65,7 @@ export const TurnFlowchart = () => {
 
         <div
           className={phase === TurnPhase.Ending ? highlighted : nonHighlighted}
+          onClick={props.endTurn}
         >
           End turn
         </div>
