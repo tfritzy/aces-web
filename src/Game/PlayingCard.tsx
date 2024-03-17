@@ -30,25 +30,25 @@ export const getSuitIcon = (suit: Suit): JSX.Element | undefined => {
   switch (suit) {
     case Suit.CLUBS:
       return (
-        <span role="img" className="no-emoji">
+        <span role="img" className="no-emoji font-mono">
           &#x2663;&#xFE00;
         </span>
       );
     case Suit.DIAMONDS:
       return (
-        <span role="img" className="no-emoji">
+        <span role="img" className="no-emoji font-mono">
           &#x2666;&#xFE00;
         </span>
       );
     case Suit.HEARTS:
       return (
-        <span role="img" className="no-emoji">
+        <span role="img" className="no-emoji font-mono">
           &#x2665;&#xFE00;
         </span>
       );
     case Suit.SPADES:
       return (
-        <span role="img" className="no-emoji">
+        <span role="img" className="no-emoji font-mono">
           &#x2660;&#xFE00;
         </span>
       );
