@@ -83,7 +83,7 @@ export const App = (): JSX.Element => {
   return (
     <div className={darkMode ? "dark" : ""}>
       <Background />
-      <div className="w-full h-screen bg-gray-50 dark:bg-slate-900">
+      <div className="w-full full-height bg-gray-50 dark:bg-slate-900">
         <base href="/" />
         <RouterProvider router={router} />
       </div>

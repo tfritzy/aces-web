@@ -428,7 +428,7 @@ export const Board = (props: BoardProps) => {
             }
           }}
         >
-          <div className="absolute max-w-[1400px] w-screen h-screen border-l border-r shadow-lg dark:shadow-[#00000099] border-gray-100 dark:border-slate-700 bg-white dark:bg-gray-900">
+          <div className="absolute max-w-[1400px] w-screen full-height border-l border-r shadow-lg dark:shadow-[#00000099] border-gray-100 dark:border-slate-700 bg-white dark:bg-gray-900">
             <PlayerList key="playerList" />
 
             <div className="absolute top-0 right-0">

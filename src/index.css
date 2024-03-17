@@ -40,4 +40,8 @@ code {
   animation: animate linear infinite;
 }
 
-
+.full-height {
+  /* Fall back to 100vh if env() is not supported */
+  height: 100vh; /* Fallback for browsers that don't support env() */
+  height: calc(var(--vh, 1vh) * 100); /* Use our custom property */
+}
