@@ -343,7 +343,6 @@ export const CardManagement = (props: CardManagementProps) => {
   }
 
   const handleMouseUp = (e: React.SyntheticEvent) => {
-    e.preventDefault();
     if (isHoveringHand && heldIndex !== null && dropSlotIndex !== null) {
       props.onDrop(dropSlotIndex);
     }

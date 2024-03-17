@@ -419,7 +419,6 @@ export const Board = (props: BoardProps) => {
             dispatch(setHeldIndex(null));
           }}
           onTouchEnd={(e) => {
-            e.preventDefault();
             dispatch(setHeldIndex(null));
           }}
           onKeyDown={(e) => {
