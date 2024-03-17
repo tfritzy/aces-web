@@ -10,7 +10,6 @@ import { Background } from "components/Background";
 import { Game } from "Game/Game";
 import { RootState } from "store/store";
 import { LandingPage } from "Documentation/LandingPage";
-import { Modal } from "components/Modal";
 
 const router = createBrowserRouter([
   {

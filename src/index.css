@@ -45,3 +45,7 @@ code {
   height: 100dvh; /* Fallback for browsers that don't support env() */
   height: calc(var(--vh, 1vh) * 100); /* Use our custom property */
 }
+
+html, body {
+  overscroll-behavior: none;
+}
