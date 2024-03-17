@@ -76,7 +76,7 @@ export const Toast = (props: ToastProps) => {
   return (
     <div
       id="toast-simple"
-      className={`flex flex-row items-center h-min p-2 px-3 rounded-md shadow-md text-black dark:text-gray-400 divide-gray-700 space-x border border-gray-300 dark:border-gray-700 w-min pointer-events-auto ${getColorClasses(
+      className={`flex flex-row items-center min-w-max h-min p-2 px-3 rounded-md shadow-md text-black dark:text-gray-400 divide-gray-700 space-x border border-gray-300 dark:border-gray-700 w-min pointer-events-auto ${getColorClasses(
         props.type
       )}`}
       role="alert"
