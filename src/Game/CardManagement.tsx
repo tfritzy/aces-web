@@ -63,7 +63,6 @@ const dockHeight = cardHeight + 100;
 const dockYPercent = 0.75;
 const deckPercentFromTop = 0.27;
 const handPadding = 25;
-const handWidth = 950;
 
 type CardManagementProps = {
   onDrop: (dropIndex?: number) => void;
@@ -87,6 +86,7 @@ export const CardManagement = (props: CardManagementProps) => {
     getWindowDimensions()
   );
   const needsCardsResize = React.useRef(false);
+  const handWidth = Math.min(windowDimensions.width * 0.95, 1300);
 
   React.useEffect(() => {
     function handleResize() {
@@ -365,7 +365,9 @@ export const CardManagement = (props: CardManagementProps) => {
             width: handWidth,
           }}
         >
-          <div className="absolute -top-11 right-0">{props.buttons}</div>
+          <div className="absolute -top-11 right-0 w-[100%]">
+            {props.buttons}
+          </div>
         </div>
       </div>
 

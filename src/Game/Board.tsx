@@ -355,7 +355,7 @@ export const Board = (props: BoardProps) => {
   const isInEndRoundPhase = isOwnTurn && game.turnPhase === TurnPhase.Ending;
   const buttons = React.useMemo(() => {
     return (
-      <div className="flex justify-end py-2 w-[950px]">
+      <div className="flex justify-end py-2 w-[100%]">
         <div className="flex justify-between w-full">
           <Button
             key="sort"
@@ -414,8 +414,11 @@ export const Board = (props: BoardProps) => {
     <MouseProvider>
       <div>
         <div
-          className="min-w-screen min-h-screen flex flex-col items-center"
+          className="flex flex-col items-center"
           onMouseUp={() => {
+            dispatch(setHeldIndex(null));
+          }}
+          onTouchEnd={() => {
             dispatch(setHeldIndex(null));
           }}
           onKeyDown={(e) => {
@@ -424,7 +427,7 @@ export const Board = (props: BoardProps) => {
             }
           }}
         >
-          <div className="absolute max-w-[1400px] min-w-[1000px] h-screen border-l border-r shadow-lg dark:shadow-[#00000099] border-gray-100 dark:border-slate-700 bg-white dark:bg-gray-900">
+          <div className="absolute max-w-[1400px] min-w-[500px] w-screen h-screen border-l border-r shadow-lg dark:shadow-[#00000099] border-gray-100 dark:border-slate-700 bg-white dark:bg-gray-900">
             <PlayerList key="playerList" />
 
             <div className="absolute top-0 right-0">

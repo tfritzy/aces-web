@@ -62,8 +62,7 @@ export const App = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const aspectRatio = window.innerHeight / window.innerWidth;
-  const isMobile = aspectRatio > 1.4;
+  const isMobile = window.matchMedia("(max-width: 640px)").matches;
 
   if (isMobile) {
     return (
