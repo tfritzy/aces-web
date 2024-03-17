@@ -29,16 +29,16 @@ const cardSuitColPlacements = {
 export const getSuitIcon = (suit: Suit): JSX.Element | undefined => {
   switch (suit) {
     case Suit.CLUBS:
-      return <div className="font-bold">♣&#xFE0E;</div>;
+      return <span className="font-bold">♣</span>;
     case Suit.DIAMONDS:
-      return <div>♦&#xFE0E;</div>;
+      return <span>♦</span>;
     case Suit.HEARTS:
-      return <div>♥&#xFE0E;</div>;
+      return <span>♥</span>;
     case Suit.SPADES:
-      return <div>♠&#xFE0E;</div>;
+      return <span>♠</span>;
     case Suit.SUITLESS:
       return (
-        <div>
+        <span>
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +58,7 @@ export const getSuitIcon = (suit: Suit): JSX.Element | undefined => {
               </g>
             </g>
           </svg>
-        </div>
+        </span>
       );
   }
 };

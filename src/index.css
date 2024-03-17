@@ -49,3 +49,7 @@ code {
 html, body {
   overscroll-behavior: none;
 }
+
+span::before {
+  font-family: 'Segoe UI Symbol';
+}
