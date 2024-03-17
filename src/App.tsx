@@ -71,8 +71,8 @@ export const App = (): JSX.Element => {
         <Modal shown>
           <div className="flex flex-col items-center justify-center px-8 py-6 space-y-4">
             <div className="text-center text-gray-700 dark:text-gray-100">
-              Sorry, Aces is not currently available on mobile. Please join from
-              a desktop or laptop.
+              Sorry, Aces is not currently available on phones. Please join from
+              a tablet, desktop, or laptop.
             </div>
           </div>
         </Modal>
