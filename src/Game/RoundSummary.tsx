@@ -41,6 +41,7 @@ export const RoundSummary = (props: RoundSummaryProps) => {
     getWindowDimensions()
   );
   const [sortedPlayers, setSortedPlayers] = React.useState<SummaryPlayer[]>([]);
+  const isConstrainedInWidth = windowDimensions.width < 600;
 
   const ownId = useSelector((state: RootState) => state.self.id);
   const isLeader = sortedPlayers[0]?.id === ownId;
@@ -120,24 +121,28 @@ export const RoundSummary = (props: RoundSummaryProps) => {
             {isGameOver ? "Final standings" : `Round ${game.round} results`}
           </div>
 
-          <div className="px-6 py-4">
+          <div className="px-4 py-4">
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th key="rank" className="px-3 py-2 text-left"></th>
-                  <th key="player" className="px-3 py-2 text-left">
+                  <th key="rank" className="px-2 py-1 text-left"></th>
+                  <th key="player" className="px-2 py-1 text-left">
                     Player
                   </th>
-                  <th key="grouped" className="px-3 py-2 text-left">
-                    Grouped
-                  </th>
-                  <th key="ungrouped" className="px-3 py-2 text-left">
-                    Ungrouped
-                  </th>
-                  <th key="round" className="px-3 py-2 text-left">
+                  {!isConstrainedInWidth && (
+                    <th key="grouped" className="px-2 py-1 text-left">
+                      Grouped
+                    </th>
+                  )}
+                  {!isConstrainedInWidth && (
+                    <th key="ungrouped" className="px-2 py-1 text-left">
+                      Ungrouped
+                    </th>
+                  )}
+                  <th key="round" className="px-2 py-1 text-left">
                     Round
                   </th>
-                  <th key="total" className="px-3 py-2 text-left">
+                  <th key="total" className="px-2 py-1 text-left">
                     Total
                   </th>
                 </tr>
@@ -153,52 +158,62 @@ export const RoundSummary = (props: RoundSummaryProps) => {
                       key={p.id}
                     >
                       <td key="placement" className="px-3 py-2">
-                        <div className="font-bold text-xl leading-none text-center px-2 pr-4">
+                        <div className="font-semibold text-xl leading-none text-center px-1 pr-3">
                           {p.placement}
                           {getChevron(p)}
                         </div>
                       </td>
 
                       <td key="player" className="px-3 py-2">
-                        <div>
-                          <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 rounded px-2 max-w-max">
-                            <div className="overflow-hidden w-12 h-12 ">
-                              <img
-                                src={icon}
-                                className="rounded-full w-10 h-12 mx-auto translate-y-2 -translate-x-1"
-                                alt="avatar"
-                              />
-                            </div>
-                            <div className="text-left truncate">
-                              {p.displayName}
+                        {!isConstrainedInWidth ? (
+                          <div>
+                            <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 rounded px-2 max-w-max">
+                              <div className="overflow-hidden w-12 h-12 ">
+                                <img
+                                  src={icon}
+                                  className="rounded-full w-10 h-12 mx-auto translate-y-2 -translate-x-1"
+                                  alt="avatar"
+                                />
+                              </div>
+                              <div className="text-left truncate">
+                                {p.displayName}
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="text-left truncate">
+                            {p.displayName}
+                          </div>
+                        )}
                       </td>
 
-                      <td key="grouped" className="px-3 py-2">
-                        <div className="flex flex-row flex-wrap max-w-[175px]">
-                          {p.mostRecentGroupedCards.map((g) => (
-                            <div className="flex flex-row px-1">
-                              {g.map((c) => (
-                                <div className="m-[1px]">
-                                  <Minicard card={c} />
-                                </div>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      </td>
+                      {!isConstrainedInWidth && (
+                        <td key="grouped" className="px-3 py-2">
+                          <div className="flex flex-row flex-wrap max-w-[175px]">
+                            {p.mostRecentGroupedCards.map((g) => (
+                              <div className="flex flex-row px-1">
+                                {g.map((c) => (
+                                  <div className="m-[1px]">
+                                    <Minicard card={c} />
+                                  </div>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      )}
 
-                      <td key="ungrouped" className="px-3 py-2 min">
-                        <div className="flex flex-row flex-wrap max-w-[175px]">
-                          {p.mostRecentUngroupedCards.map((c) => (
-                            <div className="m-[1px]">
-                              <Minicard card={c} />
-                            </div>
-                          ))}
-                        </div>
-                      </td>
+                      {!isConstrainedInWidth && (
+                        <td key="ungrouped" className="px-3 py-2 min">
+                          <div className="flex flex-row flex-wrap max-w-[175px]">
+                            {p.mostRecentUngroupedCards.map((c) => (
+                              <div className="m-[1px]">
+                                <Minicard card={c} />
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      )}
 
                       <td key="round" className="px-3 py-2">
                         <div>{p.roundScore}</div>
