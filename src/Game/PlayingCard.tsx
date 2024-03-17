@@ -37,7 +37,7 @@ export const getSuitIcon = (suit: Suit): JSX.Element | undefined => {
     case Suit.DIAMONDS:
       return (
         <span role="img" className="no-emoji">
-          &#x25C6;
+          &#x2666;
         </span>
       );
     case Suit.HEARTS:
