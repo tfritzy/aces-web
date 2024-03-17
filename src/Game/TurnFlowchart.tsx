@@ -13,6 +13,11 @@ export const TurnFlowchart = () => {
   const phase = useSelector((state: RootState) => state.game.turnPhase);
   const game = useSelector((state: RootState) => state.game);
   const canGoOut = game.hand.length > 0 && game.hand.every((c) => c.isGrouped);
+  const isMobile = window.matchMedia("(max-width: 640px)").matches;
+
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col items-center border p-3 rounded dark:border-gray-700">

@@ -27,19 +27,14 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
 
   return (
     <div className="flex flex-row items-center space-x-3" key={props.player.id}>
-      {turn === props.index && (
-        <div
-          key="arrow"
-          className="relative bg-rose-50 border border-rose-300 rounded text-md text-rose-700 px-2 py-1 flex flex-row items-center space-x-2 dark:bg-rose-600 dark:text-white dark:border-rose-400"
-        >
-          <div>{turnPhaseString}</div>
-        </div>
-      )}
-
       <div
-        className={`rounded-lg flex flex-row space-x-1 items-center bg-slate-50 border border-gray-300 dark:border-gray-500 dark:bg-gray-700 pl-3 overflow-hidden ${
-          isSelf ? "pr-6" : "pr-3"
-        }`}
+        className={`rounded-lg flex flex-row space-x-1 items-center pl-3 overflow-hidden ${
+          isSelf ? "pr-7" : "pr-3"
+        } ${
+          turn === props.index
+            ? "border-rose-400 dark:border-rose-600 bg-rose-200 dark:bg-rose-900"
+            : ""
+        } border-gray-300 dark:border-gray-500 bg-slate-50 border dark:bg-gray-700`}
       >
         <div className="w-12 h-12 rounded-lg">
           <div className="overflow-hidden w-12 h-12 rounded-lg">
@@ -51,8 +46,15 @@ export const PlayerStatus = (props: PlayerStatusProps) => {
           </div>
         </div>
 
-        <div className="text-gray-800 dark:text-white">
-          {props.player.displayName}
+        <div>
+          <div className="text-gray-800 dark:text-white">
+            {props.player.displayName}
+          </div>
+          {turn === props.index && (
+            <div className="text-gray-800 dark:text-gray-200 text-xs">
+              {turnPhaseString}
+            </div>
+          )}
         </div>
 
         {isSelf && (
@@ -82,8 +84,8 @@ export const PlayerList = () => {
   });
 
   return (
-    <div className="absolute top-2 left-2">
-      <div className="flex flex-col space-y-3 p-4">{playerStatuses}</div>
+    <div className="absolute -top-2 -left-1">
+      <div className="flex flex-col space-y-2 p-4">{playerStatuses}</div>
     </div>
   );
 };

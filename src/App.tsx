@@ -31,6 +31,14 @@ const router = createBrowserRouter([
   },
 ]);
 
+window.addEventListener(
+  "touchmove",
+  function (event) {
+    event.preventDefault();
+  },
+  { passive: false }
+);
+
 export const App = (): JSX.Element => {
   const dispatch = useDispatch();
   const darkMode = useSelector((state: RootState) => state.self.darkMode);

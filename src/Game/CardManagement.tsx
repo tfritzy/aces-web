@@ -61,7 +61,7 @@ function getHoveredIndex(
 
 const dockHeight = cardHeight + 100;
 const dockYPercent = 0.75;
-const deckPercentFromTop = 0.27;
+const deckPercentFromTop = 0.33;
 const handPadding = 25;
 
 type CardManagementProps = {
@@ -100,10 +100,16 @@ export const CardManagement = (props: CardManagementProps) => {
 
   const cards: JSX.Element[] = [];
 
-  const dockCenterY = windowDimensions.height * dockYPercent;
+  const mobileHeight = windowDimensions.height < 725;
+  const mobileWidth = windowDimensions.width < 500;
+  const dockCenterY = mobileWidth
+    ? windowDimensions.height - dockHeight / 2
+    : windowDimensions.height * dockYPercent;
   const dockTop = dockCenterY - dockHeight / 2;
   const dockBottom = dockCenterY + dockHeight / 2;
-  const deckY = windowDimensions.height * deckPercentFromTop;
+  const deckY = mobileHeight
+    ? cardHeight / 2
+    : windowDimensions.height * deckPercentFromTop;
   const deckCenterX = windowDimensions.width / 2 - cardWidth - 25;
   const pileX = windowDimensions.width / 2 + 25;
   const isHoveringHand = mousePos.y > dockTop && mousePos.y < dockBottom;

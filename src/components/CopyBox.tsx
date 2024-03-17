@@ -50,12 +50,43 @@ const checkIcon = (
   </svg>
 );
 
+function fallbackCopyTextToClipboard(text: string) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+
+  // Avoid scrolling to bottom
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.position = "fixed";
+
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    const successful = document.execCommand("copy");
+    const msg = successful ? "successful" : "unsuccessful";
+    console.log("Fallback: Copying text command was " + msg);
+  } catch (err) {
+    console.error("Fallback: Oops, unable to copy", err);
+  }
+
+  document.body.removeChild(textArea);
+}
+
 export const CopyBox = (props: CopyBoxProps) => {
   const [copied, setCopied] = React.useState(false);
   const [hovered, setHovered] = React.useState(false);
 
   const copy = () => {
-    navigator.clipboard.writeText(props.copyText);
+    if (!navigator.clipboard) {
+      fallbackCopyTextToClipboard(props.copyText);
+    } else {
+      navigator.clipboard.writeText(props.copyText).catch((err) => {
+        fallbackCopyTextToClipboard(props.copyText);
+      });
+    }
+
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
