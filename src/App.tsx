@@ -62,23 +62,23 @@ export const App = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const isMobile = window.matchMedia("(max-width: 640px)").matches;
+  // const isMobile = window.matchMedia("(max-width: 640px)").matches;
 
-  if (isMobile) {
-    return (
-      <>
-        <Background />
-        <Modal shown>
-          <div className="flex flex-col items-center justify-center px-8 py-6 space-y-4">
-            <div className="text-center text-gray-700 dark:text-gray-100">
-              Sorry, Aces is not currently available on phones. Please join from
-              a tablet, desktop, or laptop.
-            </div>
-          </div>
-        </Modal>
-      </>
-    );
-  }
+  // if (isMobile) {
+  //   return (
+  //     <>
+  //       <Background />
+  //       <Modal shown>
+  //         <div className="flex flex-col items-center justify-center px-8 py-6 space-y-4">
+  //           <div className="text-center text-gray-700 dark:text-gray-100">
+  //             Sorry, Aces is not currently available on phones. Please join from
+  //             a tablet, desktop, or laptop.
+  //           </div>
+  //         </div>
+  //       </Modal>
+  //     </>
+  //   );
+  // }
 
   return (
     <div className={darkMode ? "dark" : ""}>
