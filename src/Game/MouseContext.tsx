@@ -16,13 +16,19 @@ export const MouseProvider = ({ children }: { children: JSX.Element }) => {
       setMouseY(event.touches[0].clientY);
       event.preventDefault();
     };
+    const handleTouchDown = (event: TouchEvent) => {
+      setMouseX(event.touches[0].clientX);
+      setMouseY(event.touches[0].clientY);
+    };
 
     window.addEventListener("mousemove", handleMouseMove, true);
     window.addEventListener("touchmove", handleTouchMove, true);
+    window.addEventListener("touchstart", handleTouchDown, true);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchDown);
     };
   }, []);
 
