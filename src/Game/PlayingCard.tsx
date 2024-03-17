@@ -29,13 +29,13 @@ const cardSuitColPlacements = {
 export const getSuitIcon = (suit: Suit): JSX.Element | undefined => {
   switch (suit) {
     case Suit.CLUBS:
-      return <span className="no-emoji">♣</span>;
+      return <span className="no-emoji">&#x2663;</span>;
     case Suit.DIAMONDS:
-      return <span className="no-emoji">♦</span>;
+      return <span className="no-emoji">&#x25C6;</span>;
     case Suit.HEARTS:
-      return <span className="no-emoji">♥</span>;
+      return <span className="no-emoji">&#x2665;</span>;
     case Suit.SPADES:
-      return <span className="no-emoji">♠</span>;
+      return <span className="no-emoji">&#x2660;</span>;
     case Suit.SUITLESS:
       return (
         <span>
