@@ -290,15 +290,19 @@ export const PlayingCard = (
     dispatch(setDropSlotIndex(props.index));
   }, [dispatch, props]);
 
-  const handleGrab = React.useCallback(() => {
-    if (!selfRef.current) {
-      return;
-    }
+  const handleGrab = React.useCallback(
+    (e: React.SyntheticEvent) => {
+      e.preventDefault();
+      if (!selfRef.current) {
+        return;
+      }
 
-    if (props.heldIndex === null) {
-      handleDragStart();
-    }
-  }, [props.heldIndex, handleDragStart]);
+      if (props.heldIndex === null) {
+        handleDragStart();
+      }
+    },
+    [props.heldIndex, handleDragStart]
+  );
 
   const handleMouseUp = React.useCallback(
     (e: React.MouseEvent) => {

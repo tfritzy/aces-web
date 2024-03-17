@@ -108,8 +108,8 @@ export const CardManagement = (props: CardManagementProps) => {
   const dockTop = dockCenterY - dockHeight / 2;
   const dockBottom = dockCenterY + dockHeight / 2;
   const deckY = mobileHeight
-    ? cardHeight / 2
-    : windowDimensions.height * deckPercentFromTop;
+    ? cardHeight / 2 - 10
+    : dockCenterY - cardHeight * 2.5;
   const deckCenterX = windowDimensions.width / 2 - cardWidth - 25;
   const pileX = windowDimensions.width / 2 + 25;
   const isHoveringHand = mousePos.y > dockTop && mousePos.y < dockBottom;
@@ -342,7 +342,8 @@ export const CardManagement = (props: CardManagementProps) => {
     );
   }
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.SyntheticEvent) => {
+    e.preventDefault();
     if (isHoveringHand && heldIndex !== null && dropSlotIndex !== null) {
       props.onDrop(dropSlotIndex);
     }
