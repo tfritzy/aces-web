@@ -29,7 +29,7 @@ export const Minicard = (props: MinicardProps) => {
       <div className="text-sm absolute top-0 left-1">
         {getValueIcon(props.card).slice(0, 2)}
       </div>
-      <div className="text-xs absolute bottom-0 right-[2px]">
+      <div className="text-xs absolute bottom-0 right-[2px] no-emoji">
         {getSuitIcon(props.card.suit)}
       </div>
     </div>

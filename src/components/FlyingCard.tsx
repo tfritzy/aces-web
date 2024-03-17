@@ -29,7 +29,7 @@ export const FlyingCard = (props: FlyingCardProps) => {
         )} ${props.reverse ? "-rotate-[135deg]" : "rotate-45"}`}
       >
         <div className="asbolute pl-5 pt-3">A</div>
-        <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 text-7xl">
+        <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 text-7xl no-emoji">
           {getSuitIcon(props.suit)}
         </div>
         <div className="absolute bottom-4 right-5">A</div>

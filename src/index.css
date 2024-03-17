@@ -49,3 +49,7 @@ code {
 html, body {
   overscroll-behavior: none;
 }
+
+.no-emoji {
+  font-feature-settings: "liga" 0;
+}
