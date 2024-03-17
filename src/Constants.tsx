@@ -1,6 +1,6 @@
 export const API_URL = "https://aces-backend.azurewebsites.net";
-export const cardWidth = 128;
-export const cardHeight = 183;
+export const cardWidth = 105;
+export const cardHeight = 148;
 
 export const red =
   " text-red-600 fill-red-600 stroke-red-600 dark:text-red-500 dark:fill-red-500 dark:stroke-red-500";

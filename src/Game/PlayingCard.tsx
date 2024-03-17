@@ -149,7 +149,7 @@ const CardCol = (props: CardColProps) => {
     <div className={className}>
       <div className={`${cardBackground}`}>
         {valueIcon.map((c) => (
-          <div className="text-center font-semibold h-[18px]" key={c}>
+          <div className="text-center font-semibold h-[26px] text-2xl" key={c}>
             {c}
           </div>
         ))}
@@ -207,7 +207,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
   } else {
     face = (
       <div className="w-full h-full flex justify-center items-center text-center align-middle">
-        <div className="w-[50px] h-[50px] text-6xl">
+        <div className="w-[35px] h-[35px] text-4xl">
           {getSuitIcon(card.suit)}
         </div>
       </div>
