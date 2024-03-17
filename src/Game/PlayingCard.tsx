@@ -179,7 +179,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
 
     face = (
       <div className="flex grow flex-row w-full px-1">
-        <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
+        <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-2xl">
           {Array.from({ length: counts[0] }).map((_, i) => (
             <div className={i > counts[0] / 2 - 1 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card.suit)}
@@ -187,7 +187,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
           ))}
         </div>
 
-        <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
+        <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-2xl">
           {Array.from({ length: counts[1] }).map((_, i) => (
             <div className={i > counts[1] / 2 - 1 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card.suit)}
@@ -195,7 +195,7 @@ const CardFace = (props: CardFaceProps): JSX.Element | null => {
           ))}
         </div>
 
-        <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-3xl">
+        <div className="flex grow flex-col items-center justify-evenly justify-items-stretch text-2xl">
           {Array.from({ length: counts[2] }).map((_, i) => (
             <div className={i > counts[2] / 2 - 1 ? "rotate-180" : ""} key={i}>
               {getSuitIcon(card.suit)}
